@@ -13,15 +13,6 @@ export default defineConfig({
     esbuild: {
         loader: 'jsx',
         include: /.*\.jsx$/,
-        exclude: /node_modules/,
-    },
-    optimizeDeps: {
-        esbuildOptions: {
-            loader: {
-                '.js': 'jsx',
-                '.jsx': 'jsx',
-            },
-        },
     },
     server: {
         watch: {
