@@ -17,8 +17,9 @@ export default defineConfig({
         tailwindcss(),
     ],
     esbuild: {
-        loader: 'jsx',
-        include: /.*\.jsx$/,
+        loader: 'tsx',
+        include: /\.(jsx|tsx)$/,
+        exclude: /node_modules/,
     },
     server: {
         watch: {
