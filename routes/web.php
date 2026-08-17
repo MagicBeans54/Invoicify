@@ -3,11 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\CompanySettingsController;
+use App\Http\Controllers\AuthController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });
+
+Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
+Route::post('/register', [AuthController::class, 'store'])->name('register.store');
+
+Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
 Route::get('/invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
