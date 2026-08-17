@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
+import path from 'node:path';
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, 'resources/js'),
+        },
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.jsx'],
@@ -11,8 +17,9 @@ export default defineConfig({
         tailwindcss(),
     ],
     esbuild: {
-        loader: 'jsx',
-        include: /.*\.jsx$/,
+        loader: 'tsx',
+        include: /\.(jsx|tsx)$/,
+        exclude: /node_modules/,
     },
     server: {
         watch: {
