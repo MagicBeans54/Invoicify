@@ -1,6 +1,10 @@
+import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function LoginForm() {
     const { data, setData, post, processing, errors } = useForm({
@@ -14,30 +18,48 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center min-h-screen">
-            <h1 className="text-3xl font-bold mb-6">Login</h1>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
-                </div>
-                <button type="submit" disabled={processing}>Login</button>
-            </form>
-            <a href="/register" className="text-indigo-500 hover:text-indigo-700">Don't have an account? Register</a>
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <Card className="w-full max-w-md">
+                <CardHeader className="text-center">
+                    <CardTitle className="text-2xl">Login</CardTitle>
+                    <CardDescription>Welcome back to Invoicify</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="you@example.com"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                            />
+                            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                placeholder="••••••••"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                            />
+                            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                        </div>
+                        <Button type="submit" className="w-full" disabled={processing}>
+                            {processing ? 'Logging in...' : 'Login'}
+                        </Button>
+                    </form>
+                </CardContent>
+                <CardContent className="pt-0 text-center text-sm text-muted-foreground">
+                    Don't have an account?{' '}
+                    <a href="/register" className="text-primary hover:underline">
+                        Register
+                    </a>
+                </CardContent>
+            </Card>
         </div>
     );
 }
