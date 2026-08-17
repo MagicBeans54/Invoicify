@@ -15,6 +15,12 @@ export default function Welcome() {
                 </p>
                 
                 <div className="space-y-3 mb-6">
+                     <Link
+                        href={route('login')}
+                        className="block w-full text-center px-4 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+                    >
+                        Login
+                    </Link>
                     <Link
                         href={route('invoices.index')}
                         className="block w-full text-center px-4 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
