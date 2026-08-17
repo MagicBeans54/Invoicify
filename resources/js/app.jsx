@@ -1,3 +1,4 @@
+import React from 'react';
 import './bootstrap';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
