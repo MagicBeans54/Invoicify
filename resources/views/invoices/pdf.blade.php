@@ -25,12 +25,12 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 5px;
+            margin-bottom: 1px;
         }
         .company-info h1 {
             color: #10b981;
             font-size: 28px;
-            margin-bottom: 5px;
+            margin-bottom: 1px;
             font-weight: bold;
         }
         .company-info .company-details p {
@@ -114,7 +114,7 @@
             color: white;
             font-size: 12px;
             font-weight: 600;
-            padding: 12px;
+            padding: 1px;
             text-align: left;
             text-transform: uppercase;
         }
@@ -122,7 +122,7 @@
             text-align: right;
         }
         .items-table td {
-            padding: 12px;
+            padding: 1px;
             color: #333;
             font-size: 14px;
             border-bottom: 1px solid #e5e7eb;
