@@ -207,8 +207,8 @@ class InvoiceController extends Controller
             'companySettings' => $companySettings,
         ]);
 
-        Mail::to($invoice->client_email)
-            ->send(new InvoiceMail($invoice, $pdf->output()));
+            Mail::to($invoice->client_email)
+                ->send(new InvoiceMail($invoice, $companySettings, $pdf->output()));
 
         if ($invoice->status === 'draft') {
             $invoice->update(['status' => 'sent']);
