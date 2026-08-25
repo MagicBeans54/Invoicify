@@ -1,11 +1,22 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./resources/js/*"]
-    }
-  }
+    },
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["resources/js/**/*"],
+  "exclude": ["node_modules"]
 }
