@@ -16,8 +16,8 @@ class EnsureClientIsAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! Auth::guard('client')->check()) {
-            return redirect()->route('client.login');
+        if (! Auth::check() || ! Auth::user()->isClient()) {
+            return redirect()->route('login');
         }
 
         return $next($request);

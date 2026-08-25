@@ -13,19 +13,24 @@ export default function RegisterForm() {
         email: '',
         password: '',
         password_confirmation: '',
+        phone: '',
+        address: '',
     });
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(route('register.store'));
+        post(route('register.store'), {
+            ...data,
+            role: 'client', // Default to client role
+        });
     }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Admin Registration</CardTitle>
-                    <CardDescription>Create your admin account</CardDescription>
+                    <CardTitle className="text-2xl">Registration</CardTitle>
+                    <CardDescription>Create your account</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
@@ -72,6 +77,28 @@ export default function RegisterForm() {
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                             />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="phone">Phone (Optional)</Label>
+                            <Input
+                                id="phone"
+                                type="text"
+                                placeholder="+1 234 567 890"
+                                value={data.phone}
+                                onChange={(e) => setData('phone', e.target.value)}
+                            />
+                            {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="address">Address (Optional)</Label>
+                            <Input
+                                id="address"
+                                type="text"
+                                placeholder="123 Main St, City, Country"
+                                value={data.address}
+                                onChange={(e) => setData('address', e.target.value)}
+                            />
+                            {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
+                        </div>
                         <Button type="submit" className="w-full" disabled={processing}>
                             {processing ? 'Creating account...' : 'Register'}
                         </Button>
@@ -79,7 +106,7 @@ export default function RegisterForm() {
                 </CardContent>
                 <CardContent className="pt-0 text-center text-sm text-muted-foreground">
                     Already have an account?{' '}
-                    <Link href={route('login.page')} className="text-primary hover:underline">
+                    <Link href={route('login')} className="text-primary hover:underline">
                         Login
                     </Link>
                 </CardContent>

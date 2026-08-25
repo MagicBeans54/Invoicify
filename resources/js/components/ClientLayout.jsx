@@ -40,7 +40,7 @@ export default function ClientLayout({ title, children, actions }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => router.post(route('client.logout'))}
+                        onClick={() => router.post(route('logout'))}
                     >
                         Log out
                     </Button>

@@ -4,17 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientInvoiceController;
 use Inertia\Inertia;
 
-Route::get('/', fn () => Inertia::render('Landing'))->name('landing');
-Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login.page');
+Route::get('/', fn () => Inertia::render('Auth/Login'))->name('login');
 
 Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
 Route::post('/register', [AuthController::class, 'store'])->name('register.store');
 
-Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -37,12 +35,6 @@ Route::middleware('auth.admin')->group(function () {
 
 // Client Routes
 Route::prefix('client')->name('client.')->group(function () {
-    Route::get('/login', [ClientAuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [ClientAuthController::class, 'login'])->name('login.store');
-    Route::get('/register', [ClientAuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [ClientAuthController::class, 'register'])->name('register.store');
-    Route::post('/logout', [ClientAuthController::class, 'logout'])->name('logout');
-
     Route::middleware('auth.client')->group(function () {
         Route::get('/dashboard', [ClientInvoiceController::class, 'index'])->name('dashboard');
         Route::get('/invoices/{invoice}', [ClientInvoiceController::class, 'show'])->name('invoices.show');

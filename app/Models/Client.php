@@ -3,31 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
-class Client extends Authenticatable
+class Client extends Model
 {
-    use Notifiable;
-
     protected $fillable = [
         'name',
         'email',
-        'password',
         'phone',
         'address',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    protected function casts(): array
+    public function user()
     {
-        return [
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(User::class, 'email', 'email');
     }
 
     public function invoices()

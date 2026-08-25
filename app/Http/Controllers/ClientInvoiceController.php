@@ -10,8 +10,8 @@ class ClientInvoiceController extends Controller
 {
     public function index()
     {
-        $client = Auth::guard('client')->user();
-        $invoices = Invoice::where('client_email', $client->email)
+        $user = Auth::user();
+        $invoices = Invoice::where('client_email', $user->email)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -22,10 +22,10 @@ class ClientInvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        $client = Auth::guard('client')->user();
+        $user = Auth::user();
 
         // Ensure client can only view their own invoices
-        if ($invoice->client_email !== $client->email) {
+        if ($invoice->client_email !== $user->email) {
             abort(403);
         }
 
@@ -36,10 +36,10 @@ class ClientInvoiceController extends Controller
 
     public function downloadPDF(Invoice $invoice)
     {
-        $client = Auth::guard('client')->user();
+        $user = Auth::user();
 
         // Ensure client can only download their own invoices
-        if ($invoice->client_email !== $client->email) {
+        if ($invoice->client_email !== $user->email) {
             abort(403);
         }
 

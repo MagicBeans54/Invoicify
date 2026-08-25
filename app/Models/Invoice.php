@@ -49,6 +49,11 @@ class Invoice extends Model
         return $this->belongsTo(Client::class, 'client_email', 'email');
     }
 
+    public function clientUser()
+    {
+        return $this->belongsTo(User::class, 'client_email', 'email');
+    }
+
     public function calculateTotals(): void
     {
         $this->subtotal = $this->items->sum('total');

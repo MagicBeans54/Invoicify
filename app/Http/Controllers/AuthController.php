@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
@@ -15,18 +17,33 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::min(8)],
+            'phone' => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => $validated['password'],
-            'is_admin' => true, // Default to admin for user registration
+            'password' => Hash::make($validated['password']),
+            'role' => 'client', // Default to client role
+        ]);
+
+        // Create client profile
+        Client::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('invoices.index');
+        // Redirect based on role
+        if ($user->isAdmin()) {
+            return redirect()->route('invoices.index');
+        } else {
+            return redirect()->route('client.dashboard');
+        }
     }
 
     public function login(Request $request)
@@ -44,15 +61,12 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        // Check if user is admin
-        if (! Auth::user()->is_admin) {
-            Auth::logout();
-            return back()->withErrors([
-                'email' => 'Admin access required. Please use the client portal instead.',
-            ]);
+        // Redirect based on role
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('invoices.index');
+        } else {
+            return redirect()->route('client.dashboard');
         }
-
-        return redirect()->route('invoices.index');
     }
 
     public function logout(Request $request)
@@ -62,6 +76,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('landing');
+        return redirect()->route('login');
     }
 }
