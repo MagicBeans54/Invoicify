@@ -105,7 +105,7 @@ export default function Index({ settings }) {
                                     id="logo"
                                     type="file"
                                     accept="image/*"
-                                    className="sr-only"
+                                    className="hidden"
                                     onChange={handleLogoChange}
                                 />
                                 <Button
