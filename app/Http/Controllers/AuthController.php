@@ -21,6 +21,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'is_admin' => true, // Default to admin for user registration
         ]);
 
         Auth::login($user);
@@ -43,6 +44,14 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        // Check if user is admin
+        if (! Auth::user()->is_admin) {
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Admin access required. Please use the client portal instead.',
+            ]);
+        }
+
         return redirect()->route('invoices.index');
     }
 
@@ -53,6 +62,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('landing');
     }
 }

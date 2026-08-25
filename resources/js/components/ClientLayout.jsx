@@ -4,13 +4,12 @@ import { route } from 'ziggy-js';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export default function AppLayout({ title, children, actions }) {
+export default function ClientLayout({ title, children, actions }) {
     const { flash } = usePage().props;
     const flashMessage = flash?.success || flash?.error;
 
     const links = [
-        { label: 'Invoices', href: route('invoices.index') },
-        { label: 'Settings', href: route('settings.index') },
+        { label: 'My Invoices', href: route('client.dashboard') },
     ];
 
     return (
@@ -19,10 +18,10 @@ export default function AppLayout({ title, children, actions }) {
                 <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
                     <div className="flex items-center gap-8">
                         <Link
-                            href={route('invoices.index')}
+                            href={route('client.dashboard')}
                             className="text-sm font-semibold tracking-tight"
                         >
-                            Invoicify Admin
+                            Invoicify Client Portal
                         </Link>
                         <nav className="flex items-center gap-1">
                             {links.map((link) => (
@@ -41,31 +40,29 @@ export default function AppLayout({ title, children, actions }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => router.post(route('logout'))}
+                        onClick={() => router.post(route('client.logout'))}
                     >
                         Log out
                     </Button>
                 </div>
             </header>
             <main className="mx-auto max-w-5xl px-6 py-8">
-                {(title || actions) && (
-                    <div className="mb-6 flex items-center justify-between">
-                        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-                        {actions}
-                    </div>
-                )}
                 {flashMessage && (
                     <div
                         className={cn(
-                            'mb-6 rounded-lg border px-4 py-3 text-sm',
-                            flash?.success
-                                ? 'border-border bg-card text-foreground'
-                                : 'border-destructive/30 bg-destructive/10 text-destructive'
+                            'mb-4 rounded-lg p-4 text-sm',
+                            flash?.error
+                                ? 'bg-destructive/10 text-destructive'
+                                : 'bg-green-50 text-green-800'
                         )}
                     >
                         {flashMessage}
                     </div>
                 )}
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-semibold">{title}</h1>
+                    {actions && <div className="flex gap-2">{actions}</div>}
+                </div>
                 {children}
             </main>
         </div>

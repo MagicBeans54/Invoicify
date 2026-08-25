@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function LoginForm() {
+export default function ClientLoginForm() {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -14,15 +14,15 @@ export default function LoginForm() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(route('login.store'));
+        post(route('client.login.store'));
     }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Admin Login</CardTitle>
-                    <CardDescription>Welcome back to Invoicify Admin</CardDescription>
+                    <CardTitle className="text-2xl">Client Login</CardTitle>
+                    <CardDescription>Welcome to the Invoicify Client Portal</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
@@ -54,18 +54,10 @@ export default function LoginForm() {
                     </form>
                 </CardContent>
                 <CardContent className="pt-0 text-center text-sm text-muted-foreground">
-                    <div className="space-y-2">
-                        <p>Don't have an account?{' '}
-                            <Link href={route('register')} className="text-primary hover:underline">
-                                Register
-                            </Link>
-                        </p>
-                        <p>Are you a client?{' '}
-                            <Link href={route('client.login')} className="text-primary hover:underline">
-                                Client Portal
-                            </Link>
-                        </p>
-                    </div>
+                    Don't have an account?{' '}
+                    <Link href={route('client.register')} className="text-primary hover:underline">
+                        Register
+                    </Link>
                 </CardContent>
             </Card>
         </div>

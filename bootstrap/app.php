@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
+
+        $middleware->alias([
+            'auth.client' => \App\Http\Middleware\EnsureClientIsAuthenticated::class,
+            'auth.admin' => \App\Http\Middleware\EnsureAdminIsAuthenticated::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
