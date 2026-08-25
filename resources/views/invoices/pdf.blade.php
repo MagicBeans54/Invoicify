@@ -12,7 +12,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
-            padding: 20px;
+            padding: 5px;
         }
         .invoice-container {
             max-width: 800px;
@@ -25,62 +25,83 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 40px;
+            margin-bottom: 5px;
         }
         .company-info h1 {
-            color: #2563eb;
-            font-size: 32px;
-            margin-bottom: 10px;
+            color: #10b981;
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        .company-info p {
+        .company-info .company-details p {
             color: #666;
-            font-size: 14px;
+            font-size: 12px;
+            margin-bottom: 2px;
         }
-        .invoice-details {
+        .invoice-title {
             text-align: right;
         }
-        .invoice-details h2 {
+        .invoice-title h2 {
             color: #333;
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 32px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        .invoice-details p {
+        .invoice-title .invoice-number {
             color: #666;
             font-size: 14px;
-            margin-bottom: 8px;
         }
-        .invoice-details strong {
-            color: #333;
-        }
-        .billing-section {
+
+        .info-section {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
         }
         .bill-to {
             flex: 1;
         }
         .bill-to h3 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 10px;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
         .bill-to p {
-            color: #666;
+            color: #333;
             font-size: 14px;
-            line-height: 1.6;
+            font-weight: bold;
+            line-height: 1.5;
         }
-        .balance-due {
+        .invoice-meta {
+            flex: 1;
             text-align: right;
         }
-        .balance-due h3 {
-            color: #666;
+        .invoice-meta p {
+            color: #333;
             font-size: 14px;
             margin-bottom: 5px;
         }
-        .balance-due .amount {
-            color: #2563eb;
-            font-size: 36px;
+        .invoice-meta strong {
+            color: #666;
+            font-weight: normal;
+        }
+        .balance-due-box {
+            background-color: #f3f4f6;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .balance-due-box h3 {
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .balance-due-box .amount {
+            color: #333;
+            font-size: 24px;
             font-weight: bold;
         }
         .items-table {
@@ -89,22 +110,22 @@
             margin-bottom: 30px;
         }
         .items-table th {
-            background-color: #f8f9fa;
-            color: #333;
-            font-size: 14px;
+            background-color: #374151;
+            color: white;
+            font-size: 12px;
             font-weight: 600;
             padding: 12px;
             text-align: left;
-            border-bottom: 2px solid #e0e0e0;
+            text-transform: uppercase;
         }
         .items-table th:last-child {
             text-align: right;
         }
         .items-table td {
             padding: 12px;
-            color: #666;
+            color: #333;
             font-size: 14px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e5e7eb;
         }
         .items-table td:last-child {
             text-align: right;
@@ -119,7 +140,7 @@
         }
         .summary-table td {
             padding: 8px 0;
-            color: #666;
+            color: #333;
             font-size: 14px;
         }
         .summary-table td:last-child {
@@ -127,10 +148,10 @@
             font-weight: 600;
         }
         .summary-table tr.total td {
-            color: #2563eb;
-            font-size: 18px;
+            color: #333;
+            font-size: 16px;
             font-weight: bold;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid #e5e7eb;
             padding-top: 12px;
         }
         .notes-section {
@@ -163,7 +184,7 @@
             color: #333;
         }
         .terms-section {
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #e5e7eb;
             padding-top: 20px;
         }
         .terms-section h3 {
@@ -183,19 +204,33 @@
         <div class="header">
             <div class="company-info">
                 <h1>{{ $companySettings->company_name }}</h1>
-                @if($companySettings->address)
-                    <p>{{ $companySettings->address }}</p>
-                @endif
-                @if($companySettings->email)
-                    <p>{{ $companySettings->email }}</p>
-                @endif
-                @if($companySettings->phone)
-                    <p>{{ $companySettings->phone }}</p>
+                <div class="company-details">
+                    @if($companySettings->address)
+                        <p>{{ $companySettings->address }}</p>
+                    @endif
+                    @if($companySettings->email)
+                        <p>{{ $companySettings->email }}</p>
+                    @endif
+                    @if($companySettings->phone)
+                        <p>{{ $companySettings->phone }}</p>
+                    @endif
+                </div>
+            </div>
+            <div class="invoice-title">
+                <h2>INVOICE</h2>
+                <div class="invoice-number"># {{ $invoice->invoice_number }}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="bill-to">
+                <h3>Bill To:</h3>
+                <p>{{ $invoice->client_name }}</p>
+                @if($invoice->client_address)
+                    <p>{{ $invoice->client_address }}</p>
                 @endif
             </div>
-            <div class="invoice-details">
-                <h2>INVOICE</h2>
-                <p><strong>Invoice #:</strong> {{ $invoice->invoice_number }}</p>
+            <div class="invoice-meta">
                 @if($invoice->contract_number)
                     <p><strong>Contract #:</strong> {{ $invoice->contract_number }}</p>
                 @endif
@@ -205,25 +240,9 @@
             </div>
         </div>
 
-        <div class="billing-section">
-            <div class="bill-to">
-                <h3>Bill To:</h3>
-                <p>{{ $invoice->client_name }}<br>
-                @if($invoice->client_address)
-                    {{ $invoice->client_address }}<br>
-                @endif
-                @if($invoice->client_email)
-                    {{ $invoice->client_email }}<br>
-                @endif
-                @if($invoice->client_phone)
-                    {{ $invoice->client_phone }}
-                @endif
-                </p>
-            </div>
-            <div class="balance-due">
-                <h3>Balance Due:</h3>
-                <div class="amount">${{ number_format($invoice->total, 2) }}</div>
-            </div>
+        <div class="balance-due-box">
+            <h3>Balance Due:</h3>
+            <div class="amount">${{ number_format($invoice->total, 2) }}</div>
         </div>
 
         <table class="items-table">
