@@ -1,10 +1,13 @@
 import React from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export default function AppLayout({ title, children, actions }) {
+    const { flash } = usePage().props;
+    const flashMessage = flash?.success || flash?.error;
+
     const links = [
         { label: 'Invoices', href: route('invoices.index') },
         { label: 'Settings', href: route('settings.index') },
@@ -49,6 +52,18 @@ export default function AppLayout({ title, children, actions }) {
                     <div className="mb-6 flex items-center justify-between">
                         <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
                         {actions}
+                    </div>
+                )}
+                {flashMessage && (
+                    <div
+                        className={cn(
+                            'mb-6 rounded-lg border px-4 py-3 text-sm',
+                            flash?.success
+                                ? 'border-border bg-card text-foreground'
+                                : 'border-destructive/30 bg-destructive/10 text-destructive'
+                        )}
+                    >
+                        {flashMessage}
                     </div>
                 )}
                 {children}

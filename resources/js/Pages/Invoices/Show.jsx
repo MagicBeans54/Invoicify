@@ -1,7 +1,7 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { ArrowLeft, Download, Pencil } from 'lucide-react';
+import { ArrowLeft, Download, Pencil, Send } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,15 @@ const badgeVariant = {
 };
 
 export default function Show({ invoice }) {
+    const [sending, setSending] = useState(false);
+
+    const sendInvoice = () => {
+        setSending(true);
+        router.post(route('invoices.send', invoice.id), {}, {
+            onFinish: () => setSending(false),
+        });
+    };
+
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString();
     };
@@ -175,6 +184,19 @@ export default function Show({ invoice }) {
                 </Card>
 
                 <div className="mt-6 flex justify-end gap-2">
+                    <Button
+                        size="sm"
+                        onClick={sendInvoice}
+                        disabled={sending || !invoice.client_email}
+                        title={
+                            invoice.client_email
+                                ? `Email this invoice to ${invoice.client_email}`
+                                : 'Add a client email to enable sending'
+                        }
+                    >
+                        <Send />
+                        {sending ? 'Sending...' : 'Send'}
+                    </Button>
                     <Button asChild variant="outline" size="sm">
                         <a href={route('invoices.pdf', invoice.id)}>
                             <Download />

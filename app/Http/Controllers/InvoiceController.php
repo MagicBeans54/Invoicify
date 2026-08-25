@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\CompanySettings;
+use App\Mail\InvoiceMail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
-use PDF;
 
 class InvoiceController extends Controller
 {
@@ -182,11 +184,36 @@ class InvoiceController extends Controller
         $invoice->load('items');
         $companySettings = CompanySettings::getSettings();
         
-        $pdf = PDF::loadView('invoices.pdf', [
+        $pdf = Pdf::loadView('invoices.pdf', [
             'invoice' => $invoice,
             'companySettings' => $companySettings,
         ]);
         
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
+    }
+
+    public function send(Invoice $invoice)
+    {
+        $invoice->load('items');
+
+        if (!$invoice->client_email) {
+            return back()->with('error', 'This invoice has no client email address');
+        }
+
+        $companySettings = CompanySettings::getSettings();
+
+        $pdf = Pdf::loadView('invoices.pdf', [
+            'invoice' => $invoice,
+            'companySettings' => $companySettings,
+        ]);
+
+        Mail::to($invoice->client_email)
+            ->send(new InvoiceMail($invoice, $pdf->output()));
+
+        if ($invoice->status === 'draft') {
+            $invoice->update(['status' => 'sent']);
+        }
+
+        return back()->with('success', "Invoice sent to {$invoice->client_email}");
     }
 }
