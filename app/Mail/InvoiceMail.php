@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\CompanySettings;
 use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -17,7 +16,6 @@ class InvoiceMail extends Mailable
 
     public function __construct(
         public Invoice $invoice,
-        public CompanySettings $companySettings,
         public string $pdf,
     ) {}
 
@@ -31,12 +29,8 @@ class InvoiceMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'invoices.pdf',
+            view: 'emails.invoice',
             text: 'emails.invoice-text',
-            with: [
-                'invoice' => $this->invoice,
-                'companySettings' => $this->companySettings,
-            ],
         );
     }
 
