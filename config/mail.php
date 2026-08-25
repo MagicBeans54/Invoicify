@@ -37,6 +37,10 @@ return [
 
     'mailers' => [
 
+        'mailtrap-sdk' => [
+            'transport' => 'mailtrap-sdk',
+        ],
+
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -112,7 +116,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
+        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Techstacks')),
     ],
 
 ];

@@ -203,7 +203,7 @@ class InvoiceController extends Controller
         $pdf = Pdf::loadView('invoices.pdf', [
             'invoice' => $invoice,
             'companySettings' => $companySettings,
-        ]);
+        ])->setPaper('letter');
         
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
     }
@@ -221,7 +221,7 @@ class InvoiceController extends Controller
         $pdf = Pdf::loadView('invoices.pdf', [
             'invoice' => $invoice,
             'companySettings' => $companySettings,
-        ]);
+        ])->setPaper('letter');
 
             Mail::to($invoice->client_email)
                 ->send(new InvoiceMail($invoice, $pdf->output()));
