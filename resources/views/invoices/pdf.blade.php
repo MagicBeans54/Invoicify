@@ -44,7 +44,7 @@
         .invoice-title h2 {
             color: #333;
             font-size: 32px;
-            margin-bottom: 5px;
+            margin-bottom: 1px;
             font-weight: bold;
         }
         .invoice-title .invoice-number {
@@ -228,6 +228,12 @@
                 <p>{{ $invoice->client_name }}</p>
                 @if($invoice->client_address)
                     <p>{{ $invoice->client_address }}</p>
+                @endif
+                @if($invoice->client_email)
+                    <p>{{ $invoice->client_email }}</p>
+                @endif
+                @if($invoice->client_phone)
+                    <p>{{ $invoice->client_phone }}</p>
                 @endif
             </div>
             <div class="invoice-meta">
