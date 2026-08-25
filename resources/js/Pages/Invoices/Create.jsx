@@ -1,10 +1,13 @@
 import React from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import AppLayout from '@/components/AppLayout';
 import InvoiceForm from '@/components/InvoiceForm';
 
 export default function Create({ companySettings }) {
+    const page = usePage();
+    const clientData = page.props.client || null;
+
     const { data, setData, post, processing, errors } = useForm({
         invoice_number: `INV-${Date.now()}`,
         contract_number: '',
@@ -15,10 +18,10 @@ export default function Create({ companySettings }) {
         company_email: companySettings.email || '',
         company_phone: companySettings.phone || '',
         company_address: companySettings.address || '',
-        client_name: '',
-        client_email: '',
-        client_phone: '',
-        client_address: '',
+        client_name: clientData ? clientData.name : '',
+        client_email: clientData ? clientData.email : '',
+        client_phone: clientData ? clientData.phone : '',
+        client_address: clientData ? clientData.address : '',
         tax_rate: companySettings.default_tax_rate || 0,
         notes: companySettings.invoice_notes || '',
         terms: companySettings.default_terms || '',

@@ -10,6 +10,7 @@ export default function AppLayout({ title, children, actions }) {
 
     const links = [
         { label: 'Invoices', href: route('invoices.index') },
+        { label: 'Clients', href: route('clients.index') },
         { label: 'Settings', href: route('settings.index') },
     ];
 

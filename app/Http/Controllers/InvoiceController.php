@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\CompanySettings;
+use App\Models\Client;
 use App\Mail\InvoiceMail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -21,11 +22,18 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request, $client_id = null)
     {
         $companySettings = CompanySettings::getSettings();
+        $client = null;
+        
+        if ($client_id) {
+            $client = Client::find($client_id);
+        }
+        
         return Inertia::render('Invoices/Create', [
             'companySettings' => $companySettings,
+            'client' => $client,
         ]);
     }
 

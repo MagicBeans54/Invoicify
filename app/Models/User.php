@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Client::class, 'email', 'email');
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'client_email', 'email');
+    }
 }
