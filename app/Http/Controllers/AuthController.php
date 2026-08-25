@@ -13,46 +13,36 @@ class AuthController extends Controller
 {
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['required', 'confirmed', Password::min(8)],
-                'phone' => ['nullable', 'string'],
-                'address' => ['nullable', 'string'],
-            ]);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Password::min(8)],
+            'phone' => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
+        ]);
 
-            $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'role' => 'client', // Default to client role
-            ]);
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'client', // Default to client role
+        ]);
 
-            // Create client profile
-            Client::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'] ?? null,
-                'address' => $validated['address'] ?? null,
-            ]);
+        // Create client profile
+        Client::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
+        ]);
 
-            Auth::login($user);
+        Auth::login($user);
 
-            // Redirect based on role
-            if ($user->isAdmin()) {
-                return redirect()->route('invoices.index');
-            } else {
-                return redirect()->route('client.dashboard');
-            }
-        } catch (\Exception $e) {
-            // Return error as JSON for debugging
-            return response()->json([
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
+        // Redirect based on role
+        if ($user->isAdmin()) {
+            return redirect()->route('invoices.index');
+        } else {
+            return redirect()->route('client.dashboard');
         }
     }
 
