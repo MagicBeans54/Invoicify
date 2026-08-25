@@ -4,7 +4,8 @@ import { createInertiaApp } from '@inertiajs/react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName =
+    document.querySelector('meta[name="app-name"]')?.content || 'Invoicify';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
