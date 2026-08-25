@@ -9,6 +9,7 @@ class Invoice extends Model
 {
     protected $fillable = [
         'invoice_number',
+        'contract_number',
         'invoice_date',
         'due_date',
         'status',
@@ -26,6 +27,7 @@ class Invoice extends Model
         'tax_amount',
         'total',
         'notes',
+        'terms',
     ];
 
     protected $casts = [

@@ -7,6 +7,7 @@ import InvoiceForm from '@/components/InvoiceForm';
 export default function Edit({ invoice }) {
     const { data, setData, put, processing, errors } = useForm({
         invoice_number: invoice.invoice_number,
+        contract_number: invoice.contract_number || '',
         invoice_date: invoice.invoice_date,
         due_date: invoice.due_date,
         status: invoice.status,
@@ -20,6 +21,7 @@ export default function Edit({ invoice }) {
         client_address: invoice.client_address || '',
         tax_rate: invoice.tax_rate,
         notes: invoice.notes || '',
+        terms: invoice.terms || '',
         items: invoice.items.map((item) => ({
             description: item.description,
             quantity: item.quantity,

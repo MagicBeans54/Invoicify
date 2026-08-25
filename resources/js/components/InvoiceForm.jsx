@@ -53,7 +53,7 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <Card>
-                <CardContent className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
+                <CardContent className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
                     <Field
                         label="Invoice Number"
                         id="invoice_number"
@@ -63,6 +63,18 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
                             id="invoice_number"
                             value={data.invoice_number}
                             onChange={(e) => setData('invoice_number', e.target.value)}
+                        />
+                    </Field>
+                    <Field
+                        label="Contract Number"
+                        id="contract_number"
+                        error={errors.contract_number}
+                    >
+                        <Input
+                            id="contract_number"
+                            value={data.contract_number || ''}
+                            onChange={(e) => setData('contract_number', e.target.value)}
+                            placeholder="Optional"
                         />
                     </Field>
                     <Field label="Invoice Date" id="invoice_date" error={errors.invoice_date}>
@@ -299,6 +311,20 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
                             rows={3}
                             value={data.notes}
                             onChange={(e) => setData('notes', e.target.value)}
+                        />
+                    </Field>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardContent className="p-6">
+                    <Field label="Terms" id="terms" error={errors.terms}>
+                        <Textarea
+                            id="terms"
+                            rows={3}
+                            placeholder="Payment terms and conditions for this invoice"
+                            value={data.terms || ''}
+                            onChange={(e) => setData('terms', e.target.value)}
                         />
                     </Field>
                 </CardContent>

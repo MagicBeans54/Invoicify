@@ -63,7 +63,12 @@ export default function Show({ invoice }) {
                                 <ArrowLeft />
                             </Link>
                         </Button>
-                        {invoice.invoice_number}
+                        <div className="flex flex-col">
+                            <span>{invoice.invoice_number}</span>
+                            {invoice.contract_number && (
+                                <span className="text-xs text-muted-foreground">Contract: {invoice.contract_number}</span>
+                            )}
+                        </div>
                     </span>
                 }
                 actions={
@@ -113,6 +118,14 @@ export default function Show({ invoice }) {
                             </p>
                             <p className="text-sm font-medium">{formatDate(invoice.due_date)}</p>
                         </div>
+                        {invoice.contract_number && (
+                            <div className="space-y-1.5">
+                                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                    Contract
+                                </p>
+                                <p className="text-sm font-medium">{invoice.contract_number}</p>
+                            </div>
+                        )}
                     </CardContent>
 
                     <Separator />
@@ -177,6 +190,20 @@ export default function Show({ invoice }) {
                                 </p>
                                 <p className="mt-1.5 whitespace-pre-line text-sm">
                                     {invoice.notes}
+                                </p>
+                            </CardContent>
+                        </>
+                    )}
+
+                    {invoice.terms && (
+                        <>
+                            <Separator />
+                            <CardContent className="p-6">
+                                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                    Terms
+                                </p>
+                                <p className="mt-1.5 whitespace-pre-line text-sm">
+                                    {invoice.terms}
                                 </p>
                             </CardContent>
                         </>

@@ -7,6 +7,7 @@ import InvoiceForm from '@/components/InvoiceForm';
 export default function Create({ companySettings }) {
     const { data, setData, post, processing, errors } = useForm({
         invoice_number: `INV-${Date.now()}`,
+        contract_number: '',
         invoice_date: new Date().toISOString().split('T')[0],
         due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         status: 'draft',
@@ -20,6 +21,7 @@ export default function Create({ companySettings }) {
         client_address: '',
         tax_rate: companySettings.default_tax_rate || 0,
         notes: companySettings.invoice_notes || '',
+        terms: companySettings.default_terms || '',
         items: [
             {
                 description: '',

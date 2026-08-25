@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Invoice {{ $invoice->invoice_number }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - Techstacks</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             padding: 20px;
         }
+
         .invoice-container {
             max-width: 800px;
             margin: 0 auto;
@@ -21,73 +24,89 @@
             padding: 40px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 40px;
         }
+
         .company-info h1 {
             color: #2563eb;
             font-size: 32px;
             margin-bottom: 10px;
         }
+
         .company-info p {
             color: #666;
             font-size: 14px;
         }
+
         .invoice-details {
             text-align: right;
         }
+
         .invoice-details h2 {
             color: #333;
             font-size: 24px;
             margin-bottom: 20px;
         }
+
         .invoice-details p {
             color: #666;
             font-size: 14px;
             margin-bottom: 8px;
         }
+
         .invoice-details strong {
             color: #333;
         }
+
         .billing-section {
             display: flex;
             justify-content: space-between;
             margin-bottom: 30px;
         }
+
         .bill-to {
             flex: 1;
         }
+
         .bill-to h3 {
             color: #333;
             font-size: 16px;
             margin-bottom: 10px;
         }
+
         .bill-to p {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
         }
+
         .balance-due {
             text-align: right;
         }
+
         .balance-due h3 {
             color: #666;
             font-size: 14px;
             margin-bottom: 5px;
         }
+
         .balance-due .amount {
             color: #2563eb;
             font-size: 36px;
             font-weight: bold;
         }
+
         .items-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
         }
+
         .items-table th {
             background-color: #f8f9fa;
             color: #333;
@@ -97,35 +116,43 @@
             text-align: left;
             border-bottom: 2px solid #e0e0e0;
         }
+
         .items-table th:last-child {
             text-align: right;
         }
+
         .items-table td {
             padding: 12px;
             color: #666;
             font-size: 14px;
             border-bottom: 1px solid #e0e0e0;
         }
+
         .items-table td:last-child {
             text-align: right;
         }
+
         .summary-section {
             display: flex;
             justify-content: flex-end;
             margin-bottom: 30px;
         }
+
         .summary-table {
             width: 300px;
         }
+
         .summary-table td {
             padding: 8px 0;
             color: #666;
             font-size: 14px;
         }
+
         .summary-table td:last-child {
             text-align: right;
             font-weight: 600;
         }
+
         .summary-table tr.total td {
             color: #2563eb;
             font-size: 18px;
@@ -133,44 +160,54 @@
             border-top: 2px solid #e0e0e0;
             padding-top: 12px;
         }
+
         .notes-section {
             margin-bottom: 30px;
         }
+
         .notes-section h3 {
             color: #333;
             font-size: 16px;
             margin-bottom: 10px;
         }
+
         .notes-section p {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
         }
+
         .bank-details {
             margin-bottom: 30px;
         }
+
         .bank-details h3 {
             color: #333;
             font-size: 16px;
             margin-bottom: 15px;
         }
+
         .bank-details p {
             color: #666;
             font-size: 14px;
             margin-bottom: 8px;
         }
+
         .bank-details strong {
             color: #333;
         }
+
         .terms-section {
             border-top: 1px solid #e0e0e0;
             padding-top: 20px;
         }
+
         .terms-section h3 {
             color: #333;
             font-size: 16px;
             margin-bottom: 10px;
         }
+
         .terms-section p {
             color: #666;
             font-size: 14px;
@@ -182,47 +219,29 @@
     <div class="invoice-container">
         <div class="header">
             <div class="company-info">
-                <h1>{{ $companySettings->company_name }}</h1>
-                @if($companySettings->address)
-                    <p>{{ $companySettings->address }}</p>
-                @endif
-                @if($companySettings->email)
-                    <p>{{ $companySettings->email }}</p>
-                @endif
-                @if($companySettings->phone)
-                    <p>{{ $companySettings->phone }}</p>
-                @endif
+                <h1>Techstacks</h1>
+                <p>Professional Software Solutions</p>
             </div>
             <div class="invoice-details">
                 <h2>INVOICE</h2>
-                <p><strong>Invoice #:</strong> {{ $invoice->invoice_number }}</p>
-                @if($invoice->contract_number)
-                    <p><strong>Contract #:</strong> {{ $invoice->contract_number }}</p>
-                @endif
-                <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('M d, Y') }}</p>
+                <p><strong>Invoice #:</strong> INV-2025-001</p>
+                <p><strong>Date:</strong> 25 Aug 2025</p>
                 <p><strong>Payment Terms:</strong> Due on receipt</p>
-                <p><strong>Due Date:</strong> {{ \Carbon\Carbon::parse($invoice->due_date)->format('M d, Y') }}</p>
+                <p><strong>Due Date:</strong> 25 Aug 2025</p>
             </div>
         </div>
 
         <div class="billing-section">
             <div class="bill-to">
                 <h3>Bill To:</h3>
-                <p>{{ $invoice->client_name }}<br>
-                @if($invoice->client_address)
-                    {{ $invoice->client_address }}<br>
-                @endif
-                @if($invoice->client_email)
-                    {{ $invoice->client_email }}<br>
-                @endif
-                @if($invoice->client_phone)
-                    {{ $invoice->client_phone }}
-                @endif
-                </p>
+                <p>Vince B.<br>
+                123 Main Street<br>
+                San Francisco, CA 94102<br>
+                United States</p>
             </div>
             <div class="balance-due">
                 <h3>Balance Due:</h3>
-                <div class="amount">${{ number_format($invoice->total, 2) }}</div>
+                <div class="amount">$800.00</div>
             </div>
         </div>
 
@@ -236,14 +255,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($invoice->items as $item)
-                    <tr>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>${{ number_format($item->unit_price, 2) }}</td>
-                        <td>${{ number_format($item->total, 2) }}</td>
-                    </tr>
-                @endforeach
+                <tr>
+                    <td>Custom Software Development</td>
+                    <td>1</td>
+                    <td>$800.00</td>
+                    <td>$800.00</td>
+                </tr>
             </tbody>
         </table>
 
@@ -251,71 +268,38 @@
             <table class="summary-table">
                 <tr>
                     <td>Subtotal</td>
-                    <td>${{ number_format($invoice->subtotal, 2) }}</td>
+                    <td>$800.00</td>
                 </tr>
                 <tr>
-                    <td>Tax ({{ $invoice->tax_rate }}%)</td>
-                    <td>${{ number_format($invoice->tax_amount, 2) }}</td>
+                    <td>Tax (0%)</td>
+                    <td>$0.00</td>
                 </tr>
                 <tr class="total">
                     <td>Total</td>
-                    <td>${{ number_format($invoice->total, 2) }}</td>
+                    <td>$800.00</td>
                 </tr>
             </table>
         </div>
 
-        @if($invoice->notes || $companySettings->invoice_notes)
-            <div class="notes-section">
-                <h3>Notes</h3>
-                <p>
-                    @if($invoice->notes)
-                        {{ $invoice->notes }}
-                    @endif
-                    @if($companySettings->invoice_notes)
-                        @if($invoice->notes)
-                            <br><br>
-                        @endif
-                        {{ $companySettings->invoice_notes }}
-                    @endif
-                </p>
-            </div>
-        @endif
+        <div class="notes-section">
+            <h3>Notes</h3>
+            <p>USD Rate: 1 USD = 83.50 INR<br>
+            Amount in INR: ₹66,800.00</p>
+        </div>
 
-        @if($companySettings->tax_id || $companySettings->bank_name)
-            <div class="bank-details">
-                <h3>Bank Details</h3>
-                @if($companySettings->bank_account_name)
-                    <p><strong>Account Name:</strong> {{ $companySettings->bank_account_name }}</p>
-                @endif
-                @if($companySettings->bank_name)
-                    <p><strong>Bank Name:</strong> {{ $companySettings->bank_name }}</p>
-                @endif
-                @if($companySettings->bank_account_number)
-                    <p><strong>Account Number:</strong> {{ $companySettings->bank_account_number }}</p>
-                @endif
-                @if($companySettings->bank_account_type)
-                    <p><strong>Account Type:</strong> {{ $companySettings->bank_account_type }}</p>
-                @endif
-                @if($companySettings->bank_address)
-                    <p><strong>Bank Address:</strong> {{ $companySettings->bank_address }}</p>
-                @endif
-                @if($companySettings->tax_id)
-                    <p><strong>Tax ID:</strong> {{ $companySettings->tax_id }}</p>
-                @endif
-            </div>
-        @endif
+        <div class="bank-details">
+            <h3>Bank Details</h3>
+            <p><strong>Account Name:</strong> Techstacks Solutions</p>
+            <p><strong>Bank Name:</strong> Chase Bank</p>
+            <p><strong>Account Number:</strong> ****-****-1234</p>
+            <p><strong>Account Type:</strong> Business Checking</p>
+            <p><strong>Bank Address:</strong> 123 Wall Street, New York, NY 10005</p>
+        </div>
 
-        @if($invoice->terms)
-            <div class="terms-section">
-                <h3>Terms</h3>
-                <p>{{ $invoice->terms }}</p>
-            </div>
-        @else
-            <div class="terms-section">
-                <h3>Terms</h3>
-                <p>Payment is due upon receipt. Thank you for your business!</p>
-            </div>
-        @endif
+        <div class="terms-section">
+            <h3>Terms</h3>
+            <p>Payment is due upon receipt. Late payments may be subject to a 1.5% monthly fee. Thank you for your business!</p>
+        </div>
     </div>
 </body>
 </html>

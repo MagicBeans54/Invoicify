@@ -33,6 +33,7 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate([
             'invoice_number' => 'required|unique:invoices',
+            'contract_number' => 'nullable|string',
             'invoice_date' => 'required|date',
             'due_date' => 'required|date',
             'status' => 'required|in:draft,sent,paid,overdue',
@@ -46,6 +47,7 @@ class InvoiceController extends Controller
             'client_address' => 'nullable|string',
             'tax_rate' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
+            'terms' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string',
             'items.*.quantity' => 'required|integer|min:1',
@@ -54,6 +56,7 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::create([
             'invoice_number' => $validated['invoice_number'],
+            'contract_number' => $validated['contract_number'] ?? null,
             'invoice_date' => $validated['invoice_date'],
             'due_date' => $validated['due_date'],
             'status' => $validated['status'],
@@ -67,6 +70,7 @@ class InvoiceController extends Controller
             'client_address' => $validated['client_address'],
             'tax_rate' => $validated['tax_rate'],
             'notes' => $validated['notes'],
+            'terms' => $validated['terms'] ?? null,
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -105,6 +109,7 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate([
             'invoice_number' => 'required|unique:invoices,invoice_number,' . $invoice->id,
+            'contract_number' => 'nullable|string',
             'invoice_date' => 'required|date',
             'due_date' => 'required|date',
             'status' => 'required|in:draft,sent,paid,overdue',
@@ -118,6 +123,7 @@ class InvoiceController extends Controller
             'client_address' => 'nullable|string',
             'tax_rate' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
+            'terms' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string',
             'items.*.quantity' => 'required|integer|min:1',
@@ -126,6 +132,7 @@ class InvoiceController extends Controller
 
         $invoice->update([
             'invoice_number' => $validated['invoice_number'],
+            'contract_number' => $validated['contract_number'] ?? null,
             'invoice_date' => $validated['invoice_date'],
             'due_date' => $validated['due_date'],
             'status' => $validated['status'],
@@ -139,6 +146,7 @@ class InvoiceController extends Controller
             'client_address' => $validated['client_address'],
             'tax_rate' => $validated['tax_rate'],
             'notes' => $validated['notes'],
+            'terms' => $validated['terms'] ?? null,
         ]);
 
         $invoice->items()->delete();

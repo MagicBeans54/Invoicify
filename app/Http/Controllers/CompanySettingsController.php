@@ -26,6 +26,12 @@ class CompanySettingsController extends Controller
             'tax_id' => 'nullable|string',
             'default_tax_rate' => 'required|numeric|min:0',
             'invoice_notes' => 'nullable|string',
+            'bank_account_name' => 'nullable|string',
+            'bank_name' => 'nullable|string',
+            'bank_account_number' => 'nullable|string',
+            'bank_account_type' => 'nullable|string',
+            'bank_address' => 'nullable|string',
+            'default_terms' => 'nullable|string',
         ]);
 
         $settings = CompanySettings::getSettings();
