@@ -9,7 +9,6 @@ export default function Create({ companySettings }) {
     const clientData = page.props.client || null;
 
     const { data, setData, post, processing, errors } = useForm({
-        invoice_number: `INV-000-${new Date().toISOString().split('T')[0]}`,
         contract_number: '',
         invoice_date: new Date().toISOString().split('T')[0],
         due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -51,6 +50,7 @@ export default function Create({ companySettings }) {
                     processing={processing}
                     onSubmit={handleSubmit}
                     submitLabel="Create Invoice"
+                    isEdit={false}
                 />
             </AppLayout>
         </>

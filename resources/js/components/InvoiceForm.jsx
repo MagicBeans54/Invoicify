@@ -26,7 +26,7 @@ function Field({ label, id, error, children }) {
     );
 }
 
-export default function InvoiceForm({ data, setData, errors, processing, onSubmit, submitLabel }) {
+export default function InvoiceForm({ data, setData, errors, processing, onSubmit, submitLabel, isEdit = false }) {
     const addItem = () => {
         setData('items', [...data.items, { description: '', quantity: 1, unit_price: 0 }]);
     };
@@ -61,8 +61,10 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
                     >
                         <Input
                             id="invoice_number"
-                            value={data.invoice_number}
+                            value={data.invoice_number || 'Auto-generated on save'}
                             onChange={(e) => setData('invoice_number', e.target.value)}
+                            disabled={!isEdit}
+                            className={!isEdit ? 'bg-muted' : ''}
                         />
                     </Field>
                     <Field

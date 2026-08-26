@@ -46,6 +46,7 @@ export default function Edit({ invoice }) {
                     processing={processing}
                     onSubmit={handleSubmit}
                     submitLabel="Save Changes"
+                    isEdit={true}
                 />
             </AppLayout>
         </>

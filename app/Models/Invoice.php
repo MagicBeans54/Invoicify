@@ -72,4 +72,34 @@ class Invoice extends Model
         $this->tax_amount = $this->subtotal * ($this->tax_rate / 100);
         $this->total = $this->subtotal + $this->tax_amount;
     }
+
+    public static function generateInvoiceNumber($clientName, $invoiceDate): string
+    {
+        $date = $invoiceDate instanceof \DateTime ? $invoiceDate->format('Y-m-d') : $invoiceDate;
+        
+        // Find existing invoices for this client on this date
+        $existingInvoices = self::where('client_name', $clientName)
+            ->where('invoice_date', $date)
+            ->orderBy('invoice_number', 'desc')
+            ->get();
+        
+        if ($existingInvoices->isEmpty()) {
+            // First invoice for this client on this date
+            return "INV-000-{$date}";
+        }
+        
+        // Extract the highest suffix from existing invoices
+        $lastInvoice = $existingInvoices->first();
+        $lastNumber = $lastInvoice->invoice_number;
+        
+        // Parse the format INV-XXX-YYYY-MM-DD
+        if (preg_match('/INV-(\d+)-' . preg_quote($date, '/') . '$/', $lastNumber, $matches)) {
+            $suffix = intval($matches[1]);
+            $newSuffix = str_pad($suffix + 1, 3, '0', STR_PAD_LEFT);
+            return "INV-{$newSuffix}-{$date}";
+        }
+        
+        // Fallback if format doesn't match expected pattern
+        return "INV-001-{$date}";
+    }
 }

@@ -40,7 +40,6 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'invoice_number' => 'required|unique:invoices',
             'contract_number' => 'nullable|string',
             'invoice_date' => 'required|date',
             'due_date' => 'required|date',
@@ -63,8 +62,11 @@ class InvoiceController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
+        // Generate invoice number automatically
+        $invoiceNumber = Invoice::generateInvoiceNumber($validated['client_name'], $validated['invoice_date']);
+
         $invoice = Invoice::create([
-            'invoice_number' => $validated['invoice_number'],
+            'invoice_number' => $invoiceNumber,
             'contract_number' => $validated['contract_number'] ?? null,
             'invoice_date' => $validated['invoice_date'],
             'due_date' => $validated['due_date'],
