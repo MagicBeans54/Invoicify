@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { Upload } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +21,7 @@ function Field({ label, id, error, children }) {
 export default function Index({ settings }) {
     const { data, setData, post, processing, errors } = useForm({
         company_name: settings.company_name || 'Techstacks',
+        logo: null,
         email: settings.email || '',
         phone: settings.phone || '',
         address: settings.address || '',
@@ -36,38 +36,12 @@ export default function Index({ settings }) {
         default_terms: settings.default_terms || '',
     });
 
-    const [logoPreview, setLogoPreview] = useState(
-        settings.logo_path ? `/storage/${settings.logo_path}` : null
-    );
-    const [logoFile, setLogoFile] = useState(null);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('settings.update'));
-    };
-
-    const handleLogoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setLogoFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setLogoPreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleLogoUpload = () => {
-        if (!logoFile) return;
-
-        const formData = new FormData();
-        formData.append('logo', logoFile);
-
-        post(route('settings.uploadLogo'), formData, {
-            onSuccess: () => {
-                setLogoFile(null);
-            },
+        post(route('settings.update'), {
+            forceFormData: true,
         });
     };
 
@@ -76,50 +50,6 @@ export default function Index({ settings }) {
             <Head title="Company Settings" />
             <AppLayout title="Settings">
                 <div className="mx-auto max-w-3xl space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">Company Logo</CardTitle>
-                            <CardDescription>
-                                Shown on your invoices. PNG or JPG, square images work best.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex items-center gap-6">
-                            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed bg-muted/50">
-                                {logoPreview ? (
-                                    <img
-                                        src={logoPreview}
-                                        alt="Company logo"
-                                        className="h-full w-full object-contain"
-                                    />
-                                ) : (
-                                    <span className="text-xs text-muted-foreground">No logo</span>
-                                )}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button asChild variant="outline" size="sm">
-                                    <label htmlFor="logo" className="cursor-pointer">
-                                        Choose file
-                                    </label>
-                                </Button>
-                                <Input
-                                    id="logo"
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleLogoChange}
-                                />
-                                <Button
-                                    size="sm"
-                                    onClick={handleLogoUpload}
-                                    disabled={!logoFile || processing}
-                                >
-                                    <Upload />
-                                    {processing ? 'Uploading...' : 'Upload'}
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
                     <form onSubmit={handleSubmit}>
                         <Card>
                             <CardHeader>
@@ -138,6 +68,14 @@ export default function Index({ settings }) {
                                         id="company_name"
                                         value={data.company_name}
                                         onChange={(e) => setData('company_name', e.target.value)}
+                                    />
+                                </Field>
+                                <Field label="Logo" id="logo" error={errors.logo}>
+                                    <Input
+                                        id="logo"
+                                        type="file"
+                                        accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                                        onChange={(e) => setData('logo', e.target.files[0])}
                                     />
                                 </Field>
                                 <Field label="Email" id="email" error={errors.email}>

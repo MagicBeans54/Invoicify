@@ -34,7 +34,6 @@ Route::middleware('auth.admin')->group(function () {
 
     Route::get('/settings', [CompanySettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [CompanySettingsController::class, 'update'])->name('settings.update');
-    Route::post('/settings/logo', [CompanySettingsController::class, 'uploadLogo'])->name('settings.uploadLogo');
 });
 
 // Client Routes

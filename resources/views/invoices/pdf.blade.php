@@ -27,6 +27,18 @@
             align-items: flex-start;
             margin-bottom: 1px;
         }
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            filter: hue-rotate(90deg) saturate(1.5);
+            align-items: left;
+        }
         .company-info h1 {
             color: #10b981;
             font-size: 28px;
@@ -203,17 +215,24 @@
     <div class="invoice-container">
         <div class="header">
             <div class="company-info">
-                <h1>{{ $companySettings->company_name }}</h1>
-                <div class="company-details">
-                    @if($companySettings->address)
-                        <p>{{ $companySettings->address }}</p>
-                    @endif
-                    @if($companySettings->email)
-                        <p>{{ $companySettings->email }}</p>
-                    @endif
-                    @if($companySettings->phone)
-                        <p>{{ $companySettings->phone }}</p>
-                    @endif
+                @if($logoPath)
+                    <img src="{{ str_replace('\\', '/', $logoPath) }}" alt="Company Logo" class="company-logo">
+                @else
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjI1IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlQ8L3RleHQ+Cjwvc3ZnPg==" alt="Company Logo" class="company-logo">
+                @endif
+                <div>
+                    <h1>{{ $companySettings->company_name }}</h1>
+                    <div class="company-details">
+                        @if($companySettings->address)
+                            <p>{{ $companySettings->address }}</p>
+                        @endif
+                        @if($companySettings->email)
+                            <p>{{ $companySettings->email }}</p>
+                        @endif
+                        @if($companySettings->phone)
+                            <p>{{ $companySettings->phone }}</p>
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="invoice-title">

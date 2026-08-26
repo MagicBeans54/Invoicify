@@ -178,31 +178,21 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index')->with('success', 'Invoice deleted successfully');
     }
 
-    public function uploadLogo(Request $request)
-    {
-        $request->validate([
-            'logo' => 'required|image|max:2048',
-        ]);
-
-        if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('logos', 'public');
-            $settings = CompanySettings::getSettings();
-            $settings->update(['logo_path' => $path]);
-            
-            return back()->with('success', 'Logo uploaded successfully');
-        }
-
-        return back()->with('error', 'Failed to upload logo');
-    }
-
     public function downloadPDF(Invoice $invoice)
     {
         $invoice->load('items');
         $companySettings = CompanySettings::getSettings();
         
+        // Get logo file path if exists
+        $logoPath = null;
+        if ($companySettings->logo_path) {
+            $logoPath = public_path('storage/' . $companySettings->logo_path);
+        }
+        
         $pdf = Pdf::loadView('invoices.pdf', [
             'invoice' => $invoice,
             'companySettings' => $companySettings,
+            'logoPath' => $logoPath,
         ])->setPaper('letter');
         
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
@@ -218,9 +208,16 @@ class InvoiceController extends Controller
 
         $companySettings = CompanySettings::getSettings();
 
+        // Get logo file path if exists
+        $logoPath = null;
+        if ($companySettings->logo_path) {
+            $logoPath = public_path('storage/' . $companySettings->logo_path);
+        }
+
         $pdf = Pdf::loadView('invoices.pdf', [
             'invoice' => $invoice,
             'companySettings' => $companySettings,
+            'logoPath' => $logoPath,
         ])->setPaper('letter');
 
             Mail::to($invoice->client_email)

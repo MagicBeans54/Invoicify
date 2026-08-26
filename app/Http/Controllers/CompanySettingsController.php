@@ -20,6 +20,7 @@ class CompanySettingsController extends Controller
     {
         $validated = $request->validate([
             'company_name' => 'required|string',
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
@@ -35,25 +36,27 @@ class CompanySettingsController extends Controller
         ]);
 
         $settings = CompanySettings::getSettings();
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($settings->logo_path) {
+                $oldLogoPath = public_path('storage/' . $settings->logo_path);
+                if (file_exists($oldLogoPath)) {
+                    unlink($oldLogoPath);
+                }
+            }
+
+            // Store new logo
+            $logoPath = $request->file('logo')->store('logos', 'public');
+            $validated['logo_path'] = $logoPath;
+        }
+
+        // Remove logo from validated data since it's not a database field
+        unset($validated['logo']);
+
         $settings->update($validated);
 
         return back()->with('success', 'Settings updated successfully');
-    }
-
-    public function uploadLogo(Request $request)
-    {
-        $request->validate([
-            'logo' => 'required|image|max:2048',
-        ]);
-
-        if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('logos', 'public');
-            $settings = CompanySettings::getSettings();
-            $settings->update(['logo_path' => $path]);
-            
-            return redirect()->route('settings.index')->with('success', 'Logo uploaded successfully');
-        }
-
-        return redirect()->route('settings.index')->with('error', 'Failed to upload logo');
     }
 }
