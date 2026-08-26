@@ -46,7 +46,7 @@ export default function ClientPaymentShow({ payment }) {
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Amount:</span>
                                 <span className="font-medium">
-                                    ${parseFloat(payment.amount).toFixed(2)}
+                                    ₱{parseFloat(payment.amount).toFixed(2)}
                                 </span>
                             </div>
                             <div className="flex justify-between">

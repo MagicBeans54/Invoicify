@@ -28,7 +28,7 @@ export default function Show({ client }) {
     };
 
     const formatCurrency = (amount) => {
-        return '$' + parseFloat(amount).toFixed(2);
+        return '₱' + parseFloat(amount).toFixed(2);
     };
 
     return (

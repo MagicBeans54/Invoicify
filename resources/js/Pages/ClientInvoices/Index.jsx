@@ -58,7 +58,7 @@ export default function ClientIndex({ invoices }) {
                                             {new Date(invoice.due_date).toLocaleDateString()}
                                         </TableCell>
                                         <TableCell className="text-right tabular-nums">
-                                            ${parseFloat(invoice.total).toFixed(2)}
+                                            ₱{parseFloat(invoice.total).toFixed(2)}
                                         </TableCell>
                                         <TableCell>
                                             <Badge

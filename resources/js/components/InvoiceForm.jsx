@@ -291,7 +291,7 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
                     <div className="ml-auto w-full max-w-xs space-y-2 text-sm">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span className="tabular-nums">${subtotal.toFixed(2)}</span>
+                            <span className="tabular-nums">₱{subtotal.toFixed(2)}</span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                             <span className="text-muted-foreground">Tax (%)</span>
@@ -310,7 +310,7 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
                         <div className="flex justify-between font-semibold">
                             <span>Total</span>
                             <span className="tabular-nums">
-                                ${(subtotal + tax).toFixed(2)}
+                                ₱{(subtotal + tax).toFixed(2)}
                             </span>
                         </div>
                     </div>

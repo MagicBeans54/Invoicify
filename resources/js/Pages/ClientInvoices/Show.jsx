@@ -29,7 +29,7 @@ export default function ClientShow({ invoice }) {
     };
 
     const formatCurrency = (amount) => {
-        return `$${parseFloat(amount).toFixed(2)}`;
+        return `₱${parseFloat(amount).toFixed(2)}`;
     };
 
     const AddressBlock = ({ name, email, phone, address }) => (

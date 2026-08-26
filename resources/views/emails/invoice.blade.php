@@ -30,7 +30,7 @@
                                 <tr>
                                     <td style="padding: 16px;">
                                         <p style="margin: 0 0 2px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a;">Amount due</p>
-                                        <p style="margin: 0; font-size: 22px; font-weight: 600; color: #18181b;">${{ number_format((float) $invoice->total, 2) }}</p>
+                                        <p style="margin: 0; font-size: 22px; font-weight: 600; color: #18181b;">₱{{ number_format((float) $invoice->total, 2) }}</p>
                                     </td>
                                     <td align="right" style="padding: 16px;">
                                         <p style="margin: 0 0 2px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a;">Due date</p>

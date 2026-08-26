@@ -309,7 +309,7 @@
 
         <div class="balance-due-box">
             <h3>Balance Due:</h3>
-            <div class="amount">${{ number_format($invoice->total, 2) }}</div>
+            <div class="amount">₱{{ number_format($invoice->total, 2) }}</div>
         </div>
 
         <table class="items-table">
@@ -326,8 +326,8 @@
                     <tr>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->quantity }}</td>
-                        <td>${{ number_format($item->unit_price, 2) }}</td>
-                        <td>${{ number_format($item->total, 2) }}</td>
+                        <td>₱{{ number_format($item->unit_price, 2) }}</td>
+                        <td>₱{{ number_format($item->total, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -337,15 +337,15 @@
             <table class="summary-table">
                 <tr>
                     <td>Subtotal</td>
-                    <td>${{ number_format($invoice->subtotal, 2) }}</td>
+                    <td>₱{{ number_format($invoice->subtotal, 2) }}</td>
                 </tr>
                 <tr>
                     <td>Tax ({{ $invoice->tax_rate }}%)</td>
-                    <td>${{ number_format($invoice->tax_amount, 2) }}</td>
+                    <td>₱{{ number_format($invoice->tax_amount, 2) }}</td>
                 </tr>
                 <tr class="total">
                     <td>Total</td>
-                    <td>${{ number_format($invoice->total, 2) }}</td>
+                    <td>₱{{ number_format($invoice->total, 2) }}</td>
                 </tr>
             </table>
         </div>

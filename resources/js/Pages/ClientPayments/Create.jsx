@@ -70,7 +70,7 @@ export default function ClientPaymentCreate({ invoice, invoices }) {
                                 <SelectContent>
                                     {invoices.map((inv) => (
                                         <SelectItem key={inv.id} value={inv.id.toString()}>
-                                            {inv.invoice_number} - ${parseFloat(inv.total).toFixed(2)}
+                                            {inv.invoice_number} - ₱{parseFloat(inv.total).toFixed(2)}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

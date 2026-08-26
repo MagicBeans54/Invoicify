@@ -61,7 +61,7 @@ export default function ClientPaymentIndex({ payments }) {
                                             {payment.invoice?.invoice_number || 'N/A'}
                                         </TableCell>
                                         <TableCell className="tabular-nums">
-                                            ${parseFloat(payment.amount).toFixed(2)}
+                                            ₱{parseFloat(payment.amount).toFixed(2)}
                                         </TableCell>
                                         <TableCell className="text-muted-foreground">
                                             {new Date(payment.payment_date).toLocaleDateString()}

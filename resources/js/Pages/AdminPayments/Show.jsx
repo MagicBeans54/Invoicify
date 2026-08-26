@@ -82,13 +82,13 @@ export default function AdminPaymentShow({ payment }) {
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Invoice Total:</span>
                                 <span className="font-medium">
-                                    ${payment.invoice ? parseFloat(payment.invoice.total).toFixed(2) : 'N/A'}
+                                    ₱{payment.invoice ? parseFloat(payment.invoice.total).toFixed(2) : 'N/A'}
                                 </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Payment Amount:</span>
                                 <span className="font-medium">
-                                    ${parseFloat(payment.amount).toFixed(2)}
+                                    ₱{parseFloat(payment.amount).toFixed(2)}
                                 </span>
                             </div>
                             <div className="flex justify-between">
