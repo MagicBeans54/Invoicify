@@ -27,6 +27,7 @@
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            padding-bottom: 50px;
         }
         .header-table td {
             vertical-align: middle;
@@ -36,6 +37,7 @@
         }
         .header-table td:last-child {
             text-align: right;
+            
         }
         .company-info {
             display: flex;
@@ -74,9 +76,21 @@
         }
 
         .info-section {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 5px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            
+        }
+        .info-table td {
+            vertical-align: top;
+        }
+        .info-table td:first-child {
+            text-align: left;
+        }
+        .info-table td:last-child {
+            text-align: right;
         }
         .bill-to {
             flex: 1;
@@ -152,9 +166,8 @@
             text-align: right;
         }
         .summary-section {
-            display: flex;
-            justify-content: flex-end;
             margin-bottom: 30px;
+            text-align: right;
         }
         .summary-table {
             width: 300px;
@@ -259,27 +272,35 @@
         </div>
 
         <div class="info-section">
-            <div class="bill-to">
-                <h3>Bill To:</h3>
-                <p>{{ $invoice->client_name }}</p>
-                @if($invoice->client_address)
-                    <p>{{ $invoice->client_address }}</p>
-                @endif
-                @if($invoice->client_email)
-                    <p>{{ $invoice->client_email }}</p>
-                @endif
-                @if($invoice->client_phone)
-                    <p>{{ $invoice->client_phone }}</p>
-                @endif
-            </div>
-            <div class="invoice-meta">
-                @if($invoice->contract_number)
-                    <p><strong>Contract #:</strong> {{ $invoice->contract_number }}</p>
-                @endif
-                <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('M d, Y') }}</p>
-                <p><strong>Payment Terms:</strong> Due on receipt</p>
-                <p><strong>Due Date:</strong> {{ \Carbon\Carbon::parse($invoice->due_date)->format('M d, Y') }}</p>
-            </div>
+            <table class="info-table">
+                <tr>
+                    <td>
+                        <div class="bill-to">
+                            <h3>Bill To:</h3>
+                            <p>{{ $invoice->client_name }}</p>
+                            @if($invoice->client_address)
+                                <p>{{ $invoice->client_address }}</p>
+                            @endif
+                            @if($invoice->client_email)
+                                <p>{{ $invoice->client_email }}</p>
+                            @endif
+                            @if($invoice->client_phone)
+                                <p>{{ $invoice->client_phone }}</p>
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div class="invoice-meta">
+                            @if($invoice->contract_number)
+                                <p><strong>Contract #:</strong> {{ $invoice->contract_number }}</p>
+                            @endif
+                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('M d, Y') }}</p>
+                            <p><strong>Payment Terms:</strong> Due on receipt</p>
+                            <p><strong>Due Date:</strong> {{ \Carbon\Carbon::parse($invoice->due_date)->format('M d, Y') }}</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div class="balance-due-box">
@@ -290,10 +311,10 @@
         <table class="items-table">
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
