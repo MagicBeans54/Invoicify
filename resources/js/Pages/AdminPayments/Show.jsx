@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Download, Check, X } from 'lucide-react';
+import SpecularButton from '@/components/ui/SpecularButton';
 
 const badgeVariant = {
     pending: 'secondary',
@@ -173,79 +174,129 @@ export default function AdminPaymentShow({ payment }) {
                             <CardTitle>Review Actions</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex gap-4">
-                                <form onSubmit={handleApprove} className="flex-1">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <Label htmlFor="approve_notes">Admin Notes (Optional)</Label>
-                                            <Textarea
-                                                id="approve_notes"
-                                                value={approveForm.data.admin_notes}
-                                                onChange={(e) => approveForm.setData('admin_notes', e.target.value)}
-                                                placeholder="Add any notes for approving this payment"
-                                                rows={2}
-                                            />
-                                        </div>
-                                        <Button
-                                            type="submit"
-                                            disabled={approveForm.processing}
-                                            className="w-full"
-                                        >
+                            <form onSubmit={handleApprove}>
+                                <div className="space-y-4">
+                                    <div>
+                                        <Label htmlFor="approve_notes">Admin Notes (Optional)</Label>
+                                        <Textarea
+                                            id="approve_notes"
+                                            value={approveForm.data.admin_notes}
+                                            onChange={(e) => approveForm.setData('admin_notes', e.target.value)}
+                                            placeholder="Add any notes for approving this payment"
+                                            rows={2}
+                                        />
+                                    </div>
+                                    <SpecularButton
+                                        type="submit"
+                                        disabled={approveForm.processing}
+                                        size="lg"
+                                        radius={18}
+                                        tint="#00b1f7fc"
+                                        tintOpacity={0}
+                                        blur={0}
+                                        textColor="#00c832"
+                                        lineColor="#22cc00"
+                                        baseColor="#00f8d7"
+                                        intensity={2}
+                                        shineSize={10}
+                                        shineFade={40}
+                                        thickness={2}
+                                        speed={0.5}
+                                        followMouse
+                                        proximity={250}
+                                        autoAnimate={false}
+                                        className="w-full"
+                                    >
+                                        <div className="flex items-center">
                                             <Check className="mr-2 h-4 w-4" />
                                             {approveForm.processing ? 'Approving...' : 'Approve Payment'}
-                                        </Button>
-                                    </div>
-                                </form>
+                                        </div>
+                                    </SpecularButton>
+                                </div>
+                            </form>
 
-                                <div className="flex-1">
-                                    {!showRejectForm ? (
-                                        <Button
-                                            variant="destructive"
-                                            onClick={() => setShowRejectForm(true)}
-                                            className="w-full"
-                                        >
+                            <div className="pt-4">
+                                {!showRejectForm ? (
+                                    <SpecularButton
+                                        onClick={() => setShowRejectForm(true)}
+                                        size="lg"
+                                        radius={18}
+                                        tint="#ffffff"
+                                        tintOpacity={0}
+                                        blur={0}
+                                        textColor="#ff0000"
+                                        lineColor="#ff4444"
+                                        baseColor="#8b0000"
+                                        intensity={2}
+                                        shineSize={10}
+                                        shineFade={40}
+                                        thickness={2}
+                                        speed={0.5}
+                                        followMouse
+                                        proximity={250}
+                                        autoAnimate={false}
+                                        className="w-full"
+                                    >
+                                        <div className="flex items-center">
                                             <X className="mr-2 h-4 w-4" />
                                             Reject Payment
-                                        </Button>
-                                    ) : (
-                                        <form onSubmit={handleReject}>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label htmlFor="reject_notes">Rejection Reason (Required)</Label>
-                                                    <Textarea
-                                                        id="reject_notes"
-                                                        value={rejectForm.data.admin_notes}
-                                                        onChange={(e) => rejectForm.setData('admin_notes', e.target.value)}
-                                                        placeholder="Please provide a reason for rejection"
-                                                        rows={2}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Button
-                                                        type="submit"
-                                                        variant="destructive"
-                                                        disabled={rejectForm.processing}
-                                                        className="flex-1"
-                                                    >
+                                        </div>
+                                    </SpecularButton>
+                                ) : (
+                                    <form onSubmit={handleReject}>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label htmlFor="reject_notes">Rejection Reason (Required)</Label>
+                                                <Textarea
+                                                    id="reject_notes"
+                                                    value={rejectForm.data.admin_notes}
+                                                    onChange={(e) => rejectForm.setData('admin_notes', e.target.value)}
+                                                    placeholder="Please provide a reason for rejection"
+                                                    rows={2}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <SpecularButton
+                                                    type="submit"
+                                                    disabled={rejectForm.processing}
+                                                    size="lg"
+                                                    radius={18}
+                                                    tint="#ffffff"
+                                                    tintOpacity={0}
+                                                    blur={0}
+                                                    textColor="#f5f5f5"
+                                                    lineColor="#ff4444"
+                                                    baseColor="#8b0000"
+                                                    intensity={1}
+                                                    shineSize={10}
+                                                    shineFade={40}
+                                                    thickness={1}
+                                                    speed={0.35}
+                                                    followMouse
+                                                    proximity={250}
+                                                    autoAnimate={false}
+                                                    className="flex-1"
+                                                >
+                                                    <div className="flex items-center">
                                                         <X className="mr-2 h-4 w-4" />
                                                         {rejectForm.processing ? 'Rejecting...' : 'Confirm Reject'}
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        onClick={() => {
-                                                            setShowRejectForm(false);
-                                                            rejectForm.setData('admin_notes', '');
-                                                        }}
-                                                    >
-                                                        Cancel
-                                                    </Button>
-                                                </div>
+                                                    </div>
+                                                </SpecularButton>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setShowRejectForm(false);
+                                                        rejectForm.setData('admin_notes', '');
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </Button>
                                             </div>
-                                        </form>
-                                    )}
-                                </div>
+                                        </div>
+                                    </form>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
