@@ -193,7 +193,7 @@ class InvoiceController extends Controller
             'invoice' => $invoice,
             'companySettings' => $companySettings,
             'logoPath' => $logoPath,
-        ])->setPaper('letter');
+        ])->setPaper('a4');
         
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
     }
@@ -218,7 +218,7 @@ class InvoiceController extends Controller
             'invoice' => $invoice,
             'companySettings' => $companySettings,
             'logoPath' => $logoPath,
-        ])->setPaper('letter');
+        ])->setPaper('a4');
 
             Mail::to($invoice->client_email)
                 ->send(new InvoiceMail($invoice, $pdf->output()));

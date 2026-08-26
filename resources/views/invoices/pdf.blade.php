@@ -22,10 +22,20 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
             margin-bottom: 1px;
+        }
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header-table td {
+            vertical-align: middle;
+        }
+        .header-table td:first-child {
+            text-align: left;
+        }
+        .header-table td:last-child {
+            text-align: right;
         }
         .company-info {
             display: flex;
@@ -37,7 +47,6 @@
             height: 60px;
             object-fit: contain;
             filter: hue-rotate(90deg) saturate(1.5);
-            align-items: left;
         }
         .company-info h1 {
             color: #10b981;
@@ -214,31 +223,39 @@
 <body>
     <div class="invoice-container">
         <div class="header">
-            <div class="company-info">
-                @if($logoPath)
-                    <img src="{{ str_replace('\\', '/', $logoPath) }}" alt="Company Logo" class="company-logo">
-                @else
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjI1IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlQ8L3RleHQ+Cjwvc3ZnPg==" alt="Company Logo" class="company-logo">
-                @endif
-                <div>
-                    <h1>{{ $companySettings->company_name }}</h1>
-                    <div class="company-details">
-                        @if($companySettings->address)
-                            <p>{{ $companySettings->address }}</p>
-                        @endif
-                        @if($companySettings->email)
-                            <p>{{ $companySettings->email }}</p>
-                        @endif
-                        @if($companySettings->phone)
-                            <p>{{ $companySettings->phone }}</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            <div class="invoice-title">
-                <h2>INVOICE</h2>
-                <div class="invoice-number"># {{ $invoice->invoice_number }}</div>
-            </div>
+            <table class="header-table">
+                <tr>
+                    <td>
+                        <div class="company-info">
+                            @if($logoPath)
+                                <img src="{{ str_replace('\\', '/', $logoPath) }}" alt="Company Logo" class="company-logo">
+                            @else
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjI1IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlQ8L3RleHQ+Cjwvc3ZnPg==" alt="Company Logo" class="company-logo">
+                            @endif
+                            <div>
+                                <h1>{{ $companySettings->company_name }}</h1>
+                                <div class="company-details">
+                                    @if($companySettings->address)
+                                        <p>{{ $companySettings->address }}</p>
+                                    @endif
+                                    @if($companySettings->email)
+                                        <p>{{ $companySettings->email }}</p>
+                                    @endif
+                                    @if($companySettings->phone)
+                                        <p>{{ $companySettings->phone }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="invoice-title">
+                            <h2>INVOICE</h2>
+                            <div class="invoice-number"># {{ $invoice->invoice_number }}</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div class="info-section">
