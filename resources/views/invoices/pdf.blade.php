@@ -128,6 +128,8 @@
             align-items: center;
             margin-bottom: 30px;
             border-radius: 4px;
+            margin-left: auto;
+            max-width: 300px;
         }
         .balance-due-box h3 {
             color: #333;
@@ -168,6 +170,8 @@
         .summary-section {
             margin-bottom: 30px;
             text-align: right;
+            margin-left: auto;
+            max-width: 300px;
         }
         .summary-table {
             width: 300px;
