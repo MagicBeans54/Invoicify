@@ -45,8 +45,8 @@
             gap: 15px;
         }
         .company-logo {
-            width: 60px;
-            height: 60px;
+            width: 200px;
+            height: 50px;
             object-fit: contain;
             filter: hue-rotate(90deg) saturate(1.5);
         }
@@ -250,7 +250,7 @@
                                 <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjI1IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlQ8L3RleHQ+Cjwvc3ZnPg==" alt="Company Logo" class="company-logo">
                             @endif
                             <div>
-                                <h1>{{ $companySettings->company_name }}</h1>
+                                {{-- <h1>{{ $companySettings->company_name }}</h1> --}}
                                 <div class="company-details">
                                     @if($companySettings->address)
                                         <p>{{ $companySettings->address }}</p>
@@ -309,7 +309,7 @@
 
         <div class="balance-due-box">
             <h3>Balance Due:</h3>
-            <div class="amount">₱{{ number_format($invoice->total, 2) }}</div>
+            <div class="amount">PHP {{ number_format($invoice->total, 2) }}</div>
         </div>
 
         <table class="items-table">
@@ -326,8 +326,8 @@
                     <tr>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->quantity }}</td>
-                        <td>₱{{ number_format($item->unit_price, 2) }}</td>
-                        <td>₱{{ number_format($item->total, 2) }}</td>
+                        <td>PHP {{ number_format($item->unit_price, 2) }}</td>
+                        <td>PHP {{ number_format($item->total, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -337,15 +337,15 @@
             <table class="summary-table">
                 <tr>
                     <td>Subtotal</td>
-                    <td>₱{{ number_format($invoice->subtotal, 2) }}</td>
+                    <td>PHP {{ number_format($invoice->subtotal, 2) }}</td>
                 </tr>
                 <tr>
                     <td>Tax ({{ $invoice->tax_rate }}%)</td>
-                    <td>₱{{ number_format($invoice->tax_amount, 2) }}</td>
+                    <td>PHP {{ number_format($invoice->tax_amount, 2) }}</td>
                 </tr>
                 <tr class="total">
                     <td>Total</td>
-                    <td>₱{{ number_format($invoice->total, 2) }}</td>
+                    <td>PHP {{ number_format($invoice->total, 2) }}</td>
                 </tr>
             </table>
         </div>
