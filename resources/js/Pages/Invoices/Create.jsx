@@ -9,11 +9,12 @@ export default function Create({ companySettings }) {
     const clientData = page.props.client || null;
 
     const { data, setData, post, processing, errors } = useForm({
-        invoice_number: `INV-${Date.now()}`,
+        invoice_number: `INV-000-${new Date().toISOString().split('T')[0]}`,
         contract_number: '',
         invoice_date: new Date().toISOString().split('T')[0],
         due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         status: 'draft',
+        payment_terms: '',
         company_name: companySettings.company_name || 'Techstacks',
         company_email: companySettings.email || '',
         company_phone: companySettings.phone || '',

@@ -10,6 +10,7 @@ export default function ClientLayout({ title, children, actions }) {
 
     const links = [
         { label: 'My Invoices', href: route('client.dashboard') },
+        { label: 'My Payments', href: route('client.payments.index') },
     ];
 
     return (

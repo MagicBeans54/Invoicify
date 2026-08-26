@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Invoice extends Model
 {
@@ -13,6 +14,7 @@ class Invoice extends Model
         'invoice_date',
         'due_date',
         'status',
+        'payment_terms',
         'company_name',
         'company_logo',
         'company_email',
@@ -42,6 +44,11 @@ class Invoice extends Model
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function client()

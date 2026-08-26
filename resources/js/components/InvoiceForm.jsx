@@ -53,7 +53,7 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <Card>
-                <CardContent className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
+                <CardContent className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
                     <Field
                         label="Invoice Number"
                         id="invoice_number"
@@ -110,6 +110,18 @@ export default function InvoiceForm({ data, setData, errors, processing, onSubmi
                             <p className="text-sm text-destructive">{errors.status}</p>
                         )}
                     </div>
+                    <Field
+                        label="Payment Terms"
+                        id="payment_terms"
+                        error={errors.payment_terms}
+                    >
+                        <Input
+                            id="payment_terms"
+                            value={data.payment_terms || ''}
+                            onChange={(e) => setData('payment_terms', e.target.value)}
+                            placeholder="e.g., Net 30, Due on receipt"
+                        />
+                    </Field>
                 </CardContent>
             </Card>
 

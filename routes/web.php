@@ -6,6 +6,8 @@ use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientInvoiceController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\ClientPaymentController;
+use App\Http\Controllers\AdminPaymentController;
 use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('Auth/Login'))->name('login');
@@ -34,6 +36,14 @@ Route::middleware('auth.admin')->group(function () {
 
     Route::get('/settings', [CompanySettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [CompanySettingsController::class, 'update'])->name('settings.update');
+
+    // Admin Payment Routes
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/{payment}', [AdminPaymentController::class, 'show'])->name('payments.show');
+        Route::post('/payments/{payment}/approve', [AdminPaymentController::class, 'approve'])->name('payments.approve');
+        Route::post('/payments/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
+    });
 });
 
 // Client Routes
@@ -42,5 +52,13 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [ClientInvoiceController::class, 'index'])->name('dashboard');
         Route::get('/invoices/{invoice}', [ClientInvoiceController::class, 'show'])->name('invoices.show');
         Route::get('/invoices/{invoice}/pdf', [ClientInvoiceController::class, 'downloadPDF'])->name('invoices.pdf');
+
+        // Client Payment Routes
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::get('/', [ClientPaymentController::class, 'index'])->name('index');
+            Route::get('/create', [ClientPaymentController::class, 'create'])->name('create');
+            Route::post('/', [ClientPaymentController::class, 'store'])->name('store');
+            Route::get('/{payment}', [ClientPaymentController::class, 'show'])->name('show');
+        });
     });
 });

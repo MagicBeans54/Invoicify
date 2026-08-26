@@ -299,7 +299,7 @@
                                 <p><strong>Contract #:</strong> {{ $invoice->contract_number }}</p>
                             @endif
                             <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('M d, Y') }}</p>
-                            <p><strong>Payment Terms:</strong> Due on receipt</p>
+                            <p><strong>Payment Terms:</strong> {{ $invoice->payment_terms ?? 'Due on receipt' }}</p>
                             <p><strong>Due Date:</strong> {{ \Carbon\Carbon::parse($invoice->due_date)->format('M d, Y') }}</p>
                         </div>
                     </td>

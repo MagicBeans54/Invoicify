@@ -11,6 +11,7 @@ export default function Edit({ invoice }) {
         invoice_date: invoice.invoice_date,
         due_date: invoice.due_date,
         status: invoice.status,
+        payment_terms: invoice.payment_terms || '',
         company_name: invoice.company_name,
         company_email: invoice.company_email || '',
         company_phone: invoice.company_phone || '',

@@ -118,6 +118,14 @@ export default function Show({ invoice }) {
                             </p>
                             <p className="text-sm font-medium">{formatDate(invoice.due_date)}</p>
                         </div>
+                        {invoice.payment_terms && (
+                            <div className="space-y-1.5">
+                                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                    Payment Terms
+                                </p>
+                                <p className="text-sm font-medium">{invoice.payment_terms}</p>
+                            </div>
+                        )}
                         {invoice.contract_number && (
                             <div className="space-y-1.5">
                                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">

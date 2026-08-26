@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, Plus } from 'lucide-react';
 import ClientLayout from '@/components/ClientLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -109,6 +109,14 @@ export default function ClientShow({ invoice }) {
                             </p>
                             <p className="text-sm font-medium">{formatDate(invoice.due_date)}</p>
                         </div>
+                        {invoice.payment_terms && (
+                            <div className="space-y-1.5">
+                                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                    Payment Terms
+                                </p>
+                                <p className="text-sm font-medium">{invoice.payment_terms}</p>
+                            </div>
+                        )}
                         {invoice.contract_number && (
                             <div className="space-y-1.5">
                                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -202,6 +210,14 @@ export default function ClientShow({ invoice }) {
                 </Card>
 
                 <div className="mt-6 flex justify-end gap-2">
+                    {invoice.status !== 'paid' && (
+                        <Button asChild variant="default" size="sm">
+                            <Link href={route('client.payments.create', { invoice_id: invoice.id })}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Make Payment
+                            </Link>
+                        </Button>
+                    )}
                     <Button asChild variant="outline" size="sm">
                         <a href={route('client.invoices.pdf', invoice.id)}>
                             <Download />
