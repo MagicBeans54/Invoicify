@@ -27,6 +27,11 @@ class AdminPaymentController extends Controller
 
     public function approve(Request $request, Payment $payment)
     {
+        if (! $payment->isPending()) {
+            return redirect()->route('admin.payments.index')
+                ->with('error', 'Only pending payments can be approved.');
+        }
+
         $validated = $request->validate([
             'admin_notes' => 'nullable|string|max:1000',
         ]);
@@ -37,7 +42,7 @@ class AdminPaymentController extends Controller
             'admin_reviewed_at' => now(),
         ]);
 
-        // Update invoice status if fully paid
+        // Update invoice status based on approved payments
         $this->updateInvoiceStatus($payment->invoice);
 
         return redirect()->route('admin.payments.index')
@@ -46,6 +51,11 @@ class AdminPaymentController extends Controller
 
     public function reject(Request $request, Payment $payment)
     {
+        if (! $payment->isPending()) {
+            return redirect()->route('admin.payments.index')
+                ->with('error', 'Only pending payments can be rejected.');
+        }
+
         $validated = $request->validate([
             'admin_notes' => 'required|string|max:1000',
         ]);
@@ -56,18 +66,25 @@ class AdminPaymentController extends Controller
             'admin_reviewed_at' => now(),
         ]);
 
+        // A rejection frees up the client's balance, so recompute the
+        // invoice status in case it was previously marked paid.
+        $this->updateInvoiceStatus($payment->invoice);
+
         return redirect()->route('admin.payments.index')
             ->with('success', 'Payment rejected successfully.');
     }
 
     private function updateInvoiceStatus($invoice)
     {
-        $totalPaid = $invoice->payments()
+        $totalPaid = (float) $invoice->payments()
             ->where('status', 'approved')
             ->sum('amount');
 
-        if ($totalPaid >= $invoice->total) {
+        if ($totalPaid >= (float) $invoice->total) {
             $invoice->update(['status' => 'paid']);
+        } elseif ($invoice->status === 'paid') {
+            // Approved payments no longer cover the total — reopen it.
+            $invoice->update(['status' => 'sent']);
         }
     }
 }
