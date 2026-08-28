@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'password' => 'password123',
-                'is_admin' => true,
+                'role' => 'admin',
                 'email_verified_at' => now(),
             ]
         );
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'User',
                 'password' => 'password123',
-                'is_admin' => false,
+                'role' => 'client',
                 'email_verified_at' => now(),
             ]
         );
