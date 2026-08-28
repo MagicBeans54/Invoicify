@@ -62,28 +62,46 @@ class InvoiceController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        // Generate invoice number automatically
-        $invoiceNumber = Invoice::generateInvoiceNumber($validated['client_name'], $validated['invoice_date']);
+        // Generate invoice number automatically and create the invoice.
+        // Under concurrent requests, two generations can collide on the
+        // unique invoice_number column, so retry with a freshly generated
+        // number when that happens.
+        $invoice = null;
+        $attempts = 0;
 
-        $invoice = Invoice::create([
-            'invoice_number' => $invoiceNumber,
-            'contract_number' => $validated['contract_number'] ?? null,
-            'invoice_date' => $validated['invoice_date'],
-            'due_date' => $validated['due_date'],
-            'status' => $validated['status'],
-            'payment_terms' => $validated['payment_terms'] ?? null,
-            'company_name' => $validated['company_name'],
-            'company_email' => $validated['company_email'],
-            'company_phone' => $validated['company_phone'],
-            'company_address' => $validated['company_address'],
-            'client_name' => $validated['client_name'],
-            'client_email' => $validated['client_email'],
-            'client_phone' => $validated['client_phone'],
-            'client_address' => $validated['client_address'],
-            'tax_rate' => $validated['tax_rate'],
-            'notes' => $validated['notes'],
-            'terms' => $validated['terms'] ?? null,
-        ]);
+        while ($attempts < 5) {
+            $attempts++;
+
+            try {
+                $invoice = Invoice::create([
+                    'invoice_number' => Invoice::generateInvoiceNumber($validated['client_name'], $validated['invoice_date']),
+                    'contract_number' => $validated['contract_number'] ?? null,
+                    'invoice_date' => $validated['invoice_date'],
+                    'due_date' => $validated['due_date'],
+                    'status' => $validated['status'],
+                    'payment_terms' => $validated['payment_terms'] ?? null,
+                    'company_name' => $validated['company_name'],
+                    'company_email' => $validated['company_email'],
+                    'company_phone' => $validated['company_phone'],
+                    'company_address' => $validated['company_address'],
+                    'client_name' => $validated['client_name'],
+                    'client_email' => $validated['client_email'],
+                    'client_phone' => $validated['client_phone'],
+                    'client_address' => $validated['client_address'],
+                    'tax_rate' => $validated['tax_rate'],
+                    'notes' => $validated['notes'],
+                    'terms' => $validated['terms'] ?? null,
+                ]);
+                break;
+            } catch (\Illuminate\Database\QueryException $e) {
+                $isDuplicateKey = str_contains($e->getMessage(), 'Duplicate entry')
+                    || str_contains($e->getMessage(), 'UNIQUE constraint failed');
+
+                if ($attempts >= 5 || ! $isDuplicateKey) {
+                    throw $e;
+                }
+            }
+        }
 
         foreach ($validated['items'] as $item) {
             $invoice->items()->create([
