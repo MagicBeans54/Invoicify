@@ -114,6 +114,8 @@ class InvoiceController extends Controller
         $invoice->calculateTotals();
         $invoice->save();
 
+        $this->syncClientRecord($validated);
+
         return redirect()->route('invoices.index')->with('success', 'Invoice created successfully');
     }
 
@@ -193,7 +195,34 @@ class InvoiceController extends Controller
         $invoice->calculateTotals();
         $invoice->save();
 
+        $this->syncClientRecord($validated);
+
         return redirect()->route('invoices.index')->with('success', 'Invoice updated successfully');
+    }
+
+    /**
+     * Keep the Clients directory in sync with invoice data: ensure a Client
+     * record exists for the invoice's client email, and update its details.
+     * Only fields actually provided on the invoice are overwritten, so
+     * existing client data (e.g. a phone number set at registration) is
+     * never wiped by an invoice that omits it.
+     */
+    private function syncClientRecord(array $validated): void
+    {
+        if (empty($validated['client_email'])) {
+            return;
+        }
+
+        $attributes = array_filter([
+            'name' => $validated['client_name'] ?? null,
+            'phone' => $validated['client_phone'] ?? null,
+            'address' => $validated['client_address'] ?? null,
+        ], fn ($value) => $value !== null && $value !== '');
+
+        Client::updateOrCreate(
+            ['email' => $validated['client_email']],
+            $attributes
+        );
     }
 
     public function destroy(Invoice $invoice)

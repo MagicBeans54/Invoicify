@@ -28,13 +28,17 @@ class AuthController extends Controller
             'role' => 'client', // Default to client role
         ]);
 
-        // Create client profile
-        Client::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'address' => $validated['address'] ?? null,
-        ]);
+        // Create or update the client profile, keyed by email, so that
+        // re-registration or a pre-existing client record never results
+        // in duplicate clients.
+        Client::updateOrCreate(
+            ['email' => $validated['email']],
+            [
+                'name' => $validated['name'],
+                'phone' => $validated['phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+            ]
+        );
 
         Auth::login($user);
 
