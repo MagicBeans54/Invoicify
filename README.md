@@ -45,12 +45,19 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
+# Create the storage symlink (required for logo/receipt uploads)
+php artisan storage:link
+
 # Run migrations and seed test accounts
 php artisan migrate --seed
 
 # Build frontend assets
 npm run build
 ```
+
+### Database
+
+The app uses **SQLite** by default (`database/database.sqlite`) — zero configuration required. To use **MySQL** instead, uncomment the `DB_CONNECTION=mysql` block in `.env`, create the database, then run `php artisan migrate --seed` again.
 
 ### Development
 
