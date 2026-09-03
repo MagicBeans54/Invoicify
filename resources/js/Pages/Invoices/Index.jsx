@@ -1,17 +1,11 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { createColumnHelper } from '@tanstack/react-table';
 import AppLayout from '@/components/AppLayout';
+import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 
 const badgeVariant = {
     paid: 'default',
@@ -19,6 +13,66 @@ const badgeVariant = {
     overdue: 'destructive',
     draft: 'outline',
 };
+
+const columnHelper = createColumnHelper();
+
+function formatDate(value) {
+    return value ? new Date(value).toLocaleDateString() : '';
+}
+
+const columns = [
+    columnHelper.accessor('invoice_number', {
+        header: 'Number',
+        cell: (info) => (
+            <span className="font-medium">{info.getValue()}</span>
+        ),
+    }),
+    columnHelper.accessor('client_name', {
+        header: 'Client',
+    }),
+    columnHelper.accessor('invoice_date', {
+        header: 'Issued',
+        cell: (info) => (
+            <span className="text-muted-foreground">{formatDate(info.getValue())}</span>
+        ),
+    }),
+    columnHelper.accessor('due_date', {
+        header: 'Due',
+        cell: (info) => (
+            <span className="text-muted-foreground">{formatDate(info.getValue())}</span>
+        ),
+    }),
+    columnHelper.accessor('total', {
+        header: 'Total',
+        cell: (info) => (
+            <span className="tabular-nums">₱{parseFloat(info.getValue()).toFixed(2)}</span>
+        ),
+        meta: { align: 'right' },
+    }),
+    columnHelper.accessor('status', {
+        header: 'Status',
+        cell: (info) => {
+            const status = info.getValue();
+            return (
+                <Badge variant={badgeVariant[status] ?? 'outline'}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                </Badge>
+            );
+        },
+    }),
+    columnHelper.accessor('id', {
+        header: '',
+        enableSorting: false,
+        cell: (info) => (
+            <div className="text-right">
+                <Button asChild variant="ghost" size="sm" className="-mr-2">
+                    <Link href={route('invoices.show', info.getValue())}>View</Link>
+                </Button>
+            </div>
+        ),
+        meta: { align: 'right' },
+    }),
+];
 
 export default function Index({ invoices }) {
     return (
@@ -33,60 +87,11 @@ export default function Index({ invoices }) {
                         </p>
                     </div>
                 ) : (
-                    <div className="rounded-lg border bg-card">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Number</TableHead>
-                                    <TableHead>Client</TableHead>
-                                    <TableHead>Issued</TableHead>
-                                    <TableHead>Due</TableHead>
-                                    <TableHead className="text-right">Total</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right" />
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {invoices.map((invoice) => (
-                                    <TableRow key={invoice.id}>
-                                        <TableCell className="font-medium">
-                                            {invoice.invoice_number}
-                                        </TableCell>
-                                        <TableCell>{invoice.client_name}</TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {new Date(invoice.invoice_date).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {new Date(invoice.due_date).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right tabular-nums">
-                                            ₱{parseFloat(invoice.total).toFixed(2)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant={badgeVariant[invoice.status] ?? 'outline'}
-                                            >
-                                                {invoice.status.charAt(0).toUpperCase() +
-                                                    invoice.status.slice(1)}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                asChild
-                                                variant="ghost"
-                                                size="sm"
-                                                className="-mr-2"
-                                            >
-                                                <Link href={route('invoices.show', invoice.id)}>
-                                                    View
-                                                </Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={columns}
+                        data={invoices}
+                        searchPlaceholder="Search invoices…"
+                    />
                 )}
             </AppLayout>
         </>

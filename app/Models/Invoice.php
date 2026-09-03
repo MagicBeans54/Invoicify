@@ -85,7 +85,7 @@ class Invoice extends Model
         // done numerically rather than via string ordering, which breaks once
         // the suffix grows beyond three digits.
         $highestSuffix = self::where('client_name', $clientName)
-            ->where('invoice_date', $date)
+            ->whereDate('invoice_date', $date)
             ->pluck('invoice_number')
             ->map(function ($number) use ($date) {
                 preg_match('/INV-(\d+)-' . preg_quote($date, '/') . '$/', $number, $matches);

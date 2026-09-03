@@ -2,16 +2,17 @@
 
 namespace App\Mail;
 
+use App\Models\CompanySettings;
 use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Barryvdh\DomPDF\Facade\Pdf;
 
-class InvoiceMail extends Mailable implements ShouldQueue
+class InvoiceMail extends Mailable
 {
     use Queueable;
 
@@ -72,5 +73,28 @@ class InvoiceMail extends Mailable implements ShouldQueue
                 ->as("invoice-{$this->invoiceData['invoice_number']}.pdf")
                 ->withMime('application/pdf'),
         ];
+    }
+
+    /**
+     * Generate the invoice PDF at send time. With ShouldQueue removed, this runs
+     * synchronously inside the HTTP request, so the PDF binary is passed directly
+     * to the mailer and never serialized anywhere.
+     */
+    private function buildPdf(): string
+    {
+        $this->invoice->loadMissing('items');
+
+        $companySettings = CompanySettings::getSettings();
+
+        $logoPath = null;
+        if ($companySettings->logo_path) {
+            $logoPath = public_path('storage/' . $companySettings->logo_path);
+        }
+
+        return Pdf::loadView('invoices.pdf', [
+            'invoice' => $this->invoice,
+            'companySettings' => $companySettings,
+            'logoPath' => $logoPath,
+        ])->setPaper('a4')->output();
     }
 }

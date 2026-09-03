@@ -1,17 +1,46 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { createColumnHelper } from '@tanstack/react-table';
 import AppLayout from '@/components/AppLayout';
+import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+
+const columnHelper = createColumnHelper();
+
+const columns = [
+    columnHelper.accessor('name', {
+        header: 'Name',
+        cell: (info) => <span className="font-medium">{info.getValue()}</span>,
+    }),
+    columnHelper.accessor('email', {
+        header: 'Email',
+        cell: (info) => <span className="text-muted-foreground">{info.getValue()}</span>,
+    }),
+    columnHelper.accessor('phone', {
+        header: 'Phone',
+        cell: (info) => <span className="text-muted-foreground">{info.getValue() || '-'}</span>,
+    }),
+    columnHelper.accessor('invoices_count', {
+        header: 'Invoices',
+        cell: (info) => (
+            <Badge variant="outline">{info.getValue() || 0} invoices</Badge>
+        ),
+    }),
+    columnHelper.accessor('id', {
+        header: '',
+        enableSorting: false,
+        cell: (info) => (
+            <div className="text-right">
+                <Button asChild variant="ghost" size="sm" className="-mr-2">
+                    <Link href={route('clients.show', info.getValue())}>View</Link>
+                </Button>
+            </div>
+        ),
+        meta: { align: 'right' },
+    }),
+];
 
 export default function Index({ clients }) {
     return (
@@ -26,51 +55,11 @@ export default function Index({ clients }) {
                         </p>
                     </div>
                 ) : (
-                    <div className="rounded-lg border bg-card">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Phone</TableHead>
-                                    <TableHead>Invoices</TableHead>
-                                    <TableHead className="text-right" />
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {clients.map((client) => (
-                                    <TableRow key={client.id}>
-                                        <TableCell className="font-medium">
-                                            {client.name}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {client.email}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {client.phone || '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline">
-                                                {client.invoices_count || 0} invoices
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                asChild
-                                                variant="ghost"
-                                                size="sm"
-                                                className="-mr-2"
-                                            >
-                                                <Link href={route('clients.show', client.id)}>
-                                                    View
-                                                </Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={columns}
+                        data={clients}
+                        searchPlaceholder="Search clients…"
+                    />
                 )}
             </AppLayout>
         </>
