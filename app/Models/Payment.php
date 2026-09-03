@@ -21,6 +21,9 @@ class Payment extends Model
         'admin_reviewed_at',
     ];
 
+    // Remove the boot method and cleanUtf8 function for now
+    // The issue was with SerializesModels in queued jobs, not database storage
+
     protected $casts = [
         'amount' => 'decimal:2',
         'payment_date' => 'date',
