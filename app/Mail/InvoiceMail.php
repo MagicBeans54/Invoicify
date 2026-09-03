@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\CompanySettings;
 use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -13,7 +12,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class InvoiceMail extends Mailable implements ShouldQueue
+class InvoiceMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -46,9 +45,9 @@ class InvoiceMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Generate the invoice PDF at send time (inside the queued job), rather
-     * than serializing raw binary PDF bytes into the queue payload (which is
-     * not valid UTF-8 and breaks JSON-encoding of the job).
+     * Generate the invoice PDF at send time. With ShouldQueue removed, this runs
+     * synchronously inside the HTTP request, so the PDF binary is passed directly
+     * to the mailer and never serialized anywhere.
      */
     private function buildPdf(): string
     {
