@@ -1,23 +1,86 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { createColumnHelper } from '@tanstack/react-table';
 import AppLayout from '@/components/AppLayout';
+import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 
 const badgeVariant = {
     pending: 'secondary',
     approved: 'default',
     rejected: 'destructive',
 };
+
+const columnHelper = createColumnHelper();
+
+function formatAmount(value) {
+    return `₱${parseFloat(value).toFixed(2)}`;
+}
+
+function formatDate(value) {
+    return value ? new Date(value).toLocaleDateString() : '';
+}
+
+function friendlyMethod(method) {
+    return (method || '').replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
+const columns = [
+    columnHelper.accessor('id', {
+        header: 'Payment ID',
+        cell: (info) => <span className="font-medium">#{info.getValue()}</span>,
+    }),
+    columnHelper.accessor('user.name', {
+        header: 'Client',
+        cell: (info) => info.getValue() || 'N/A',
+    }),
+    columnHelper.accessor('invoice.invoice_number', {
+        header: 'Invoice',
+        cell: (info) => info.getValue() || 'N/A',
+    }),
+    columnHelper.accessor('amount', {
+        header: 'Amount',
+        cell: (info) => <span className="tabular-nums">{formatAmount(info.getValue())}</span>,
+        meta: { align: 'right' },
+    }),
+    columnHelper.accessor('payment_date', {
+        header: 'Date',
+        cell: (info) => (
+            <span className="text-muted-foreground">{formatDate(info.getValue())}</span>
+        ),
+    }),
+    columnHelper.accessor('payment_method', {
+        header: 'Method',
+        cell: (info) => (
+            <span className="text-muted-foreground">{friendlyMethod(info.getValue())}</span>
+        ),
+    }),
+    columnHelper.accessor('status', {
+        header: 'Status',
+        cell: (info) => {
+            const status = info.getValue();
+            return (
+                <Badge variant={badgeVariant[status] ?? 'outline'}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                </Badge>
+            );
+        },
+    }),
+    columnHelper.accessor('id', {
+        header: '',
+        enableSorting: false,
+        cell: (info) => (
+            <div className="text-right">
+                <Button asChild variant="ghost" size="sm" className="-mr-2">
+                    <Link href={route('admin.payments.show', info.getValue())}>Review</Link>
+                </Button>
+            </div>
+        ),
+        meta: { align: 'right' },
+    }),
+];
 
 export default function AdminPaymentIndex({ payments }) {
     return (
@@ -32,62 +95,11 @@ export default function AdminPaymentIndex({ payments }) {
                         </p>
                     </div>
                 ) : (
-                    <div className="rounded-lg border bg-card">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Payment ID</TableHead>
-                                    <TableHead>Client</TableHead>
-                                    <TableHead>Invoice</TableHead>
-                                    <TableHead>Amount</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Method</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right" />
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {payments.map((payment) => (
-                                    <TableRow key={payment.id}>
-                                        <TableCell className="font-medium">#{payment.id}</TableCell>
-                                        <TableCell>{payment.user?.name || 'N/A'}</TableCell>
-                                        <TableCell>
-                                            {payment.invoice?.invoice_number || 'N/A'}
-                                        </TableCell>
-                                        <TableCell className="tabular-nums">
-                                            ₱{parseFloat(payment.amount).toFixed(2)}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {new Date(payment.payment_date).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {payment.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant={badgeVariant[payment.status] ?? 'outline'}
-                                            >
-                                                {payment.status.charAt(0).toUpperCase() +
-                                                    payment.status.slice(1)}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                asChild
-                                                variant="ghost"
-                                                size="sm"
-                                                className="-mr-2"
-                                            >
-                                                <Link href={route('admin.payments.show', payment.id)}>
-                                                    Review
-                                                </Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={columns}
+                        data={payments}
+                        searchPlaceholder="Search payments…"
+                    />
                 )}
             </AppLayout>
         </>
