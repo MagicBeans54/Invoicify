@@ -1,62 +1,219 @@
 import React from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import {
+    CreditCard,
+    FileText,
+    LogOut,
+    Settings as SettingsIcon,
+    Users,
+} from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarInset,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarProvider,
+    SidebarRail,
+    SidebarTrigger,
+} from '@/components/ui/sidebar';
 import FlashToaster from '@/components/FlashToaster';
 
+const navConfig = [
+    { title: 'Invoices', routeName: 'invoices.index', icon: FileText },
+    { title: 'Clients', routeName: 'clients.index', icon: Users },
+    { title: 'Payments', routeName: 'admin.payments.index', icon: CreditCard },
+    { title: 'Settings', routeName: 'settings.index', icon: SettingsIcon },
+];
+
+function initials(name) {
+    return (name || '?')
+        .split(' ')
+        .map((part) => part[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+}
+
 export default function AppLayout({ title, children, actions }) {
-    const links = [
-        { label: 'Invoices', href: route('invoices.index') },
-        { label: 'Clients', href: route('clients.index') },
-        { label: 'Payments', href: route('admin.payments.index') },
-        { label: 'Settings', href: route('settings.index') },
-    ];
+    const { url, props } = usePage();
+    const user = props.auth?.user;
+
+    const items = navConfig.map((item) => ({
+        ...item,
+        url: route(item.routeName),
+    }));
+
+    // Breadcrumb trail: root crumb from the active section, then the page
+    // title (which pages already pass in) when it differs from the section.
+    const root =
+        items.find(
+            (item) => url === item.url || url.startsWith(`${item.url}/`)
+        ) ?? items[0];
+    const crumbs = [{ label: root.title, href: root.url }];
+    if (title && title !== root.title) {
+        crumbs.push({ label: title, href: null });
+    }
 
     return (
-        <div className="min-h-screen bg-background">
+        <SidebarProvider>
             <FlashToaster />
-            <header className="border-b">
-                <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-                    <div className="flex items-center gap-8">
-                        <Link
-                            href={route('invoices.index')}
-                            className="text-sm font-semibold tracking-tight"
-                        >
-                            Invoicify Admin
-                        </Link>
-                        <nav className="flex items-center gap-1">
-                            {links.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={cn(
-                                        'rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
-                                    )}
-                                >
-                                    {link.label}
+            <Sidebar collapsible="icon">
+                <SidebarHeader>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild size="lg">
+                                <Link href={route('invoices.index')}>
+                                    <img
+                                        src="/images/techstack_ico.png"
+                                        alt="Techstacks"
+                                        className="size-8 rounded-md object-cover"
+                                    />
+                                    <div className="grid flex-1 text-left leading-tight">
+                                        <span className="truncate text-sm font-semibold tracking-tight">
+                                            Invoicify
+                                        </span>
+                                        <span className="truncate text-xs text-muted-foreground">
+                                            Admin
+                                        </span>
+                                    </div>
                                 </Link>
-                            ))}
-                        </nav>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarHeader>
+                <SidebarContent>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {items.map((item) => {
+                                    const isActive =
+                                        url === item.url ||
+                                        url.startsWith(`${item.url}/`);
+                                    return (
+                                        <SidebarMenuItem key={item.routeName}>
+                                            <SidebarMenuButton
+                                                asChild
+                                                isActive={isActive}
+                                                tooltip={item.title}
+                                            >
+                                                <Link href={item.url}>
+                                                    <item.icon />
+                                                    <span>{item.title}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    );
+                                })}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                </SidebarContent>
+                <SidebarRail />
+            </Sidebar>
+            <SidebarInset>
+                <header className="flex h-14 shrink-0 items-center gap-2 px-4">
+                    <SidebarTrigger className="-ml-1" />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            {crumbs.map((crumb, index) => {
+                                const isLast = index === crumbs.length - 1;
+                                return (
+                                    <React.Fragment key={`${crumb.label}-${index}`}>
+                                        <BreadcrumbItem>
+                                            {isLast || !crumb.href ? (
+                                                <BreadcrumbPage>
+                                                    {crumb.label}
+                                                </BreadcrumbPage>
+                                            ) : (
+                                                <BreadcrumbLink asChild>
+                                                    <Link href={crumb.href}>
+                                                        {crumb.label}
+                                                    </Link>
+                                                </BreadcrumbLink>
+                                            )}
+                                        </BreadcrumbItem>
+                                        {!isLast && <BreadcrumbSeparator />}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                    <div className="ml-auto">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button
+                                    type="button"
+                                    className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                >
+                                    <Avatar className="size-8">
+                                        <AvatarFallback>
+                                            {initials(user?.name)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuLabel className="font-normal">
+                                    <div className="flex flex-col space-y-1">
+                                        <p className="text-sm font-medium leading-none">
+                                            {user?.name || 'Account'}
+                                        </p>
+                                        <p className="text-xs leading-none text-muted-foreground">
+                                            {user?.email || ''}
+                                        </p>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() => router.post(route('logout'))}
+                                >
+                                    <LogOut />
+                                    Log out
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.post(route('logout'))}
-                    >
-                        Log out
-                    </Button>
-                </div>
-            </header>
-            <main className="mx-auto max-w-5xl px-6 py-8">
-                {(title || actions) && (
-                    <div className="mb-6 flex items-center justify-between">
-                        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-                        {actions}
+                </header>
+                <main className="flex-1 px-6 py-8">
+                    <div className="mx-auto max-w-5xl">
+                        {(title || actions) && (
+                            <div className="mb-6 flex items-center justify-between">
+                                <h1 className="text-xl font-semibold tracking-tight">
+                                    {title}
+                                </h1>
+                                {actions}
+                            </div>
+                        )}
+                        {children}
                     </div>
-                )}
-                {children}
-            </main>
-        </div>
+                </main>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }
