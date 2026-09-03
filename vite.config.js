@@ -18,7 +18,7 @@ export default defineConfig({
     ],
     esbuild: {
         loader: 'tsx',
-        include: /\.(jsx|tsx)$/,
+        include: /\.(ts|jsx|tsx)$/,
         exclude: /node_modules/,
     },
     server: {

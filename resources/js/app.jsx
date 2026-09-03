@@ -4,6 +4,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Toaster } from 'sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const appName =
     document.querySelector('meta[name="app-name"]')?.content || 'Invoicify';
@@ -17,17 +18,17 @@ createInertiaApp({
         }
         if (import.meta.env.SSR) {
             hydrateRoot(el, (
-                <>
+                <TooltipProvider>
                     <App {...props} />
                     <Toaster position="top-center" />
-                </>
+                </TooltipProvider>
             ));
         } else {
             createRoot(el).render(
-                <>
+                <TooltipProvider>
                     <App {...props} />
                     <Toaster position="top-center" />
-                </>
+                </TooltipProvider>
             );
         }
     },
