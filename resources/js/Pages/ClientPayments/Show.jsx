@@ -1,32 +1,16 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
-import { route } from 'ziggy-js';
+import { Head } from '@inertiajs/react';
 import ClientLayout from '@/components/ClientLayout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Download } from 'lucide-react';
-
-const badgeVariant = {
-    pending: 'secondary',
-    approved: 'default',
-    rejected: 'destructive',
-};
+import { Download } from 'lucide-react';
 
 export default function ClientPaymentShow({ payment }) {
     return (
         <>
             <Head title={`Payment #${payment.id}`} />
             <ClientLayout title={`Payment #${payment.id}`}>
-                <div className="mb-4">
-                    <Button asChild variant="ghost">
-                        <Link href={route('client.payments.index')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Payments
-                        </Link>
-                    </Button>
-                </div>
-
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
@@ -69,9 +53,7 @@ export default function ClientPaymentShow({ payment }) {
                             )}
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Status:</span>
-                                <Badge variant={badgeVariant[payment.status] ?? 'outline'}>
-                                    {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
-                                </Badge>
+                                <StatusBadge status={payment.status} />
                             </div>
                             {payment.admin_reviewed_at && (
                                 <div className="flex justify-between">

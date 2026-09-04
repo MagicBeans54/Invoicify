@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { ArrowLeft, Download, Pencil, Send } from 'lucide-react';
+import { Download, Pencil, Send } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { LoadingButton } from '@/components/ui/loading-button';
+import { HoldToConfirmButton } from '@/components/ui/hold-to-confirm';
+import { ShareButton } from '@/components/ui/share-button';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -16,12 +19,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
-const badgeVariant = {
-    paid: 'default',
-    sent: 'secondary',
-    overdue: 'destructive',
-    draft: 'outline',
-};
+
 
 export default function Show({ invoice }) {
     const [sending, setSending] = useState(false);
@@ -56,25 +54,14 @@ export default function Show({ invoice }) {
         <>
             <Head title={`Invoice ${invoice.invoice_number}`} />
             <AppLayout
-                title={
-                    <span className="flex items-center gap-3">
-                        <Button asChild variant="ghost" size="icon-sm" className="-ml-2">
-                            <Link href={route('invoices.index')}>
-                                <ArrowLeft />
-                            </Link>
-                        </Button>
-                        <div className="flex flex-col">
-                            <span>{invoice.invoice_number}</span>
-                            {invoice.contract_number && (
-                                <span className="text-xs text-muted-foreground">Contract: {invoice.contract_number}</span>
-                            )}
-                        </div>
-                    </span>
+                title={invoice.invoice_number}
+                subtitle={
+                    invoice.contract_number
+                        ? `Contract: ${invoice.contract_number}`
+                        : undefined
                 }
                 actions={
-                    <Badge variant={badgeVariant[invoice.status] ?? 'outline'}>
-                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                    </Badge>
+                    <StatusBadge status={invoice.status} />
                 }
             >
                 <Card>
@@ -105,7 +92,7 @@ export default function Show({ invoice }) {
 
                     <Separator />
 
-                    <CardContent className="flex gap-12 p-6">
+                    <CardContent className="flex flex-wrap gap-x-12 gap-y-6 p-6">
                         <div className="space-y-1.5">
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 Issued
@@ -218,11 +205,12 @@ export default function Show({ invoice }) {
                     )}
                 </Card>
 
-                <div className="mt-6 flex justify-end gap-2">
-                    <Button
+                <div className="mt-6 flex flex-wrap justify-end gap-2">
+                    <LoadingButton
                         size="sm"
+                        loading={sending}
                         onClick={sendInvoice}
-                        disabled={sending || !invoice.client_email}
+                        disabled={!invoice.client_email}
                         title={
                             invoice.client_email
                                 ? `Email this invoice to ${invoice.client_email}`
@@ -230,8 +218,8 @@ export default function Show({ invoice }) {
                         }
                     >
                         <Send />
-                        {sending ? 'Sending...' : 'Send'}
-                    </Button>
+                        Send
+                    </LoadingButton>
                     <Button asChild variant="outline" size="sm">
                         <a href={route('invoices.pdf', invoice.id)}>
                             <Download />
@@ -244,6 +232,33 @@ export default function Show({ invoice }) {
                             Edit
                         </Link>
                     </Button>
+                    <ShareButton
+                        size="sm"
+                        direction="left"
+                        label={`Share ${invoice.invoice_number}`}
+                        copyValue={`${window.location.origin}${route('invoices.pdf', invoice.id)}`}
+                        actions={[
+                            {
+                                icon: <Download size={13} />,
+                                label: 'Download PDF',
+                                onSelect: () =>
+                                    window.open(route('invoices.pdf', invoice.id), '_blank'),
+                            },
+                            {
+                                icon: <Send size={13} />,
+                                label: 'Send by email',
+                                onSelect: sendInvoice,
+                            },
+                        ]}
+                    />
+                    <HoldToConfirmButton
+                        size="sm"
+                        label="Hold to delete"
+                        confirmedLabel="Deleted"
+                        onConfirm={() =>
+                            router.delete(route('invoices.destroy', invoice.id))
+                        }
+                    />
                 </div>
             </AppLayout>
         </>

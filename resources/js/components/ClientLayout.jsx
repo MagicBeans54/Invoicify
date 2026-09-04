@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { CreditCard, FileText, LogOut } from 'lucide-react';
+import { ChevronsUpDown, CreditCard, FileText, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     Breadcrumb,
@@ -22,6 +22,7 @@ import {
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
@@ -31,10 +32,13 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarProvider,
-    SidebarRail,
     SidebarTrigger,
 } from '@/components/ui/sidebar';
 import FlashToaster from '@/components/FlashToaster';
+import ModeToggle from '@/components/ModeToggle';
+import PageTransition from '@/components/PageTransition';
+import { TechstackMark } from '@/components/TechstackLogo';
+import { NotificationBell } from '@/components/ui/notification-bell';
 
 const navConfig = [
     { title: 'My Invoices', routeName: 'client.dashboard', icon: FileText },
@@ -51,7 +55,7 @@ function initials(name) {
         .toUpperCase();
 }
 
-export default function ClientLayout({ title, children, actions }) {
+export default function ClientLayout({ title, subtitle, crumbs, actions, children }) {
     const { url, props } = usePage();
     const user = props.auth?.user;
 
@@ -60,41 +64,40 @@ export default function ClientLayout({ title, children, actions }) {
         url: route(item.routeName),
     }));
 
-    // Breadcrumb trail: root crumb from the active section, then the page
-    // title (which pages already pass in) when it differs from the section.
     const root =
         items.find(
             (item) => url === item.url || url.startsWith(`${item.url}/`)
         ) ?? items[0];
-    const crumbs = [{ label: root.title, href: root.url }];
-    if (title && title !== root.title) {
-        crumbs.push({ label: title, href: null });
-    }
+    const trail = crumbs ?? [
+        { label: root.title, href: root.url },
+        ...(title && title !== root.title ? [{ label: title, href: null }] : []),
+    ];
+
+    const stats = props.stats;
+    const bellCount = stats?.overdueInvoices ?? 0;
+    const bellHref = route('client.dashboard');
 
     return (
-        <SidebarProvider>
+        <SidebarProvider style={{ '--sidebar-width': '13.5rem' }}>
             <FlashToaster />
             <Sidebar collapsible="icon">
                 <SidebarHeader>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild size="lg">
-                                <Link href={route('client.dashboard')}>
-                                    <img
-                                        src="/images/techstack_ico.png"
-                                        alt="Techstacks"
-                                        className="size-8 rounded-md object-cover"
-                                    />
-                                    <div className="grid flex-1 text-left leading-tight">
-                                        <span className="truncate text-sm font-semibold tracking-tight">
-                                            Invoicify
-                                        </span>
-                                        <span className="truncate text-xs text-muted-foreground">
-                                            Client Portal
-                                        </span>
-                                    </div>
-                                </Link>
-                            </SidebarMenuButton>
+                            <Link
+                                href={route('client.dashboard')}
+                                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+                            >
+                                <TechstackMark className="size-10 group-data-[collapsible=icon]:size-8" />
+                                <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                                    <span className="truncate text-sm font-semibold tracking-tight text-primary">
+                                        Invoicify
+                                    </span>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        Client portal
+                                    </span>
+                                </span>
+                            </Link>
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarHeader>
@@ -102,7 +105,7 @@ export default function ClientLayout({ title, children, actions }) {
                     <SidebarGroup>
                         <SidebarGroupLabel>My Account</SidebarGroupLabel>
                         <SidebarGroupContent>
-                            <SidebarMenu>
+                            <SidebarMenu className="pl-1">
                                 {items.map((item) => {
                                     const isActive =
                                         url === item.url ||
@@ -113,10 +116,14 @@ export default function ClientLayout({ title, children, actions }) {
                                                 asChild
                                                 isActive={isActive}
                                                 tooltip={item.title}
+                                                className="h-9 gap-3 rounded-lg font-medium transition-[width,height,padding,background-color,color] duration-150 data-active:bg-primary/10 data-active:text-primary data-active:font-semibold [&_svg]:text-primary"
                                             >
                                                 <Link href={item.url}>
                                                     <item.icon />
                                                     <span>{item.title}</span>
+                                                    {isActive && (
+                                                        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary" />
+                                                    )}
                                                 </Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
@@ -126,15 +133,75 @@ export default function ClientLayout({ title, children, actions }) {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 </SidebarContent>
-                <SidebarRail />
+                <SidebarFooter>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <SidebarMenuButton
+                                        size="lg"
+                                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-1"
+                                    >
+                                        <Avatar className="size-8 rounded-lg">
+                                            <AvatarFallback className="rounded-lg">
+                                                {initials(user?.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span className="grid flex-1 text-left text-sm leading-tight">
+                                            <span className="truncate font-medium">
+                                                {user?.name || 'Account'}
+                                            </span>
+                                            <span className="truncate text-xs text-muted-foreground">
+                                                {user?.email || ''}
+                                            </span>
+                                        </span>
+                                        <ChevronsUpDown className="ml-auto size-4" />
+                                    </SidebarMenuButton>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                                    side="bottom"
+                                    align="end"
+                                    sideOffset={4}
+                                >
+                                    <DropdownMenuLabel className="p-0 font-normal">
+                                        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                            <Avatar className="size-8 rounded-lg">
+                                                <AvatarFallback className="rounded-lg">
+                                                    {initials(user?.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                                <span className="truncate font-medium">
+                                                    {user?.name || 'Account'}
+                                                </span>
+                                                <span className="truncate text-xs text-muted-foreground">
+                                                    {user?.email || ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        className="cursor-pointer [&_svg]:text-primary"
+                                        onClick={() => router.post(route('logout'))}
+                                    >
+                                        <LogOut />
+                                        Log out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarFooter>
             </Sidebar>
             <SidebarInset>
-                <header className="flex h-14 shrink-0 items-center gap-2 px-4">
+                <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
                     <SidebarTrigger className="-ml-1" />
                     <Breadcrumb>
                         <BreadcrumbList>
-                            {crumbs.map((crumb, index) => {
-                                const isLast = index === crumbs.length - 1;
+                            {trail.map((crumb, index) => {
+                                const isLast = index === trail.length - 1;
                                 return (
                                     <React.Fragment key={`${crumb.label}-${index}`}>
                                         <BreadcrumbItem>
@@ -156,52 +223,40 @@ export default function ClientLayout({ title, children, actions }) {
                             })}
                         </BreadcrumbList>
                     </Breadcrumb>
-                    <div className="ml-auto">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button
-                                    type="button"
-                                    className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                    <Avatar className="size-8">
-                                        <AvatarFallback>
-                                            {initials(user?.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">
-                                            {user?.name || 'Account'}
-                                        </p>
-                                        <p className="text-xs leading-none text-muted-foreground">
-                                            {user?.email || ''}
-                                        </p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={() => router.post(route('logout'))}
-                                >
-                                    <LogOut />
-                                    Log out
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="ml-auto flex items-center gap-1">
+                        <ModeToggle />
+                        <NotificationBell
+                            size="sm"
+                            count={bellCount}
+                            onClick={() => router.visit(bellHref)}
+                        />
                     </div>
                 </header>
-                <main className="flex-1 px-6 py-8">
-                    <div className="mx-auto max-w-5xl">
-                        {(title || actions) && (
-                            <div className="mb-6 flex items-center justify-between">
-                                <h1 className="text-2xl font-semibold">{title}</h1>
-                                {actions && <div className="flex gap-2">{actions}</div>}
+                <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+                    <PageTransition pageKey={url} className="mx-auto max-w-5xl">
+                        {(title || subtitle || actions) && (
+                            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    {title && (
+                                        <h1 className="text-xl font-semibold tracking-tight">
+                                            {title}
+                                        </h1>
+                                    )}
+                                    {subtitle && (
+                                        <p className="mt-1 text-sm text-muted-foreground">
+                                            {subtitle}
+                                        </p>
+                                    )}
+                                </div>
+                                {actions && (
+                                    <div className="flex items-center gap-2">
+                                        {actions}
+                                    </div>
+                                )}
                             </div>
                         )}
                         {children}
-                    </div>
+                    </PageTransition>
                 </main>
             </SidebarInset>
         </SidebarProvider>

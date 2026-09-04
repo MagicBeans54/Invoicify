@@ -45,9 +45,8 @@
             gap: 15px;
         }
         .company-logo {
-            width: 200px;
-            height: 50px;
-            object-fit: contain;
+            height: 64px;
+            max-width: 220px;
         }
         .company-info h1 {
             color: #10b981;
@@ -244,9 +243,9 @@
                     <td>
                         <div class="company-info">
                             @if($logoPath)
-                                <img src="{{ str_replace('\\', '/', $logoPath) }}" alt="Company Logo" class="company-logo">
+                                <img src="{{ str_replace('\\', '/', $logoPath) }}" alt="Company Logo" class="company-logo" />
                             @else
-                                <img src="{{ str_replace('\\', '/', public_path('images/techstackfull_ico.png')) }}" alt="Company Logo" class="company-logo">
+                                <img src="{{ str_replace('\\', '/', public_path('images/techstackfull_mint.png')) }}" alt="Techstacks" class="company-logo" />
                             @endif
                             <div>
                                 {{-- <h1>{{ $companySettings->company_name }}</h1> --}}

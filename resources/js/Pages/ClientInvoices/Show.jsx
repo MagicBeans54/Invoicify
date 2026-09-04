@@ -1,10 +1,11 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { ArrowLeft, Download, Plus } from 'lucide-react';
+import { Download, Plus } from 'lucide-react';
 import ClientLayout from '@/components/ClientLayout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { ShareButton } from '@/components/ui/share-button';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -15,13 +16,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-
-const badgeVariant = {
-    paid: 'default',
-    sent: 'secondary',
-    overdue: 'destructive',
-    draft: 'outline',
-};
 
 export default function ClientShow({ invoice }) {
     const formatDate = (dateString) => {
@@ -47,25 +41,14 @@ export default function ClientShow({ invoice }) {
         <>
             <Head title={`Invoice ${invoice.invoice_number}`} />
             <ClientLayout
-                title={
-                    <span className="flex items-center gap-3">
-                        <Button asChild variant="ghost" size="icon-sm" className="-ml-2">
-                            <Link href={route('client.dashboard')}>
-                                <ArrowLeft />
-                            </Link>
-                        </Button>
-                        <div className="flex flex-col">
-                            <span>{invoice.invoice_number}</span>
-                            {invoice.contract_number && (
-                                <span className="text-xs text-muted-foreground">Contract: {invoice.contract_number}</span>
-                            )}
-                        </div>
-                    </span>
+                title={invoice.invoice_number}
+                subtitle={
+                    invoice.contract_number
+                        ? `Contract: ${invoice.contract_number}`
+                        : undefined
                 }
                 actions={
-                    <Badge variant={badgeVariant[invoice.status] ?? 'outline'}>
-                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                    </Badge>
+                    <StatusBadge status={invoice.status} />
                 }
             >
                 <Card>
@@ -96,7 +79,7 @@ export default function ClientShow({ invoice }) {
 
                     <Separator />
 
-                    <CardContent className="flex gap-12 p-6">
+                    <CardContent className="flex flex-wrap gap-x-12 gap-y-6 p-6">
                         <div className="space-y-1.5">
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 Issued
@@ -209,7 +192,7 @@ export default function ClientShow({ invoice }) {
                     )}
                 </Card>
 
-                <div className="mt-6 flex justify-end gap-2">
+                <div className="mt-6 flex flex-wrap justify-end gap-2">
                     {invoice.status !== 'paid' && (
                         <Button asChild variant="default" size="sm">
                             <Link href={route('client.payments.create', { invoice_id: invoice.id })}>
@@ -224,6 +207,20 @@ export default function ClientShow({ invoice }) {
                             Download PDF
                         </a>
                     </Button>
+                    <ShareButton
+                        size="sm"
+                        direction="left"
+                        label={`Share ${invoice.invoice_number}`}
+                        copyValue={`${window.location.origin}${route('client.invoices.pdf', invoice.id)}`}
+                        actions={[
+                            {
+                                icon: <Download size={13} />,
+                                label: 'Download PDF',
+                                onSelect: () =>
+                                    window.open(route('client.invoices.pdf', invoice.id), '_blank'),
+                            },
+                        ]}
+                    />
                 </div>
             </ClientLayout>
         </>

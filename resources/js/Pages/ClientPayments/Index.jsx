@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import ClientLayout from '@/components/ClientLayout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import {
     Table,
     TableBody,
@@ -13,12 +13,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Plus } from 'lucide-react';
-
-const badgeVariant = {
-    pending: 'secondary',
-    approved: 'default',
-    rejected: 'destructive',
-};
 
 export default function ClientPaymentIndex({ payments }) {
     return (
@@ -70,12 +64,7 @@ export default function ClientPaymentIndex({ payments }) {
                                             {payment.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge
-                                                variant={badgeVariant[payment.status] ?? 'outline'}
-                                            >
-                                                {payment.status.charAt(0).toUpperCase() +
-                                                    payment.status.slice(1)}
-                                            </Badge>
+                                            <StatusBadge status={payment.status} />
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <Button

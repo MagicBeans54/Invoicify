@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { motion, useReducedMotion } from 'framer-motion';
+import AuthLayout from '@/components/AuthLayout';
+import { TechstackMark } from '@/components/TechstackLogo';
 import { Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
+import { PasswordStrengthInput } from '@/components/ui/password-strength';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,8 +21,8 @@ export default function RegisterForm() {
         phone: '',
         address: '',
     });
-    const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+    const reduce = useReducedMotion();
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -29,8 +33,22 @@ export default function RegisterForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-md">
+        <AuthLayout title="Register">
+            <motion.div
+                initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="mb-6 flex items-center justify-center gap-2.5 lg:hidden"
+            >
+                <TechstackMark className="size-9" />
+                <span className="text-lg font-semibold tracking-tight text-primary">Invoicify</span>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, y: reduce ? 0 : 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.08, ease: 'easeOut' }}
+            >
+            <Card>
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">Registration</CardTitle>
                     <CardDescription>Create your account</CardDescription>
@@ -61,25 +79,19 @@ export default function RegisterForm() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder="••••••••"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    className="pr-10"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword((prev) => !prev)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                    tabIndex={-1}
-                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                >
-                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </button>
-                            </div>
+                            <PasswordStrengthInput
+                                id="password"
+                                name="password"
+                                value={data.password}
+                                onValueChange={(value) => setData('password', value)}
+                                placeholder="••••••••"
+                                autoComplete="new-password"
+                                rules={[
+                                    { label: 'At least 8 characters (required)', test: (value) => value.length >= 8 },
+                                    { label: 'One uppercase letter', test: (value) => /[A-Z]/.test(value) },
+                                    { label: 'One number', test: (value) => /[0-9]/.test(value) },
+                                ]}
+                            />
                             {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                         </div>
                         <div className="space-y-2">
@@ -126,9 +138,9 @@ export default function RegisterForm() {
                             />
                             {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
                         </div>
-                        <Button type="submit" className="w-full" disabled={processing}>
-                            {processing ? 'Creating account...' : 'Register'}
-                        </Button>
+                        <LoadingButton type="submit" className="w-full" loading={processing}>
+                            Register
+                        </LoadingButton>
                     </form>
                 </CardContent>
                 <CardContent className="pt-0 text-center text-sm text-muted-foreground">
@@ -138,6 +150,7 @@ export default function RegisterForm() {
                     </Link>
                 </CardContent>
             </Card>
-        </div>
+            </motion.div>
+        </AuthLayout>
     );
 }

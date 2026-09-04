@@ -259,9 +259,20 @@ class InvoiceController extends Controller
             return back()->with('error', 'This invoice has no client email address');
         }
 
-        // The PDF is generated inside InvoiceMail at send time, so the raw
-        // binary is never serialized into the queued mail job.
-        Mail::to($invoice->client_email)->send(new InvoiceMail($invoice));
+        $companySettings = CompanySettings::getSettings();
+
+        $logoPath = null;
+        if ($companySettings->logo_path) {
+            $logoPath = public_path('storage/' . $companySettings->logo_path);
+        }
+
+        $pdf = Pdf::loadView('invoices.pdf', [
+            'invoice' => $invoice,
+            'companySettings' => $companySettings,
+            'logoPath' => $logoPath,
+        ])->setPaper('a4')->output();
+
+        Mail::to($invoice->client_email)->send(new InvoiceMail($invoice, $pdf));
 
         if ($invoice->status === 'draft') {
             $invoice->update(['status' => 'sent']);

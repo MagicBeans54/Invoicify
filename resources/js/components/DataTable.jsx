@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronsLeft, ChevronsRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import {
     Table,
@@ -24,7 +25,7 @@ import {
  * shadcn table primitives. Supports column sorting, a global text filter,
  * and client-side pagination.
  */
-export default function DataTable({ columns, data, searchPlaceholder = 'Searchâ€¦' }) {
+export default function DataTable({ columns, data, searchPlaceholder = 'Searchâ€¦', isLoading = false }) {
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
@@ -46,7 +47,7 @@ export default function DataTable({ columns, data, searchPlaceholder = 'Searchâ€
 
     return (
         <div>
-            <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="relative w-full max-w-xs">
                     <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -107,7 +108,16 @@ export default function DataTable({ columns, data, searchPlaceholder = 'Searchâ€
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows.length ? (
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <span className="inline-flex items-center gap-2 text-muted-foreground">
+                                        <Spinner size="small" />
+                                        Loadingâ€¦
+                                    </span>
+                                </TableCell>
+                            </TableRow>
+                        ) : table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
                                     {row.getVisibleCells().map((cell) => (

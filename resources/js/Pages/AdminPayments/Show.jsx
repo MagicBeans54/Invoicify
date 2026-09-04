@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Download, Check, X } from 'lucide-react';
+import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
+import { Download, Check, X } from 'lucide-react';
 import SpecularButton from '@/components/ui/SpecularButton';
-
-const badgeVariant = {
-    pending: 'secondary',
-    approved: 'default',
-    rejected: 'destructive',
-};
 
 export default function AdminPaymentShow({ payment }) {
     const [showRejectForm, setShowRejectForm] = useState(false);
@@ -47,15 +41,6 @@ export default function AdminPaymentShow({ payment }) {
         <>
             <Head title={`Review Payment #${payment.id}`} />
             <AppLayout title={`Review Payment #${payment.id}`}>
-                <div className="mb-4">
-                    <Button asChild variant="ghost">
-                        <Link href={route('admin.payments.index')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Payments
-                        </Link>
-                    </Button>
-                </div>
-
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
@@ -112,9 +97,7 @@ export default function AdminPaymentShow({ payment }) {
                             )}
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Status:</span>
-                                <Badge variant={badgeVariant[payment.status] ?? 'outline'}>
-                                    {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
-                                </Badge>
+                                <StatusBadge status={payment.status} />
                             </div>
                             {payment.admin_reviewed_at && (
                                 <div className="flex justify-between">
@@ -178,12 +161,13 @@ export default function AdminPaymentShow({ payment }) {
                                 <div className="space-y-4">
                                     <div>
                                         <Label htmlFor="approve_notes">Admin Notes (Optional)</Label>
-                                        <Textarea
+                                        <AutosizeTextarea
                                             id="approve_notes"
                                             value={approveForm.data.admin_notes}
                                             onChange={(e) => approveForm.setData('admin_notes', e.target.value)}
                                             placeholder="Add any notes for approving this payment"
-                                            rows={2}
+                                            minHeight={52}
+                                            maxHeight={200}
                                         />
                                     </div>
                                     <SpecularButton
@@ -247,12 +231,13 @@ export default function AdminPaymentShow({ payment }) {
                                         <div className="space-y-4">
                                             <div>
                                                 <Label htmlFor="reject_notes">Rejection Reason (Required)</Label>
-                                                <Textarea
+                                                <AutosizeTextarea
                                                     id="reject_notes"
                                                     value={rejectForm.data.admin_notes}
                                                     onChange={(e) => rejectForm.setData('admin_notes', e.target.value)}
                                                     placeholder="Please provide a reason for rejection"
-                                                    rows={2}
+                                                    minHeight={52}
+                                                    maxHeight={200}
                                                     required
                                                 />
                                             </div>

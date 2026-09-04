@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { motion, useReducedMotion } from 'framer-motion';
+import AuthLayout from '@/components/AuthLayout';
+import { TechstackMark } from '@/components/TechstackLogo';
 import { Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +16,7 @@ export default function LoginForm() {
         password: '',
     });
     const [showPassword, setShowPassword] = useState(false);
+    const reduce = useReducedMotion();
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -20,8 +24,22 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-md">
+        <AuthLayout title="Login">
+            <motion.div
+                initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="mb-6 flex items-center justify-center gap-2.5 lg:hidden"
+            >
+                <TechstackMark className="size-9" />
+                <span className="text-lg font-semibold tracking-tight text-primary">Invoicify</span>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, y: reduce ? 0 : 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.08, ease: 'easeOut' }}
+            >
+            <Card>
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">Login</CardTitle>
                     <CardDescription>Welcome back to Invoicify</CardDescription>
@@ -62,9 +80,9 @@ export default function LoginForm() {
                             </div>
                             {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                         </div>
-                        <Button type="submit" className="w-full" disabled={processing}>
-                            {processing ? 'Logging in...' : 'Login'}
-                        </Button>
+                        <LoadingButton type="submit" className="w-full" loading={processing}>
+                            Login
+                        </LoadingButton>
                     </form>
                 </CardContent>
                 <CardContent className="pt-0 text-center text-sm text-muted-foreground">
@@ -75,6 +93,7 @@ export default function LoginForm() {
                     </p>
                 </CardContent>
             </Card>
-        </div>
+            </motion.div>
+        </AuthLayout>
     );
 }

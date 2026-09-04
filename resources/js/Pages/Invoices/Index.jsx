@@ -4,15 +4,9 @@ import { route } from 'ziggy-js';
 import { createColumnHelper } from '@tanstack/react-table';
 import AppLayout from '@/components/AppLayout';
 import DataTable from '@/components/DataTable';
+import InvoiceSummaryCards from '@/components/InvoiceSummaryCards';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-
-const badgeVariant = {
-    paid: 'default',
-    sent: 'secondary',
-    overdue: 'destructive',
-    draft: 'outline',
-};
+import { StatusBadge } from '@/components/ui/status-badge';
 
 const columnHelper = createColumnHelper();
 
@@ -53,11 +47,7 @@ const columns = [
         header: 'Status',
         cell: (info) => {
             const status = info.getValue();
-            return (
-                <Badge variant={badgeVariant[status] ?? 'outline'}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                </Badge>
-            );
+            return <StatusBadge status={status} />;
         },
     }),
     columnHelper.accessor('id', {
@@ -87,11 +77,14 @@ export default function Index({ invoices }) {
                         </p>
                     </div>
                 ) : (
-                    <DataTable
-                        columns={columns}
-                        data={invoices}
-                        searchPlaceholder="Search invoices…"
-                    />
+                    <>
+                        <InvoiceSummaryCards invoices={invoices} />
+                        <DataTable
+                            columns={columns}
+                            data={invoices}
+                            searchPlaceholder="Search invoices…"
+                        />
+                    </>
                 )}
             </AppLayout>
         </>
