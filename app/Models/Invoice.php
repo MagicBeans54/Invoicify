@@ -32,6 +32,9 @@ class Invoice extends Model
         'terms',
     ];
 
+    // Remove the boot method and cleanUtf8 function for now
+    // The issue was with SerializesModels in queued jobs, not database storage
+
     protected $casts = [
         'invoice_date' => 'date',
         'due_date' => 'date',
