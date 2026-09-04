@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
+import { TechstackMark } from '@/components/TechstackLogo';
 import { Eye, EyeOff } from 'lucide-react';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,12 +30,8 @@ export default function LoginForm() {
                 transition={{ duration: 0.35, ease: 'easeOut' }}
                 className="mb-6 flex items-center gap-2.5"
             >
-                <img
-                    src="/images/techstack_ico.png"
-                    alt="Invoicify"
-                    className="size-9 rounded-lg border object-cover"
-                />
-                <span className="text-lg font-semibold tracking-tight">Invoicify</span>
+                <TechstackMark className="size-9" />
+                <span className="text-lg font-semibold tracking-tight text-primary">Invoicify</span>
             </motion.div>
             <motion.div
                 initial={{ opacity: 0, y: reduce ? 0 : 14 }}

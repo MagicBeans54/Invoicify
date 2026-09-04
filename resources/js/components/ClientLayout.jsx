@@ -19,7 +19,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
 import {
     Sidebar,
     SidebarContent,
@@ -36,6 +35,8 @@ import {
     SidebarTrigger,
 } from '@/components/ui/sidebar';
 import FlashToaster from '@/components/FlashToaster';
+import ModeToggle from '@/components/ModeToggle';
+import { TechstackMark } from '@/components/TechstackLogo';
 import { NotificationBell } from '@/components/ui/notification-bell';
 
 const navConfig = [
@@ -86,25 +87,20 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                 <SidebarHeader>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild size="lg">
-                                <Link href={route('client.dashboard')}>
-                                    <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-card">
-                                        <img
-                                            src="/images/techstack_ico.png"
-                                            alt="Invoicify"
-                                            className="size-8 object-cover"
-                                        />
+                            <Link
+                                href={route('client.dashboard')}
+                                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+                            >
+                                <TechstackMark className="size-10" />
+                                <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                                    <span className="truncate text-sm font-semibold tracking-tight text-primary">
+                                        Invoicify
                                     </span>
-                                    <span className="grid flex-1 text-left leading-tight">
-                                        <span className="truncate text-sm font-semibold tracking-tight">
-                                            Invoicify
-                                        </span>
-                                        <span className="truncate text-xs text-muted-foreground">
-                                            Client portal
-                                        </span>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        Client portal
                                     </span>
-                                </Link>
-                            </SidebarMenuButton>
+                                </span>
+                            </Link>
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarHeader>
@@ -204,7 +200,6 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
             <SidebarInset>
                 <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
                     <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-1 h-4" />
                     <Breadcrumb>
                         <BreadcrumbList>
                             {trail.map((crumb, index) => {
@@ -231,6 +226,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                         </BreadcrumbList>
                     </Breadcrumb>
                     <div className="ml-auto flex items-center gap-1">
+                        <ModeToggle />
                         <NotificationBell
                             size="sm"
                             count={bellCount}

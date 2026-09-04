@@ -5,9 +5,23 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { THEME_EVENT } from '@/components/ModeToggle';
 
 const appName =
     document.querySelector('meta[name="app-name"]')?.content || 'Invoicify';
+
+// Follows the ModeToggle (`dark` class on <html>) so toasts match the theme.
+function ThemedToaster() {
+    const [theme, setTheme] = React.useState(() =>
+        document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    );
+    React.useEffect(() => {
+        const onChange = (e) => setTheme(e.detail);
+        window.addEventListener(THEME_EVENT, onChange);
+        return () => window.removeEventListener(THEME_EVENT, onChange);
+    }, []);
+    return <Toaster position="top-center" theme={theme} />;
+}
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -20,19 +34,19 @@ createInertiaApp({
             hydrateRoot(el, (
                 <TooltipProvider>
                     <App {...props} />
-                    <Toaster position="top-center" />
+                    <ThemedToaster />
                 </TooltipProvider>
             ));
         } else {
             createRoot(el).render(
                 <TooltipProvider>
                     <App {...props} />
-                    <Toaster position="top-center" />
+                    <ThemedToaster />
                 </TooltipProvider>
             );
         }
     },
     progress: {
-        color: '#4b5563',
+        color: '#24D6AE',
     },
 });
