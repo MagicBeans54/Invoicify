@@ -47,8 +47,6 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
-            // Action-queue counts for the navbar notification bell. Two cheap
-            // COUNT queries per Inertia response; null for guests.
             'stats' => function () use ($request) {
                 $user = $request->user();
                 if (! $user) {

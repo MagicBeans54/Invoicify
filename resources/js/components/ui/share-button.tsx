@@ -1,28 +1,3 @@
-/**
- * Spectrum UI — ShareButton (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/share-button/share-button.tsx (Apache-2.0)
- *
- * A share trigger that fans out into a row of action buttons. Opening springs
- * each action out from behind the trigger with a 30ms stagger while the share
- * icon morphs into an X; closing reverses the stagger. Ships an optional
- * copy-link action with emerald success feedback, tooltip labels on hover,
- * keyboard support (focus moves to the first action, Tab and arrow keys
- * cycle, Escape closes and restores focus) and honors prefers-reduced-motion
- * with a fade-only expansion.
- *
- * Dependencies: framer-motion, lucide-react, @/lib/utils
- *
- * @example
- * <ShareButton
- *   copyValue="https://ui.spectrumhq.in"
- *   actions={[
- *     { icon: <Twitter size={15} />, label: "Share on X", onSelect: shareOnX },
- *   ]}
- * />
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState } from "react"

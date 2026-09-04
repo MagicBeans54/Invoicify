@@ -79,7 +79,7 @@ export default function ClientShow({ invoice }) {
 
                     <Separator />
 
-                    <CardContent className="flex gap-12 p-6">
+                    <CardContent className="flex flex-wrap gap-x-12 gap-y-6 p-6">
                         <div className="space-y-1.5">
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 Issued
@@ -192,7 +192,7 @@ export default function ClientShow({ invoice }) {
                     )}
                 </Card>
 
-                <div className="mt-6 flex justify-end gap-2">
+                <div className="mt-6 flex flex-wrap justify-end gap-2">
                     {invoice.status !== 'paid' && (
                         <Button asChild variant="default" size="sm">
                             <Link href={route('client.payments.create', { invoice_id: invoice.id })}>

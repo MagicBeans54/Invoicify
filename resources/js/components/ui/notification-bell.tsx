@@ -1,22 +1,3 @@
-/**
- * Spectrum UI — NotificationBell (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/notification-bell/notification-bell.tsx (Apache-2.0)
- *
- * A bell icon button micro-interaction. When the unread count increases the
- * bell swings from its hinge like a settling pendulum while the clapper
- * wiggles the opposite way in phase, and a rose badge springs in and rolls
- * its count like an odometer. A dot mode swaps the number for an indicator
- * that pings once per increase. Honors prefers-reduced-motion and announces
- * unread changes to screen readers.
- *
- * Dependencies: framer-motion, @/lib/utils
- *
- * @example
- * <NotificationBell count={3} onClick={() => openInbox()} />
- */
-
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"

@@ -3,13 +3,6 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useImperativeHandle } from "react";
 
-/**
- * Spectrum UI — Autosize Textarea (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/spectrumui/autosize-textarea.tsx (Apache-2.0)
- */
-
 interface UseAutosizeTextAreaProps {
   textAreaRef: HTMLTextAreaElement | null;
   minHeight?: number;
@@ -101,7 +94,7 @@ export const AutosizeTextarea = React.forwardRef<
         value={value}
         ref={textAreaRef}
         className={cn(
-          "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30",
           className,
         )}
         onChange={(e) => {

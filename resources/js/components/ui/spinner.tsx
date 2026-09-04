@@ -3,13 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/**
- * Spectrum UI — Spinner (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/spectrumui/spinner-dependencies.tsx (Apache-2.0)
- */
-
 const spinnerVariants = cva('flex-col items-center justify-center', {
     variants: {
         show: {

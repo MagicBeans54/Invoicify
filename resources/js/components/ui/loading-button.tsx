@@ -5,19 +5,6 @@ import { cn } from '@/lib/utils';
 import { buttonVariants } from './button';
 import type { VariantProps } from 'class-variance-authority';
 
-/**
- * Spectrum UI — Loading Button (adapted).
- *
- * Source idea: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/spectrumui/loading-button-dependencies.tsx (Apache-2.0)
- *
- * Spectrum's behavior (Loader2 spinner + `loading` prop + disabled while
- * loading + asChild support) kept, but styled with this project's existing
- * `buttonVariants` (radix-nova) so it matches the app instead of forking a
- * second button design system. Uses `Slot.Root` from the installed `radix-ui`
- * package (same as ./button.tsx).
- */
-
 export interface LoadingButtonProps
     extends React.ComponentProps<'button'>,
         VariantProps<typeof buttonVariants> {

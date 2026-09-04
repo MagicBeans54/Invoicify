@@ -10,18 +10,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/**
- * Spectrum UI — Status Badge (vendored + adapted for Invoicify).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/status-badge/statusdemo.tsx (Apache-2.0)
- *
- * Adapted from Spectrum's demo list into a reusable `status` prop so invoice
- * (`draft|sent|paid|overdue`) and payment (`pending|approved|rejected`) states
- * share one animated pill. Styling (rounded-full, ring-1 ring-inset,
- * per-status light/dark palettes) is kept from Spectrum.
- */
-
 const STATUS_CONFIG = {
     // Invoices
     paid: {

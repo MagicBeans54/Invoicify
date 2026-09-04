@@ -1,23 +1,3 @@
-/**
- * Spectrum UI — PasswordStrengthInput (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/password-strength/password-strength.tsx (Apache-2.0)
- *
- * A password input with an animated strength meter and requirements
- * checklist. Typing fills a four-segment meter sequentially with a spring,
- * the strength label crossfades between "Too weak" and "Strong", and each
- * satisfied rule draws a check into an emerald circle. Includes an eye
- * visibility toggle, works controlled or uncontrolled, honors
- * prefers-reduced-motion, and announces strength changes politely to
- * screen readers.
- *
- * Dependencies: framer-motion, lucide-react, @/lib/utils
- *
- * @example
- * <PasswordStrengthInput onValueChange={(value) => setPassword(value)} />
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useId, useRef, useState } from "react"
@@ -183,7 +163,7 @@ export function PasswordStrengthInput({
           disabled={disabled}
           aria-describedby={showMeter ? meterId : undefined}
           className={cn(
-            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+            "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
             "pr-10",
           )}
         />
@@ -196,7 +176,7 @@ export function PasswordStrengthInput({
           className={cn(
             "absolute right-1 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 touch-manipulation select-none items-center justify-center rounded-md text-neutral-500 transition-colors",
             "hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200/70 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 dark:active:bg-neutral-700/60",
-            "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring/40",
             "disabled:pointer-events-none disabled:opacity-50",
           )}
         >

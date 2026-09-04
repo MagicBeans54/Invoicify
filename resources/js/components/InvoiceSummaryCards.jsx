@@ -43,9 +43,11 @@ function StatCard({ label, value, sub, icon: Icon, tone, index }) {
         <motion.div
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
             animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            whileHover={reduce ? undefined : { y: -2 }}
             transition={
                 reduce ? { duration: 0.15 } : { duration: 0.4, delay: index * 0.06, ease: 'easeOut' }
             }
+            className="rounded-xl transition-shadow duration-200 hover:shadow-md"
         >
             <Card>
                 <CardContent className="p-5">
@@ -65,10 +67,6 @@ function StatCard({ label, value, sub, icon: Icon, tone, index }) {
     );
 }
 
-/**
- * Summary strip for the invoice lists. Totals animate (count-up) on mount
- * and on every data change; amounts stay tabular-nums so columns don't jitter.
- */
 export default function InvoiceSummaryCards({ invoices }) {
     const list = invoices || [];
     const sum = (statuses) =>

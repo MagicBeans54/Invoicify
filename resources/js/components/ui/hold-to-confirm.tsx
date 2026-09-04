@@ -1,23 +1,3 @@
-/**
- * Spectrum UI — HoldToConfirmButton (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/hold-to-confirm/hold-to-confirm.tsx (Apache-2.0)
- *
- * A press-and-hold confirmation button for destructive actions. Holding the
- * button (pointer, Space or Enter) fills a circular progress ring around the
- * icon; releasing early springs the ring back and nothing fires. Holding to
- * completion fires onConfirm exactly once, draws a check in with a spring pop,
- * staggers the label swap behind it, tints the button emerald and then resets
- * to idle. Honors prefers-reduced-motion and announces confirmation to screen
- * readers.
- *
- * Dependencies: framer-motion, lucide-react, @/lib/utils
- *
- * @example
- * <HoldToConfirmButton onConfirm={() => deleteProject(id)} />
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState } from "react"

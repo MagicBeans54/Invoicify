@@ -1,19 +1,3 @@
-/**
- * Spectrum UI — DateTimePicker (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: components/ui/datetime-picker.tsx (Apache-2.0)
- *
- * Adaptation for Invoicify: the original imports `CalendarProps` from a local
- * `ui/calendar` module, which this project doesn't have. The internal Calendar
- * is fully defined in this file on top of `react-day-picker`, so the type now
- * comes straight from `react-day-picker` (`DayPickerProps`). Everything else
- * is verbatim Spectrum source.
- *
- * Dependencies: date-fns, react-day-picker, lucide-react, @/lib/utils
- * Local UI deps: button, input, select, popover
- */
-
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

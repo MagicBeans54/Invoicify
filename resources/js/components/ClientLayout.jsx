@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/sidebar';
 import FlashToaster from '@/components/FlashToaster';
 import ModeToggle from '@/components/ModeToggle';
+import PageTransition from '@/components/PageTransition';
 import { TechstackMark } from '@/components/TechstackLogo';
 import { NotificationBell } from '@/components/ui/notification-bell';
 
@@ -63,8 +64,6 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
         url: route(item.routeName),
     }));
 
-    // Breadcrumb owns navigation. Pages pass string-only `title`; the trail is
-    // [section root, current page]. An explicit `crumbs` prop overrides auto.
     const root =
         items.find(
             (item) => url === item.url || url.startsWith(`${item.url}/`)
@@ -74,8 +73,6 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
         ...(title && title !== root.title ? [{ label: title, href: null }] : []),
     ];
 
-    // Navbar bell: client's overdue invoices (shared by the backend in
-    // HandleInertiaRequests). Links back to the invoice list.
     const stats = props.stats;
     const bellCount = stats?.overdueInvoices ?? 0;
     const bellHref = route('client.dashboard');
@@ -91,7 +88,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                 href={route('client.dashboard')}
                                 className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                             >
-                                <TechstackMark className="size-10" />
+                                <TechstackMark className="size-10 group-data-[collapsible=icon]:size-8" />
                                 <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
                                     <span className="truncate text-sm font-semibold tracking-tight text-primary">
                                         Invoicify
@@ -108,7 +105,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                     <SidebarGroup>
                         <SidebarGroupLabel>My Account</SidebarGroupLabel>
                         <SidebarGroupContent>
-                            <SidebarMenu>
+                            <SidebarMenu className="pl-1">
                                 {items.map((item) => {
                                     const isActive =
                                         url === item.url ||
@@ -119,7 +116,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                                 asChild
                                                 isActive={isActive}
                                                 tooltip={item.title}
-                                                className="h-9 rounded-lg font-medium data-active:bg-primary/10 data-active:text-primary data-active:font-semibold data-active:[&_svg]:text-primary"
+                                                className="h-9 gap-3 rounded-lg font-medium transition-[width,height,padding,background-color,color] duration-150 data-active:bg-primary/10 data-active:text-primary data-active:font-semibold [&_svg]:text-primary"
                                             >
                                                 <Link href={item.url}>
                                                     <item.icon />
@@ -143,7 +140,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                 <DropdownMenuTrigger asChild>
                                     <SidebarMenuButton
                                         size="lg"
-                                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-1"
                                     >
                                         <Avatar className="size-8 rounded-lg">
                                             <AvatarFallback className="rounded-lg">
@@ -186,6 +183,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
+                                        className="cursor-pointer [&_svg]:text-primary"
                                         onClick={() => router.post(route('logout'))}
                                     >
                                         <LogOut />
@@ -234,8 +232,8 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                         />
                     </div>
                 </header>
-                <main className="flex-1 px-6 py-8">
-                    <div className="mx-auto max-w-5xl">
+                <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+                    <PageTransition pageKey={url} className="mx-auto max-w-5xl">
                         {(title || subtitle || actions) && (
                             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                                 <div>
@@ -258,7 +256,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                             </div>
                         )}
                         {children}
-                    </div>
+                    </PageTransition>
                 </main>
             </SidebarInset>
         </SidebarProvider>

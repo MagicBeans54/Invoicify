@@ -1,27 +1,3 @@
-/**
- * Spectrum UI — UndoPill (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/undo-pill/undo-pill.tsx (Apache-2.0)
- *
- * An inline undo pill with a draining countdown ring. When opened it springs
- * in from below, drains an SVG ring over the given duration while counting
- * the remaining seconds, and fires onExpire when time runs out. Hovering or
- * focusing the pill pauses the countdown; clicking Undo (or pressing Escape
- * while focus is within) fires onUndo and exits with a quick bounce. Honors
- * prefers-reduced-motion and announces itself politely to screen readers.
- *
- * Dependencies: framer-motion, @/lib/utils
- *
- * @example
- * <UndoPill
- *   open={open}
- *   label="Message deleted"
- *   onUndo={() => restore()}
- *   onExpire={() => commit()}
- * />
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState } from "react"

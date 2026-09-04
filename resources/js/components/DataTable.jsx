@@ -47,7 +47,7 @@ export default function DataTable({ columns, data, searchPlaceholder = 'Searchâ€
 
     return (
         <div>
-            <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="relative w-full max-w-xs">
                     <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input

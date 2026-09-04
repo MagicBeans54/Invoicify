@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
+import AuthLayout from '@/components/AuthLayout';
 import { TechstackMark } from '@/components/TechstackLogo';
 import { Eye, EyeOff } from 'lucide-react';
 import { LoadingButton } from '@/components/ui/loading-button';
@@ -32,12 +33,12 @@ export default function RegisterForm() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+        <AuthLayout title="Register">
             <motion.div
                 initial={{ opacity: 0, y: reduce ? 0 : 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="mb-6 flex items-center gap-2.5"
+                className="mb-6 flex items-center justify-center gap-2.5 lg:hidden"
             >
                 <TechstackMark className="size-9" />
                 <span className="text-lg font-semibold tracking-tight text-primary">Invoicify</span>
@@ -46,7 +47,6 @@ export default function RegisterForm() {
                 initial={{ opacity: 0, y: reduce ? 0 : 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.08, ease: 'easeOut' }}
-                className="w-full max-w-md"
             >
             <Card>
                 <CardHeader className="text-center">
@@ -151,6 +151,6 @@ export default function RegisterForm() {
                 </CardContent>
             </Card>
             </motion.div>
-        </div>
+        </AuthLayout>
     );
 }

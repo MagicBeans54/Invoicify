@@ -7,8 +7,6 @@
         <title>Invoicify</title>
         <link rel="icon" type="image/svg+xml" href="/images/techstack_logo.svg">
         <script>
-            // Pre-paint theme guard: default dark (techstacks), restore the
-            // stored choice before CSS applies to avoid a light flash.
             try {
                 document.documentElement.classList.toggle(
                     'dark',

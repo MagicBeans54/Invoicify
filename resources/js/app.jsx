@@ -10,7 +10,6 @@ import { THEME_EVENT } from '@/components/ModeToggle';
 const appName =
     document.querySelector('meta[name="app-name"]')?.content || 'Invoicify';
 
-// Follows the ModeToggle (`dark` class on <html>) so toasts match the theme.
 function ThemedToaster() {
     const [theme, setTheme] = React.useState(() =>
         document.documentElement.classList.contains('dark') ? 'dark' : 'light'

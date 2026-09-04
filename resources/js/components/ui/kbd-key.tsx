@@ -1,28 +1,3 @@
-/**
- * Spectrum UI — KbdKey & KbdCombo (vendored with one fix).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/kbd-key/kbd-key.tsx (Apache-2.0)
- *
- * A semantic <kbd> element rendered as a 3D keycap that physically depresses
- * when the real key is pressed — via a global keydown listener or a pointer
- * tap. Press-down is instant (keys feel mechanical) and release springs back
- * with a tiny overshoot. KbdCombo strings caps together ("meta+k"); when
- * every key is held at once the whole combo pulses and onTrigger fires.
- * Honors prefers-reduced-motion.
- *
- * FIX vs upstream: both cleanup functions called
- * `removeEventListener("blur-sm", ...)` — a typo that never unregisters the
- * `blur` listener, leaking one window listener per mount. Fixed to "blur"
- * below (2 occurrences).
- *
- * Dependencies: framer-motion, @/lib/utils
- *
- * @example
- * <KbdKey>K</KbdKey>
- * <KbdCombo keys="meta+k" onTrigger={() => openPalette()} />
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState } from "react"

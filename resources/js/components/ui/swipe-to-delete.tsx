@@ -1,24 +1,3 @@
-/**
- * Spectrum UI — SwipeToDelete (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/swipe-to-delete/swipe-to-delete.tsx (Apache-2.0)
- *
- * A swipeable list-item wrapper that reveals a delete action, iOS style. Drag
- * the row left to uncover a rose action zone; the trash icon pops the moment
- * the drag passes the commit threshold, and releasing past it (or flinging)
- * snaps the row fully open, collapses the item and fires onDelete. Non-touch
- * users get a hover/focus delete button plus Delete/Backspace on the focused
- * row, and reduced motion keeps the drag but collapses instantly.
- *
- * Dependencies: framer-motion, lucide-react, @/lib/utils
- *
- * @example
- * <SwipeToDelete label="email from Ava" onDelete={() => removeEmail(id)}>
- *   <EmailRow />
- * </SwipeToDelete>
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState } from "react"

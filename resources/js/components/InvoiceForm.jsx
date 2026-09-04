@@ -25,9 +25,6 @@ import { DateTimePicker } from '@/components/ui/datetime-picker';
 import { SwipeToDelete } from '@/components/ui/swipe-to-delete';
 import { UndoPill } from '@/components/ui/undo-pill';
 
-// Invoice dates travel as 'YYYY-MM-DD' strings (server + zod). The Spectrum
-// DateTimePicker works with Date objects, so convert at the boundary using
-// local calendar fields (noon-safe, no UTC-shift surprises).
 function parseIsoDate(value) {
     if (!value || typeof value !== 'string') return undefined;
     const [y, m, d] = value.split('-').map(Number);
@@ -374,8 +371,8 @@ export default function InvoiceForm({
                                 showButtonOnHover={false}
                                 onDelete={() => removeItem(index)}
                             >
-                            <div className="flex items-start gap-3 p-2.5">
-                                <div className="flex-1 space-y-1.5">
+                            <div className="flex flex-wrap items-start gap-3 p-2.5">
+                                <div className="min-w-full flex-1 space-y-1.5 sm:min-w-0">
                                     <Input
                                         placeholder="Description"
                                         {...register(`items.${index}.description`)}
@@ -406,7 +403,7 @@ export default function InvoiceForm({
                                         </p>
                                     )}
                                 </div>
-                                <div className="w-32 space-y-1.5">
+                                <div className="flex-1 space-y-1.5 sm:w-32 sm:flex-none">
                                     <Input
                                         type="number"
                                         min="0"
@@ -525,7 +522,7 @@ export default function InvoiceForm({
                 </LoadingButton>
             </div>
 
-            <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+            <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-max max-w-[calc(100vw-3rem)] -translate-x-1/2">
                 <UndoPill
                     key={removalSeq}
                     open={!!lastRemoved}

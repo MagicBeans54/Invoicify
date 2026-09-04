@@ -12,19 +12,18 @@ export function getTheme() {
 
 export function setTheme(theme) {
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.body.classList.add('theme-anim');
+    window.clearTimeout(window.__themeAnimTimer);
+    window.__themeAnimTimer = window.setTimeout(() => {
+        document.body.classList.remove('theme-anim');
+    }, 400);
     try {
         localStorage.setItem(THEME_KEY, theme);
     } catch {
-        // Private browsing etc. — theme just won't persist.
     }
     window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: theme }));
 }
 
-/**
- * Navbar light/dark toggle. Reads the `dark` class on <html> (see the
- * pre-paint script in app.blade.php, default dark) and broadcasts changes so
- * other theme-aware UI (e.g. the sonner Toaster) can follow.
- */
 export default function ModeToggle() {
     const [theme, setThemeState] = useState(getTheme);
 

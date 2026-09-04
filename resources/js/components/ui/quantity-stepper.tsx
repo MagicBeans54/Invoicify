@@ -1,23 +1,3 @@
-/**
- * Spectrum UI — QuantityStepper (vendored).
- *
- * Source: https://github.com/arihantcodes/spectrum-ui
- * File: app/registry/quantity-stepper/quantity-stepper.tsx (Apache-2.0)
- *
- * An animated quantity input for carts and forms. A rounded pill holds a
- * minus button, a rolling value and a plus button. Changing the value rolls
- * the digits vertically in the direction of travel, pressing a button gives
- * it a quick squish, and pushing past min or max shakes the value with a
- * brief rose tint. Holding a button repeats the step with acceleration.
- * Works controlled or uncontrolled, honors prefers-reduced-motion, and is a
- * full keyboard-operable ARIA spinbutton.
- *
- * Dependencies: framer-motion, lucide-react, @/lib/utils
- *
- * @example
- * <QuantityStepper defaultValue={1} min={1} max={10} onValueChange={(qty) => update(qty)} />
- */
-
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState } from "react"

@@ -1,16 +1,5 @@
 import { cn } from '@/lib/utils';
 
-/**
- * Techstacks brand mark in mint green.
- *
- * Official artwork fetched from https://github.com/dreamerrri/techstacks
- * (public/favicon.svg). The upstream fill is #00c896; it is normalized here
- * to the app theme's signature mint (#24D6AE, `--primary`).
- *
- * Rendered inline (rather than <img>) so the mark uses `currentColor` and
- * tracks the theme, and stays crisp at any size. A standalone file copy
- * lives at public/images/techstack_logo.svg (used for the favicon).
- */
 function TechstackGlyph({ className }) {
     return (
         <svg
