@@ -5,13 +5,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import AppLayout from '@/components/AppLayout';
 import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-
-const badgeVariant = {
-    pending: 'secondary',
-    approved: 'default',
-    rejected: 'destructive',
-};
+import { StatusBadge } from '@/components/ui/status-badge';
 
 const columnHelper = createColumnHelper();
 
@@ -61,11 +55,7 @@ const columns = [
         header: 'Status',
         cell: (info) => {
             const status = info.getValue();
-            return (
-                <Badge variant={badgeVariant[status] ?? 'outline'}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                </Badge>
-            );
+            return <StatusBadge status={status} />;
         },
     }),
     columnHelper.accessor('id', {

@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
+use App\Models\Invoice;
+use App\Models\Payment;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -45,6 +47,26 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            // Action-queue counts for the navbar notification bell. Two cheap
+            // COUNT queries per Inertia response; null for guests.
+            'stats' => function () use ($request) {
+                $user = $request->user();
+                if (! $user) {
+                    return null;
+                }
+                if ($user->isAdmin()) {
+                    return [
+                        'overdueInvoices' => Invoice::where('status', 'overdue')->count(),
+                        'pendingPayments' => Payment::where('status', 'pending')->count(),
+                    ];
+                }
+                return [
+                    'overdueInvoices' => Invoice::where('client_email', $user->email)
+                        ->where('status', 'overdue')
+                        ->count(),
+                    'pendingPayments' => 0,
+                ];
+            },
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

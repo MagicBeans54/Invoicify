@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import {
+    ChevronsUpDown,
     CreditCard,
     FileText,
     LogOut,
@@ -25,9 +26,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
@@ -37,10 +40,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarProvider,
-    SidebarRail,
     SidebarTrigger,
 } from '@/components/ui/sidebar';
 import FlashToaster from '@/components/FlashToaster';
+import { NotificationBell } from '@/components/ui/notification-bell';
 
 const navConfig = [
     { title: 'Invoices', routeName: 'invoices.index', icon: FileText },
@@ -59,7 +62,7 @@ function initials(name) {
         .toUpperCase();
 }
 
-export default function AppLayout({ title, children, actions }) {
+export default function AppLayout({ title, subtitle, crumbs, actions, children }) {
     const { url, props } = usePage();
     const user = props.auth?.user;
 
@@ -68,19 +71,30 @@ export default function AppLayout({ title, children, actions }) {
         url: route(item.routeName),
     }));
 
-    // Breadcrumb trail: root crumb from the active section, then the page
-    // title (which pages already pass in) when it differs from the section.
+    // Breadcrumb owns navigation. Pages pass string-only `title`; the trail is
+    // [section root, current page]. An explicit `crumbs` prop overrides auto.
     const root =
         items.find(
             (item) => url === item.url || url.startsWith(`${item.url}/`)
         ) ?? items[0];
-    const crumbs = [{ label: root.title, href: root.url }];
-    if (title && title !== root.title) {
-        crumbs.push({ label: title, href: null });
-    }
+    const trail = crumbs ?? [
+        { label: root.title, href: root.url },
+        ...(title && title !== root.title ? [{ label: title, href: null }] : []),
+    ];
+
+    // Navbar bell: overdue invoices + payments awaiting review (shared by the
+    // backend in HandleInertiaRequests). Jumps to the review queue when it is
+    // non-empty, otherwise to the invoice list.
+    const stats = props.stats;
+    const bellCount =
+        (stats?.overdueInvoices ?? 0) + (stats?.pendingPayments ?? 0);
+    const bellHref =
+        (stats?.pendingPayments ?? 0) > 0
+            ? route('admin.payments.index')
+            : route('invoices.index');
 
     return (
-        <SidebarProvider>
+        <SidebarProvider style={{ '--sidebar-width': '13.5rem' }}>
             <FlashToaster />
             <Sidebar collapsible="icon">
                 <SidebarHeader>
@@ -88,19 +102,21 @@ export default function AppLayout({ title, children, actions }) {
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild size="lg">
                                 <Link href={route('invoices.index')}>
-                                    <img
-                                        src="/images/techstack_ico.png"
-                                        alt="Techstacks"
-                                        className="size-8 rounded-md object-cover"
-                                    />
-                                    <div className="grid flex-1 text-left leading-tight">
+                                    <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-card">
+                                        <img
+                                            src="/images/techstack_ico.png"
+                                            alt="Invoicify"
+                                            className="size-8 object-cover"
+                                        />
+                                    </span>
+                                    <span className="grid flex-1 text-left leading-tight">
                                         <span className="truncate text-sm font-semibold tracking-tight">
                                             Invoicify
                                         </span>
                                         <span className="truncate text-xs text-muted-foreground">
-                                            Admin
+                                            Admin workspace
                                         </span>
-                                    </div>
+                                    </span>
                                 </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -108,7 +124,7 @@ export default function AppLayout({ title, children, actions }) {
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarGroup>
-                        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {items.map((item) => {
@@ -121,10 +137,14 @@ export default function AppLayout({ title, children, actions }) {
                                                 asChild
                                                 isActive={isActive}
                                                 tooltip={item.title}
+                                                className="h-9 rounded-lg font-medium data-active:bg-primary/10 data-active:text-primary data-active:font-semibold data-active:[&_svg]:text-primary"
                                             >
                                                 <Link href={item.url}>
                                                     <item.icon />
                                                     <span>{item.title}</span>
+                                                    {isActive && (
+                                                        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary" />
+                                                    )}
                                                 </Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
@@ -134,15 +154,82 @@ export default function AppLayout({ title, children, actions }) {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 </SidebarContent>
-                <SidebarRail />
+                <SidebarFooter>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <SidebarMenuButton
+                                        size="lg"
+                                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                                    >
+                                        <Avatar className="size-8 rounded-lg">
+                                            <AvatarFallback className="rounded-lg">
+                                                {initials(user?.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span className="grid flex-1 text-left text-sm leading-tight">
+                                            <span className="truncate font-medium">
+                                                {user?.name || 'Account'}
+                                            </span>
+                                            <span className="truncate text-xs text-muted-foreground">
+                                                {user?.email || ''}
+                                            </span>
+                                        </span>
+                                        <ChevronsUpDown className="ml-auto size-4" />
+                                    </SidebarMenuButton>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                                    side="bottom"
+                                    align="end"
+                                    sideOffset={4}
+                                >
+                                    <DropdownMenuLabel className="p-0 font-normal">
+                                        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                            <Avatar className="size-8 rounded-lg">
+                                                <AvatarFallback className="rounded-lg">
+                                                    {initials(user?.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                                <span className="truncate font-medium">
+                                                    {user?.name || 'Account'}
+                                                </span>
+                                                <span className="truncate text-xs text-muted-foreground">
+                                                    {user?.email || ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href={route('settings.index')}>
+                                            <SettingsIcon />
+                                            Settings
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => router.post(route('logout'))}
+                                    >
+                                        <LogOut />
+                                        Log out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarFooter>
             </Sidebar>
             <SidebarInset>
-                <header className="flex h-14 shrink-0 items-center gap-2 px-4">
+                <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
                     <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-1 h-4" />
                     <Breadcrumb>
                         <BreadcrumbList>
-                            {crumbs.map((crumb, index) => {
-                                const isLast = index === crumbs.length - 1;
+                            {trail.map((crumb, index) => {
+                                const isLast = index === trail.length - 1;
                                 return (
                                     <React.Fragment key={`${crumb.label}-${index}`}>
                                         <BreadcrumbItem>
@@ -164,50 +251,35 @@ export default function AppLayout({ title, children, actions }) {
                             })}
                         </BreadcrumbList>
                     </Breadcrumb>
-                    <div className="ml-auto">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button
-                                    type="button"
-                                    className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                    <Avatar className="size-8">
-                                        <AvatarFallback>
-                                            {initials(user?.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">
-                                            {user?.name || 'Account'}
-                                        </p>
-                                        <p className="text-xs leading-none text-muted-foreground">
-                                            {user?.email || ''}
-                                        </p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={() => router.post(route('logout'))}
-                                >
-                                    <LogOut />
-                                    Log out
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="ml-auto flex items-center gap-1">
+                        <NotificationBell
+                            size="sm"
+                            count={bellCount}
+                            onClick={() => router.visit(bellHref)}
+                        />
                     </div>
                 </header>
                 <main className="flex-1 px-6 py-8">
                     <div className="mx-auto max-w-5xl">
-                        {(title || actions) && (
-                            <div className="mb-6 flex items-center justify-between">
-                                <h1 className="text-xl font-semibold tracking-tight">
-                                    {title}
-                                </h1>
-                                {actions}
+                        {(title || subtitle || actions) && (
+                            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    {title && (
+                                        <h1 className="text-xl font-semibold tracking-tight">
+                                            {title}
+                                        </h1>
+                                    )}
+                                    {subtitle && (
+                                        <p className="mt-1 text-sm text-muted-foreground">
+                                            {subtitle}
+                                        </p>
+                                    )}
+                                </div>
+                                {actions && (
+                                    <div className="flex items-center gap-2">
+                                        {actions}
+                                    </div>
+                                )}
                             </div>
                         )}
                         {children}

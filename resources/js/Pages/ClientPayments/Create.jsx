@@ -3,9 +3,10 @@ import { Head, useForm, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import ClientLayout from '@/components/ClientLayout';
 import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import {
     Select,
     SelectContent,
@@ -13,8 +14,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft } from 'lucide-react';
-
 export default function ClientPaymentCreate({ invoice, invoices }) {
     const { data, setData, post, processing, errors } = useForm({
         invoice_id: invoice?.id || '',
@@ -47,15 +46,6 @@ export default function ClientPaymentCreate({ invoice, invoices }) {
         <>
             <Head title="Submit Payment" />
             <ClientLayout title="Submit Payment">
-                <div className="mb-4">
-                    <Button asChild variant="ghost">
-                        <Link href={route('client.payments.index')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Payments
-                        </Link>
-                    </Button>
-                </div>
-
                 <div className="max-w-2xl">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
@@ -163,12 +153,13 @@ export default function ClientPaymentCreate({ invoice, invoices }) {
 
                         <div className="space-y-2">
                             <Label htmlFor="client_notes">Notes (Optional)</Label>
-                            <Textarea
+                            <AutosizeTextarea
                                 id="client_notes"
                                 value={data.client_notes}
                                 onChange={(e) => setData('client_notes', e.target.value)}
                                 placeholder="Any additional information about this payment"
-                                rows={3}
+                                minHeight={60}
+                                maxHeight={240}
                             />
                             {errors.client_notes && (
                                 <p className="text-sm text-destructive">{errors.client_notes}</p>
@@ -179,9 +170,9 @@ export default function ClientPaymentCreate({ invoice, invoices }) {
                             <Button asChild variant="outline" type="button">
                                 <Link href={route('client.payments.index')}>Cancel</Link>
                             </Button>
-                            <Button type="submit" disabled={processing}>
-                                {processing ? 'Submitting...' : 'Submit Payment'}
-                            </Button>
+                            <LoadingButton type="submit" loading={processing}>
+                                Submit Payment
+                            </LoadingButton>
                         </div>
                     </form>
                 </div>

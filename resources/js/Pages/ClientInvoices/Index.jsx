@@ -2,8 +2,9 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import ClientLayout from '@/components/ClientLayout';
+import InvoiceSummaryCards from '@/components/InvoiceSummaryCards';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import {
     Table,
     TableBody,
@@ -12,13 +13,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-
-const badgeVariant = {
-    paid: 'default',
-    sent: 'secondary',
-    overdue: 'destructive',
-    draft: 'outline',
-};
 
 export default function ClientIndex({ invoices }) {
     return (
@@ -33,7 +27,9 @@ export default function ClientIndex({ invoices }) {
                         </p>
                     </div>
                 ) : (
-                    <div className="rounded-lg border bg-card">
+                    <>
+                        <InvoiceSummaryCards invoices={invoices} />
+                        <div className="rounded-lg border bg-card">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -61,12 +57,7 @@ export default function ClientIndex({ invoices }) {
                                             ₱{parseFloat(invoice.total).toFixed(2)}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge
-                                                variant={badgeVariant[invoice.status] ?? 'outline'}
-                                            >
-                                                {invoice.status.charAt(0).toUpperCase() +
-                                                    invoice.status.slice(1)}
-                                            </Badge>
+                                            <StatusBadge status={invoice.status} />
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <Button
@@ -85,6 +76,7 @@ export default function ClientIndex({ invoices }) {
                             </TableBody>
                         </Table>
                     </div>
+                    </>
                 )}
             </ClientLayout>
         </>

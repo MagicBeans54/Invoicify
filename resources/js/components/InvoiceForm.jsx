@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { route } from 'ziggy-js';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +19,28 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
+import { QuantityStepper } from '@/components/ui/quantity-stepper';
+import { DateTimePicker } from '@/components/ui/datetime-picker';
+import { SwipeToDelete } from '@/components/ui/swipe-to-delete';
+import { UndoPill } from '@/components/ui/undo-pill';
+
+// Invoice dates travel as 'YYYY-MM-DD' strings (server + zod). The Spectrum
+// DateTimePicker works with Date objects, so convert at the boundary using
+// local calendar fields (noon-safe, no UTC-shift surprises).
+function parseIsoDate(value) {
+    if (!value || typeof value !== 'string') return undefined;
+    const [y, m, d] = value.split('-').map(Number);
+    if (!y || !m || !d) return undefined;
+    return new Date(y, m - 1, d);
+}
+
+function toIsoDate(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+    const m = `${date.getMonth() + 1}`.padStart(2, '0');
+    const d = `${date.getDate()}`.padStart(2, '0');
+    return `${date.getFullYear()}-${m}-${d}`;
+}
 
 // Mirrors the server-side validation in app/Http/Controllers/InvoiceController.php
 const invoiceSchema = z.object({
@@ -74,6 +96,7 @@ export default function InvoiceForm({
         control,
         handleSubmit,
         watch,
+        getValues,
         setError,
         formState: { errors },
     } = useForm({
@@ -83,8 +106,10 @@ export default function InvoiceForm({
     });
 
     const [processing, setProcessing] = useState(false);
+    const [lastRemoved, setLastRemoved] = useState(null);
+    const [removalSeq, setRemovalSeq] = useState(0);
 
-    const { fields, append, remove } = useFieldArray({ control, name: 'items' });
+    const { fields, append, remove, insert } = useFieldArray({ control, name: 'items' });
 
     const items = watch('items') || [];
     const taxRate = Number(watch('tax_rate')) || 0;
@@ -115,7 +140,18 @@ export default function InvoiceForm({
     const onSubmit = handleSubmit(onValidSubmit);
 
     const addItem = () => append({ description: '', quantity: 1, unit_price: 0 });
-    const removeItem = (index) => remove(index);
+    const removeItem = (index) => {
+        if (fields.length <= 1) return;
+        const snapshot = getValues(`items.${index}`);
+        remove(index);
+        setLastRemoved({ item: { ...snapshot }, index });
+        setRemovalSeq((n) => n + 1);
+    };
+    const undoRemoveItem = () => {
+        if (!lastRemoved) return;
+        insert(lastRemoved.index, lastRemoved.item);
+        setLastRemoved(null);
+    };
 
     return (
         <form onSubmit={onSubmit} className="space-y-6" noValidate>
@@ -152,7 +188,18 @@ export default function InvoiceForm({
                         id="invoice_date"
                         error={errors.invoice_date?.message}
                     >
-                        <Input id="invoice_date" type="date" {...register('invoice_date')} />
+                        <Controller
+                            control={control}
+                            name="invoice_date"
+                            render={({ field }) => (
+                                <DateTimePicker
+                                    granularity="day"
+                                    placeholder="Pick invoice date"
+                                    value={parseIsoDate(field.value)}
+                                    onChange={(date) => field.onChange(toIsoDate(date))}
+                                />
+                            )}
+                        />
                     </Field>
 
                     <Field
@@ -160,7 +207,18 @@ export default function InvoiceForm({
                         id="due_date"
                         error={errors.due_date?.message}
                     >
-                        <Input id="due_date" type="date" {...register('due_date')} />
+                        <Controller
+                            control={control}
+                            name="due_date"
+                            render={({ field }) => (
+                                <DateTimePicker
+                                    granularity="day"
+                                    placeholder="Pick due date"
+                                    value={parseIsoDate(field.value)}
+                                    onChange={(date) => field.onChange(toIsoDate(date))}
+                                />
+                            )}
+                        />
                     </Field>
 
                     <div className="space-y-2">
@@ -236,10 +294,18 @@ export default function InvoiceForm({
                             id="company_address"
                             error={errors.company_address?.message}
                         >
-                            <Textarea
-                                id="company_address"
-                                rows={2}
-                                {...register('company_address')}
+                            <Controller
+                                control={control}
+                                name="company_address"
+                                render={({ field: { ref, ...field } }) => (
+                                    <AutosizeTextarea
+                                        id="company_address"
+                                        minHeight={40}
+                                        maxHeight={160}
+                                        {...field}
+                                        value={field.value ?? ''}
+                                    />
+                                )}
                             />
                         </Field>
                     </CardContent>
@@ -276,10 +342,18 @@ export default function InvoiceForm({
                             id="client_address"
                             error={errors.client_address?.message}
                         >
-                            <Textarea
-                                id="client_address"
-                                rows={2}
-                                {...register('client_address')}
+                            <Controller
+                                control={control}
+                                name="client_address"
+                                render={({ field: { ref, ...field } }) => (
+                                    <AutosizeTextarea
+                                        id="client_address"
+                                        minHeight={40}
+                                        maxHeight={160}
+                                        {...field}
+                                        value={field.value ?? ''}
+                                    />
+                                )}
                             />
                         </Field>
                     </CardContent>
@@ -293,7 +367,14 @@ export default function InvoiceForm({
                     </p>
                     <div className="space-y-3">
                         {fields.map((field, index) => (
-                            <div key={field.id} className="flex items-start gap-3">
+                            <SwipeToDelete
+                                key={field.id}
+                                label={`Line item ${index + 1}`}
+                                disabled={fields.length <= 1}
+                                showButtonOnHover={false}
+                                onDelete={() => removeItem(index)}
+                            >
+                            <div className="flex items-start gap-3 p-2.5">
                                 <div className="flex-1 space-y-1.5">
                                     <Input
                                         placeholder="Description"
@@ -305,14 +386,19 @@ export default function InvoiceForm({
                                         </p>
                                     )}
                                 </div>
-                                <div className="w-24 space-y-1.5">
-                                    <Input
-                                        type="number"
-                                        min="1"
-                                        aria-label="Quantity"
-                                        {...register(`items.${index}.quantity`, {
-                                            valueAsNumber: true,
-                                        })}
+                                <div className="w-28 space-y-1.5">
+                                    <Controller
+                                        control={control}
+                                        name={`items.${index}.quantity`}
+                                        render={({ field }) => (
+                                            <QuantityStepper
+                                                size="sm"
+                                                min={1}
+                                                max={9999}
+                                                value={Number(field.value) || 1}
+                                                onValueChange={field.onChange}
+                                            />
+                                        )}
                                     />
                                     {errors.items?.[index]?.quantity?.message && (
                                         <p className="text-sm text-destructive">
@@ -341,12 +427,14 @@ export default function InvoiceForm({
                                         type="button"
                                         variant="ghost"
                                         size="icon"
+                                        aria-label={`Remove line item ${index + 1}`}
                                         onClick={() => removeItem(index)}
                                     >
                                         <Trash2 />
                                     </Button>
                                 )}
                             </div>
+                            </SwipeToDelete>
                         ))}
                     </div>
                     <Button
@@ -389,7 +477,20 @@ export default function InvoiceForm({
             <Card>
                 <CardContent className="p-6">
                     <Field label="Notes" id="notes" error={errors.notes?.message}>
-                        <Textarea id="notes" rows={3} {...register('notes')} />
+                        <Controller
+                            control={control}
+                            name="notes"
+                            render={({ field: { ref, ...field } }) => (
+                                <AutosizeTextarea
+                                    id="notes"
+                                    minHeight={60}
+                                    maxHeight={240}
+                                    placeholder="Notes for the client"
+                                    {...field}
+                                    value={field.value ?? ''}
+                                />
+                            )}
+                        />
                     </Field>
                 </CardContent>
             </Card>
@@ -397,11 +498,19 @@ export default function InvoiceForm({
             <Card>
                 <CardContent className="p-6">
                     <Field label="Terms" id="terms" error={errors.terms?.message}>
-                        <Textarea
-                            id="terms"
-                            rows={3}
-                            placeholder="Payment terms and conditions for this invoice"
-                            {...register('terms')}
+                        <Controller
+                            control={control}
+                            name="terms"
+                            render={({ field: { ref, ...field } }) => (
+                                <AutosizeTextarea
+                                    id="terms"
+                                    minHeight={60}
+                                    maxHeight={240}
+                                    placeholder="Payment terms and conditions for this invoice"
+                                    {...field}
+                                    value={field.value ?? ''}
+                                />
+                            )}
                         />
                     </Field>
                 </CardContent>
@@ -411,9 +520,20 @@ export default function InvoiceForm({
                 <Button asChild variant="outline" size="sm">
                     <Link href={route('invoices.index')}>Cancel</Link>
                 </Button>
-                <Button type="submit" size="sm" disabled={processing}>
-                    {processing ? 'Saving...' : submitLabel}
-                </Button>
+                <LoadingButton type="submit" size="sm" loading={processing}>
+                    {submitLabel}
+                </LoadingButton>
+            </div>
+
+            <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+                <UndoPill
+                    key={removalSeq}
+                    open={!!lastRemoved}
+                    label="Line item removed"
+                    duration={6}
+                    onUndo={undoRemoveItem}
+                    onExpire={() => setLastRemoved(null)}
+                />
             </div>
         </form>
     );

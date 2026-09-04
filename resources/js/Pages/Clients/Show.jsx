@@ -1,10 +1,11 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
     Table,
@@ -14,13 +15,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-
-const badgeVariant = {
-    paid: 'default',
-    sent: 'secondary',
-    overdue: 'destructive',
-    draft: 'outline',
-};
 
 export default function Show({ client }) {
     const formatDate = (dateString) => {
@@ -35,19 +29,8 @@ export default function Show({ client }) {
         <>
             <Head title={'Client: ' + client.name} />
             <AppLayout
-                title={
-                    <span className="flex items-center gap-3">
-                        <Button asChild variant="ghost" size="icon-sm" className="-ml-2">
-                            <Link href={route('clients.index')}>
-                                <ArrowLeft />
-                            </Link>
-                        </Button>
-                        <div className="flex flex-col">
-                            <span>{client.name}</span>
-                            <span className="text-xs text-muted-foreground">{client.email}</span>
-                        </div>
-                    </span>
-                }
+                title={client.name}
+                subtitle={client.email}
                 actions={
                     <Button asChild size="sm">
                         <Link href={route('invoices.create', client.id)}>
@@ -125,12 +108,7 @@ export default function Show({ client }) {
                                                 {formatCurrency(invoice.total)}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge
-                                                    variant={badgeVariant[invoice.status] || 'outline'}
-                                                >
-                                                    {invoice.status.charAt(0).toUpperCase() +
-                                                        invoice.status.slice(1)}
-                                                </Badge>
+                                                <StatusBadge status={invoice.status} />
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <Button

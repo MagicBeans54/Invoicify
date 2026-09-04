@@ -2,11 +2,11 @@ import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import AppLayout from '@/components/AppLayout';
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 
 function Field({ label, id, error, children }) {
     return (
@@ -102,9 +102,10 @@ export default function Index({ settings }) {
                                 </Field>
                                 <div className="sm:col-span-2">
                                     <Field label="Address" id="address" error={errors.address}>
-                                        <Textarea
+                                        <AutosizeTextarea
                                             id="address"
-                                            rows={3}
+                                            minHeight={60}
+                                            maxHeight={200}
                                             value={data.address}
                                             onChange={(e) => setData('address', e.target.value)}
                                         />
@@ -146,9 +147,10 @@ export default function Index({ settings }) {
                                         id="invoice_notes"
                                         error={errors.invoice_notes}
                                     >
-                                        <Textarea
+                                        <AutosizeTextarea
                                             id="invoice_notes"
-                                            rows={3}
+                                            minHeight={60}
+                                            maxHeight={200}
                                             placeholder="Notes that will appear on all invoices by default"
                                             value={data.invoice_notes}
                                             onChange={(e) =>
@@ -163,9 +165,10 @@ export default function Index({ settings }) {
                                         id="default_terms"
                                         error={errors.default_terms}
                                     >
-                                        <Textarea
+                                        <AutosizeTextarea
                                             id="default_terms"
-                                            rows={3}
+                                            minHeight={60}
+                                            maxHeight={200}
                                             placeholder="Payment terms that will appear on all invoices by default"
                                             value={data.default_terms}
                                             onChange={(e) =>
@@ -227,18 +230,19 @@ export default function Index({ settings }) {
                                 </Field>
                                 <div className="sm:col-span-2">
                                     <Field label="Bank Address" id="bank_address" error={errors.bank_address}>
-                                        <Textarea
+                                        <AutosizeTextarea
                                             id="bank_address"
-                                            rows={3}
+                                            minHeight={60}
+                                            maxHeight={200}
                                             value={data.bank_address}
                                             onChange={(e) => setData('bank_address', e.target.value)}
                                         />
                                     </Field>
                                 </div>
                                 <div className="flex justify-end sm:col-span-2">
-                                    <Button type="submit" size="sm" disabled={processing}>
-                                        {processing ? 'Saving...' : 'Save Settings'}
-                                    </Button>
+                                    <LoadingButton type="submit" size="sm" loading={processing}>
+                                        Save Settings
+                                    </LoadingButton>
                                 </div>
                             </CardContent>
                         </Card>
