@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
 import AuthLayout from '@/components/AuthLayout';
 import { InvoicifyMark } from '@/components/InvoicifyLogo';
-import { PasswordVisibilityToggle } from '@/components/ui/password-visibility-toggle';
+import { PasswordStrengthInput } from '@/components/ui/password-strength';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,6 @@ export default function LoginForm() {
         email: '',
         password: '',
     });
-    const [showPassword, setShowPassword] = useState(false);
     const reduce = useReducedMotion();
 
     function handleSubmit(e) {
@@ -82,25 +81,19 @@ export default function LoginForm() {
                                     Forgot password?
                                 </Link>
                             </div>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    autoComplete="current-password"
-                                    required
-                                    placeholder="••••••••"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    aria-invalid={Boolean(errors.password)}
-                                    aria-describedby={errors.password ? 'password-error' : undefined}
-                                    className="h-10 pr-10"
-                                />
-                                <PasswordVisibilityToggle
-                                    visible={showPassword}
-                                    onClick={() => setShowPassword((prev) => !prev)}
-                                />
-                            </div>
+                            <PasswordStrengthInput
+                                id="password"
+                                name="password"
+                                value={data.password}
+                                onValueChange={(value) => setData('password', value)}
+                                placeholder="••••••••"
+                                autoComplete="current-password"
+                                required
+                                showMeter={false}
+                                showChecklist={false}
+                                aria-invalid={Boolean(errors.password)}
+                                aria-describedby={errors.password ? 'password-error' : undefined}
+                            />
                             {errors.password && (
                                 <p id="password-error" role="alert" className="text-sm text-destructive">
                                     {errors.password}

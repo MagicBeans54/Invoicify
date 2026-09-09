@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
 import AuthLayout from '@/components/AuthLayout';
 import { InvoicifyMark } from '@/components/InvoicifyLogo';
-import { PasswordVisibilityToggle } from '@/components/ui/password-visibility-toggle';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { PasswordStrengthInput } from '@/components/ui/password-strength';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +20,6 @@ export default function RegisterForm() {
         phone: '',
         address: '',
     });
-    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
     const reduce = useReducedMotion();
 
     function handleSubmit(e) {
@@ -134,25 +132,19 @@ export default function RegisterForm() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password_confirmation">Confirm password</Label>
-                                <div className="relative">
-                                    <Input
-                                        id="password_confirmation"
-                                        name="password_confirmation"
-                                        type={showPasswordConfirmation ? 'text' : 'password'}
-                                        autoComplete="new-password"
-                                        required
-                                        placeholder="••••••••"
-                                        value={data.password_confirmation}
-                                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                                        aria-invalid={Boolean(errors.password_confirmation)}
-                                        aria-describedby={errors.password_confirmation ? 'password-confirmation-error' : undefined}
-                                        className="h-10 pr-10"
-                                    />
-                                    <PasswordVisibilityToggle
-                                        visible={showPasswordConfirmation}
-                                        onClick={() => setShowPasswordConfirmation((prev) => !prev)}
-                                    />
-                                </div>
+                                <PasswordStrengthInput
+                                    id="password_confirmation"
+                                    name="password_confirmation"
+                                    value={data.password_confirmation}
+                                    onValueChange={(value) => setData('password_confirmation', value)}
+                                    placeholder="••••••••"
+                                    autoComplete="new-password"
+                                    required
+                                    showMeter={false}
+                                    showChecklist={false}
+                                    aria-invalid={Boolean(errors.password_confirmation)}
+                                    aria-describedby={errors.password_confirmation ? 'password-confirmation-error' : undefined}
+                                />
                                 {errors.password_confirmation && (
                                     <p id="password-confirmation-error" role="alert" className="text-sm text-destructive">
                                         {errors.password_confirmation}

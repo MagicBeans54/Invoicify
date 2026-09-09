@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { Download, Pencil, Send } from 'lucide-react';
+import { Download, Pencil, Send, Trash2 } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import InvoiceDocument from '@/components/InvoiceDocument';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
-import { HoldToConfirmButton } from '@/components/ui/hold-to-confirm';
-import { ShareButton } from '@/components/ui/share-button';
+import { ShareMenu } from '@/components/ShareMenu';
 
 
 
 export default function Show({ invoice }) {
     const [sending, setSending] = useState(false);
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const disarmTimer = useRef(null);
+
+    useEffect(
+        () => () => {
+            if (disarmTimer.current) window.clearTimeout(disarmTimer.current);
+        },
+        []
+    );
+
+    const armDelete = () => {
+        setConfirmingDelete(true);
+        if (disarmTimer.current) window.clearTimeout(disarmTimer.current);
+        disarmTimer.current = window.setTimeout(() => setConfirmingDelete(false), 5000);
+    };
 
     const sendInvoice = () => {
         setSending(true);
@@ -61,9 +75,7 @@ export default function Show({ invoice }) {
                             Download PDF
                         </a>
                     </Button>
-                    <ShareButton
-                        size="sm"
-                        direction="left"
+                    <ShareMenu
                         label={`Share ${invoice.invoice_number}`}
                         copyValue={`${window.location.origin}${route('invoices.pdf', invoice.id)}`}
                         actions={[
@@ -81,14 +93,40 @@ export default function Show({ invoice }) {
                         ]}
                     />
                     <span className="mx-1 hidden h-6 w-px bg-border sm:block" aria-hidden="true" />
-                    <HoldToConfirmButton
-                        size="sm"
-                        label="Hold to delete"
-                        confirmedLabel="Deleted"
-                        onConfirm={() =>
-                            router.delete(route('invoices.destroy', invoice.id))
-                        }
-                    />
+                    {confirmingDelete ? (
+                        <>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() =>
+                                    router.delete(route('invoices.destroy', invoice.id))
+                                }
+                            >
+                                <Trash2 />
+                                Confirm delete
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setConfirmingDelete(false)}
+                            >
+                                Cancel
+                            </Button>
+                        </>
+                    ) : (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={armDelete}
+                            className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        >
+                            <Trash2 />
+                            Delete
+                        </Button>
+                    )}
                 </div>
             </AppLayout>
         </>

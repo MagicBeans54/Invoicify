@@ -37,6 +37,12 @@ export interface PasswordStrengthInputProps {
   autoComplete?: string
   /** Disables the input and the visibility toggle */
   disabled?: boolean
+  /** Marks the input as required */
+  required?: boolean
+  /** Flags the input as invalid for assistive tech */
+  "aria-invalid"?: boolean | "true" | "false"
+  /** Links the input to its error message */
+  "aria-describedby"?: string
   /** Forwarded to the input element */
   onFocus?: React.FocusEventHandler<HTMLInputElement>
   /** Forwarded to the input element */
@@ -105,6 +111,9 @@ export function PasswordStrengthInput({
   name,
   autoComplete = "new-password",
   disabled = false,
+  required = false,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedby,
   onFocus,
   onBlur,
   className,
@@ -161,7 +170,9 @@ export function PasswordStrengthInput({
           placeholder={placeholder}
           autoComplete={autoComplete}
           disabled={disabled}
-          aria-describedby={showMeter ? meterId : undefined}
+          required={required}
+          aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedby ?? (showMeter ? meterId : undefined)}
           className={cn(
             "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
             "pr-10",

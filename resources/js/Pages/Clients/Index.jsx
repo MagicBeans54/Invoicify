@@ -6,6 +6,7 @@ import { Check, Link2 } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
+import { copyText } from '@/lib/clipboard';
 
 const columnHelper = createColumnHelper();
 
@@ -53,17 +54,7 @@ export default function Index({ clients }) {
     const [copied, setCopied] = useState(false);
 
     const copyRegistrationLink = async () => {
-        const url = `${window.location.origin}${route('register')}`;
-        try {
-            await navigator.clipboard.writeText(url);
-        } catch {
-            const input = document.createElement('input');
-            input.value = url;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-        }
+        await copyText(`${window.location.origin}${route('register')}`);
         setCopied(true);
         window.setTimeout(() => setCopied(false), 2000);
     };

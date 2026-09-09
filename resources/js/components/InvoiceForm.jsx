@@ -22,8 +22,7 @@ import {
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import { DateTimePicker } from '@/components/ui/datetime-picker';
-import { SwipeToDelete } from '@/components/ui/swipe-to-delete';
-import { UndoPill } from '@/components/ui/undo-pill';
+import { toast } from 'sonner';
 import { formatPeso } from '@/lib/invoices';
 
 function parseIsoDate(value) {
@@ -113,8 +112,6 @@ export default function InvoiceForm({
     });
 
     const [processing, setProcessing] = useState(false);
-    const [lastRemoved, setLastRemoved] = useState(null);
-    const [removalSeq, setRemovalSeq] = useState(0);
 
     const { fields, append, remove, insert } = useFieldArray({ control, name: 'items' });
 
@@ -149,15 +146,15 @@ export default function InvoiceForm({
     const addItem = () => append({ description: '', quantity: 1, unit_price: 0 });
     const removeItem = (index) => {
         if (fields.length <= 1) return;
-        const snapshot = getValues(`items.${index}`);
+        const snapshot = { item: { ...getValues(`items.${index}`) }, index };
         remove(index);
-        setLastRemoved({ item: { ...snapshot }, index });
-        setRemovalSeq((n) => n + 1);
-    };
-    const undoRemoveItem = () => {
-        if (!lastRemoved) return;
-        insert(lastRemoved.index, lastRemoved.item);
-        setLastRemoved(null);
+        toast('Line item removed', {
+            action: {
+                label: 'Undo',
+                onClick: () => insert(snapshot.index, snapshot.item),
+            },
+            duration: 6000,
+        });
     };
 
     return (
@@ -283,11 +280,10 @@ export default function InvoiceForm({
                 </CardContent>
             </Card>
 <div className="grid items-start gap-6 lg:grid-cols-2">
-                <Card>
-                    <CardContent className="p-6">
-                        <details>
-                            <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                From{' '}
+                <div className="rounded-xl border bg-card px-4 py-3">
+                    <details>
+                        <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            From{' '}
                                 <span className="font-normal normal-case tracking-normal">
                                     — {watch('company_name') || 'your business'} (prefilled)
                                 </span>
@@ -339,8 +335,7 @@ export default function InvoiceForm({
                                 </Field>
                             </div>
                         </details>
-                    </CardContent>
-                </Card>
+                    </div>
 
                 <Card>
                     <CardContent className="space-y-4 p-6">
@@ -398,14 +393,10 @@ export default function InvoiceForm({
                     </p>
                     <div className="space-y-3">
                         {fields.map((field, index) => (
-                            <SwipeToDelete
+                            <div
                                 key={field.id}
-                                label={`Line item ${index + 1}`}
-                                disabled={fields.length <= 1}
-                                showButtonOnHover={false}
-                                onDelete={() => removeItem(index)}
+                                className="flex flex-wrap items-start gap-3 rounded-xl border border-border bg-card p-2.5"
                             >
-                            <div className="flex flex-wrap items-start gap-3 p-2.5">
                                 <div className="min-w-full flex-1 space-y-1.5 sm:min-w-0">
                                     <Input
                                         placeholder="Description"
@@ -466,7 +457,6 @@ export default function InvoiceForm({
                                     </Button>
                                 )}
                             </div>
-                            </SwipeToDelete>
                         ))}
                     </div>
                     <Button
@@ -511,9 +501,8 @@ export default function InvoiceForm({
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardContent className="p-6">
-                    <details open={Boolean(defaultValues.notes) || undefined}>
+            <div className="rounded-xl border bg-card px-4 py-3">
+                <details open={Boolean(defaultValues.notes) || undefined}>
                         <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
                             Notes{' '}
                             <span className="font-normal normal-case tracking-normal">
@@ -539,12 +528,10 @@ export default function InvoiceForm({
                             </Field>
                         </div>
                     </details>
-                </CardContent>
-            </Card>
+                </div>
 
-            <Card>
-                <CardContent className="p-6">
-                    <details open={Boolean(defaultValues.terms) || undefined}>
+            <div className="rounded-xl border bg-card px-4 py-3">
+                <details open={Boolean(defaultValues.terms) || undefined}>
                         <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
                             Terms{' '}
                             <span className="font-normal normal-case tracking-normal">
@@ -570,8 +557,7 @@ export default function InvoiceForm({
                             </Field>
                         </div>
                     </details>
-                </CardContent>
-            </Card>
+                </div>
 
             <div className="sticky bottom-4 z-10 flex flex-wrap items-center gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur">
                 <div className="mr-auto flex items-baseline gap-2">
@@ -589,17 +575,6 @@ export default function InvoiceForm({
                 <LoadingButton type="submit" size="sm" loading={processing}>
                     {submitLabel}
                 </LoadingButton>
-            </div>
-
-            <div className="pointer-events-none fixed bottom-20 left-1/2 z-50 w-max max-w-[calc(100vw-3rem)] -translate-x-1/2 sm:bottom-6">
-                <UndoPill
-                    key={removalSeq}
-                    open={!!lastRemoved}
-                    label="Line item removed"
-                    duration={6}
-                    onUndo={undoRemoveItem}
-                    onExpire={() => setLastRemoved(null)}
-                />
             </div>
         </form>
     );

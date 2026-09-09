@@ -69,7 +69,13 @@ export default function Index({ settings }) {
             <AppLayout
                 title="Settings"
                 actions={
-                    <LoadingButton type="submit" form="settings-form" size="sm" loading={processing}>
+                    <LoadingButton
+                        type="submit"
+                        form="settings-form"
+                        size="sm"
+                        loading={processing}
+                        className="hidden sm:inline-flex"
+                    >
                         {isDirty ? 'Save changes' : 'Saved'}
                     </LoadingButton>
                 }
@@ -287,7 +293,7 @@ export default function Index({ settings }) {
                             </CardContent>
                         </Card>
 
-                        <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur">
+                        <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur sm:hidden">
                             <p className="mr-auto text-sm text-muted-foreground" aria-live="polite">
                                 {isDirty ? 'You have unsaved changes.' : 'All changes saved.'}
                             </p>

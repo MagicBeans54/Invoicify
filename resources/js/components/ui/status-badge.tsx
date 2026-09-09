@@ -10,56 +10,62 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Single tone map — statuses alias into these instead of repeating
+// identical class strings (paid≡approved, draft≡expired).
+const TONE_SUCCESS = 'bg-success/10 text-success ring-success/25';
+const TONE_INFO =
+    'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-300/25';
+const TONE_MUTED =
+    'bg-slate-100 text-slate-700 ring-slate-600/20 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-300/25';
+const TONE_NEUTRAL =
+    'bg-neutral-100 text-neutral-600 ring-neutral-500/20 dark:bg-neutral-400/10 dark:text-neutral-300 dark:ring-neutral-300/20';
+const TONE_WARNING =
+    'bg-warning/10 text-warning ring-warning/25';
+const TONE_DANGER =
+    'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-300/25';
+
 const STATUS_CONFIG = {
     // Invoices
     paid: {
         label: 'Paid',
         icon: CircleCheck,
-        className:
-            'bg-success/10 text-success ring-success/25',
+        className: TONE_SUCCESS,
     },
     approved: {
         label: 'Approved',
         icon: CircleCheck,
-        className:
-            'bg-success/10 text-success ring-success/25',
+        className: TONE_SUCCESS,
     },
     sent: {
         label: 'Sent',
         icon: Send,
-        className:
-            'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-300/25',
+        className: TONE_INFO,
     },
     pending: {
         label: 'Pending',
         icon: CircleDashed,
         spin: true,
-        className:
-            'bg-slate-100 text-slate-700 ring-slate-600/20 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-300/25',
+        className: TONE_MUTED,
     },
     draft: {
         label: 'Draft',
         icon: FileEdit,
-        className:
-            'bg-neutral-100 text-neutral-600 ring-neutral-500/20 dark:bg-neutral-400/10 dark:text-neutral-300 dark:ring-neutral-300/20',
+        className: TONE_NEUTRAL,
     },
     overdue: {
         label: 'Overdue',
         icon: TriangleAlert,
-        className:
-            'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-300/25',
+        className: TONE_WARNING,
     },
     rejected: {
         label: 'Rejected',
         icon: CircleX,
-        className:
-            'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-300/25',
+        className: TONE_DANGER,
     },
     expired: {
         label: 'Expired',
         icon: Clock5,
-        className:
-            'bg-neutral-100 text-neutral-600 ring-neutral-500/20 dark:bg-neutral-400/10 dark:text-neutral-300 dark:ring-neutral-300/20',
+        className: TONE_NEUTRAL,
     },
 } as const;
 
@@ -71,8 +77,7 @@ function getStatusEntry(status: string) {
         (STATUS_CONFIG as Record<string, (typeof STATUS_CONFIG)['paid']>)[key] ?? {
             label: status.charAt(0).toUpperCase() + status.slice(1),
             icon: Clock5,
-            className:
-                'bg-neutral-100 text-neutral-600 ring-neutral-500/20 dark:bg-neutral-400/10 dark:text-neutral-300 dark:ring-neutral-300/20',
+            className: TONE_NEUTRAL,
         }
     );
 }

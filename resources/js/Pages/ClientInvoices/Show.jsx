@@ -5,7 +5,7 @@ import { Download, Plus } from 'lucide-react';
 import ClientLayout from '@/components/ClientLayout';
 import InvoiceDocument from '@/components/InvoiceDocument';
 import { Button } from '@/components/ui/button';
-import { ShareButton } from '@/components/ui/share-button';
+import { ShareMenu } from '@/components/ShareMenu';
 
 export default function ClientShow({ invoice }) {
     return (
@@ -36,9 +36,7 @@ export default function ClientShow({ invoice }) {
                             Download PDF
                         </a>
                     </Button>
-                    <ShareButton
-                        size="sm"
-                        direction="left"
+                    <ShareMenu
                         label={`Share ${invoice.invoice_number}`}
                         copyValue={`${window.location.origin}${route('client.invoices.pdf', invoice.id)}`}
                         actions={[
