@@ -1,53 +1,157 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { useReducedMotion } from 'framer-motion';
 import { InvoicifyMark } from '@/components/InvoicifyLogo';
 
-/**
- * Static invoice-paper brand moment: a calm, decorative preview of the
- * product story (draft → sent → paid) instead of a heavyweight 3D logo.
- * Zero CDN, zero JS animation, hidden from assistive tech.
- */
-function InvoiceArtifact() {
-    return (
-        <div
-            aria-hidden="true"
-            className="mb-8 w-64 -rotate-2 rounded-xl bg-white p-4 text-left shadow-2xl xl:w-72"
-        >
-            <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-[11px] font-bold tracking-tight text-neutral-900">
-                    INV-001-2026-09-09
-                </span>
-                <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                    Sent
-                </span>
-            </div>
-            <div className="mt-3 space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                    <span className="h-2 w-2/3 rounded-full bg-neutral-200" />
-                    <span className="text-[10px] font-medium tabular-nums text-neutral-500">
-                        ₱12.00
-                    </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                    <span className="h-2 w-1/2 rounded-full bg-neutral-200" />
-                    <span className="text-[10px] font-medium tabular-nums text-neutral-500">
-                        ₱11.00
-                    </span>
-                </div>
-            </div>
-            <div className="mt-3 flex items-baseline justify-between gap-2 border-t-2 border-[#006B54] pt-2">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                    Total due
-                </span>
-                <span className="text-sm font-bold tabular-nums text-neutral-900">
-                    ₱23.00
-                </span>
-            </div>
-        </div>
-    );
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = src;
+        script.defer = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+    });
 }
 
 export default function AuthLayout({ children, title }) {
+    const containerRef = useRef(null);
+    const canvasRef = useRef(null);
+    const [modelFailed, setModelFailed] = useState(false);
+    const reduceMotion = useReducedMotion();
+
+    useEffect(() => {
+        // Decorative 3D only: skip entirely on mobile (<lg), on reduced-motion,
+        // or when the panel is hidden — saves CDN + model + battery.
+        if (reduceMotion) return;
+        if (typeof window === 'undefined') return;
+        if (!window.matchMedia('(min-width: 1024px)').matches) return;
+
+        let renderer;
+        let controls;
+        let animationId;
+        let cancelled = false;
+        let cleanupResize = null;
+
+        async function init() {
+            try {
+                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
+                await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js');
+                await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+            } catch {
+                if (!cancelled) setModelFailed(true);
+                return;
+            }
+
+            if (cancelled) return;
+
+            const THREE = window.THREE;
+            const container = containerRef.current;
+            const canvas = canvasRef.current;
+            if (!container || !canvas || !THREE) return;
+
+            const w = container.clientWidth || 220;
+            const h = container.clientHeight || 220;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+            camera.position.set(0, 0, 8);
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(w, h, false);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.1));
+            const dirLight = new THREE.DirectionalLight(0xffffff, 3);
+            dirLight.position.set(10, 10, 10);
+            scene.add(dirLight);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.enablePan = false;
+            controls.enableZoom = false;
+
+            const fitRenderer = () => {
+                const cw = container.clientWidth || 220;
+                const ch = container.clientHeight || 220;
+                renderer.setSize(cw, ch, false);
+                camera.aspect = cw / ch;
+                camera.updateProjectionMatrix();
+            };
+
+            let logo;
+            const loader = new THREE.GLTFLoader();
+            loader.load(
+                '/3d/techstacks-logo.gltf',
+                (gltf) => {
+                    if (cancelled) return;
+                    logo = gltf.scene;
+                    scene.add(logo);
+                    // Reduced-motion or hidden tab: render one static frame, no loop.
+                    renderer.render(scene, camera);
+                    if (!reduceMotion && !document.hidden) startLoop();
+                },
+                undefined,
+                () => {
+                    if (!cancelled) setModelFailed(true);
+                }
+            );
+
+            function startLoop() {
+                function animate() {
+                    if (cancelled) return;
+                    // Pause when tab hidden to save battery.
+                    if (!document.hidden && logo) logo.rotation.y += 0.01;
+                    controls.update();
+                    renderer.render(scene, camera);
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            }
+
+            const onVisibility = () => {
+                if (document.hidden && animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                } else if (!document.hidden && !animationId && logo && !cancelled && !reduceMotion) {
+                    startLoop();
+                }
+            };
+            document.addEventListener('visibilitychange', onVisibility);
+
+            window.addEventListener('resize', fitRenderer);
+
+            cleanupResize = () => {
+                window.removeEventListener('resize', fitRenderer);
+                document.removeEventListener('visibilitychange', onVisibility);
+            };
+        }
+
+        // Defer decorative payload until idle so auth form paints first.
+        let idleId = null;
+        if ('requestIdleCallback' in window) {
+            idleId = window.requestIdleCallback(() => init(), { timeout: 2000 });
+        } else {
+            idleId = window.setTimeout(() => init(), 800);
+        }
+
+        return () => {
+            cancelled = true;
+            if (idleId && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+            else if (idleId) clearTimeout(idleId);
+            if (cleanupResize) cleanupResize();
+            if (animationId) cancelAnimationFrame(animationId);
+            if (controls) controls.dispose();
+            if (renderer) renderer.dispose();
+        };
+    }, [reduceMotion]);
+
+    const showFallback = modelFailed || reduceMotion;
+
     return (
         <>
             <Head title={title} />
@@ -58,7 +162,13 @@ export default function AuthLayout({ children, title }) {
                         className="absolute inset-0 z-[1] bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent_65%)]"
                     />
                     <div className="relative z-[2] flex h-full flex-col items-center justify-center px-6 text-center text-white xl:px-10">
-                        <InvoiceArtifact />
+                        <div ref={containerRef} aria-hidden="true" className="mb-4 h-64 w-64 xl:h-80 xl:w-80">
+                            {showFallback ? (
+                                <InvoicifyMark className="size-full text-white" />
+                            ) : (
+                                <canvas ref={canvasRef} className="h-full w-full cursor-grab active:cursor-grabbing" />
+                            )}
+                        </div>
                         <div className="mb-4 flex items-center gap-2.5">
                             <InvoicifyMark className="size-8 text-white" />
                             <span className="font-display text-[32px] font-bold leading-tight">
