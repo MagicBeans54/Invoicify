@@ -16,26 +16,26 @@ const STATUS_CONFIG = {
         label: 'Paid',
         icon: CircleCheck,
         className:
-            'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-300/25',
+            'bg-success/10 text-success ring-success/25',
     },
     approved: {
         label: 'Approved',
         icon: CircleCheck,
         className:
-            'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-300/25',
+            'bg-success/10 text-success ring-success/25',
     },
     sent: {
         label: 'Sent',
         icon: Send,
         className:
-            'bg-indigo-50 text-indigo-700 ring-indigo-600/20 dark:bg-indigo-400/10 dark:text-indigo-300 dark:ring-indigo-300/25',
+            'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-300/25',
     },
     pending: {
         label: 'Pending',
         icon: CircleDashed,
         spin: true,
         className:
-            'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-400/10 dark:text-sky-300 dark:ring-sky-300/25',
+            'bg-slate-100 text-slate-700 ring-slate-600/20 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-300/25',
     },
     draft: {
         label: 'Draft',

@@ -392,7 +392,7 @@ export function ShareButton({
                       key={copied ? "check" : "link"}
                       className={cn(
                         "absolute inset-0 flex items-center justify-center",
-                        copied && "text-emerald-500",
+                        copied && "text-success",
                       )}
                       initial={
                         shouldReduceMotion

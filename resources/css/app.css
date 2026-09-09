@@ -11,12 +11,12 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme inline {
-    --font-heading: var(--font-sans);
+    --font-heading: var(--font-display);
     --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -43,6 +43,10 @@
     --color-secondary: var(--secondary);
     --color-primary-foreground: var(--primary-foreground);
     --color-primary: var(--primary);
+    --color-primary-ink: var(--primary-ink);
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-danger: var(--danger);
     --color-popover-foreground: var(--popover-foreground);
     --color-popover: var(--popover);
     --color-card-foreground: var(--card-foreground);
@@ -67,21 +71,28 @@
     --popover-foreground: oklch(0.141 0.005 285.823);
     --primary: #24D6AE;
     --primary-foreground: #0D1515;
+    /* Bolder financial ink for text/icons on light surfaces (~5.9:1 on white) */
+    --primary-ink: #006B54;
     --secondary: oklch(0.967 0.001 286.375);
     --secondary-foreground: oklch(0.21 0.006 285.885);
     --muted: oklch(0.967 0.001 286.375);
     --muted-foreground: oklch(0.552 0.016 285.938);
-    --accent: oklch(0.52 0.105 223.128);
-    --accent-foreground: oklch(0.984 0.019 200.873);
+    --accent: #D9F0E7;
+    --accent-foreground: #06382A;
     --destructive: oklch(0.577 0.245 27.325);
     --border: oklch(0.92 0.004 286.32);
     --input: oklch(0.92 0.004 286.32);
-    --ring: oklch(0.705 0.015 286.067);
-    --chart-1: oklch(0.865 0.127 207.078);
-    --chart-2: oklch(0.715 0.143 215.221);
-    --chart-3: oklch(0.609 0.126 221.723);
-    --chart-4: oklch(0.52 0.105 223.128);
-    --chart-5: oklch(0.45 0.085 224.283);
+    --ring: #006B54;
+    /* Categorical financial set: mint / ink / teal / amber / slate */
+    --chart-1: #24D6AE;
+    --chart-2: #006B54;
+    --chart-3: oklch(0.6 0.12 200);
+    --chart-4: oklch(0.68 0.15 75);
+    --chart-5: oklch(0.55 0.02 285);
+    /* Semantic statuses */
+    --success: #006B54;
+    --warning: #B45309;
+    --danger: #BE123C;
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.141 0.005 285.823);
@@ -90,7 +101,7 @@
     --sidebar-accent: oklch(0.967 0.001 286.375);
     --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
     --sidebar-border: oklch(0.92 0.004 286.32);
-    --sidebar-ring: oklch(0.705 0.015 286.067);
+    --sidebar-ring: #006B54;
 }
 
 .dark {
@@ -102,21 +113,28 @@
     --popover-foreground: oklch(0.985 0 0);
     --primary: #24D6AE;
     --primary-foreground: #0D1515;
+    /* Mint reads as text on dark surfaces; fills stay mint in both modes */
+    --primary-ink: #24D6AE;
     --secondary: oklch(0.274 0.006 286.033);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.274 0.006 286.033);
     --muted-foreground: oklch(0.705 0.015 286.067);
-    --accent: oklch(0.45 0.085 224.283);
-    --accent-foreground: oklch(0.984 0.019 200.873);
+    --accent: #0B3B2E;
+    --accent-foreground: #8AF0CE;
     --destructive: oklch(0.704 0.191 22.216);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.552 0.016 285.938);
-    --chart-1: oklch(0.865 0.127 207.078);
-    --chart-2: oklch(0.715 0.143 215.221);
-    --chart-3: oklch(0.609 0.126 221.723);
-    --chart-4: oklch(0.52 0.105 223.128);
-    --chart-5: oklch(0.45 0.085 224.283);
+    --ring: #24D6AE;
+    /* Same categorical hues in dark mode for chart consistency */
+    --chart-1: #24D6AE;
+    --chart-2: #5EEAD4;
+    --chart-3: oklch(0.7 0.12 200);
+    --chart-4: oklch(0.78 0.14 75);
+    --chart-5: oklch(0.7 0.02 285);
+    /* Semantic statuses */
+    --success: #2DD4BF;
+    --warning: #FBBF24;
+    --danger: #FDA4AF;
     --sidebar: oklch(0.21 0.006 285.885);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: #24D6AE;
@@ -124,12 +142,12 @@
     --sidebar-accent: oklch(0.274 0.006 286.033);
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.552 0.016 285.938);
+    --sidebar-ring: #24D6AE;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
     }
   body {
     @apply bg-background text-foreground;

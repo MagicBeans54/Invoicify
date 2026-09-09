@@ -33,7 +33,7 @@ export default function LoginForm() {
             >
                 <div className="flex items-center gap-2.5">
                     <TechstackMark className="size-9" />
-                    <span className="text-lg font-semibold tracking-tight text-primary">Invoicify</span>
+                    <span className="font-display text-lg font-semibold tracking-tight text-primary-ink dark:text-primary">Invoicify</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
                     Professional invoicing — live totals &amp; PDF delivery
@@ -115,7 +115,7 @@ export default function LoginForm() {
                 </CardContent>
                 <CardFooter className="justify-center text-center text-sm text-muted-foreground">
                     <p>Don&apos;t have an account?{' '}
-                        <Link href={route('register')} className="text-primary hover:underline">
+                        <Link href={route('register')} className="text-primary-ink hover:underline dark:text-primary">
                             Create account
                         </Link>
                     </p>

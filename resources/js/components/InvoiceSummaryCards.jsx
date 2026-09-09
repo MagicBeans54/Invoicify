@@ -57,7 +57,7 @@ function StatCard({ label, value, sub, icon: Icon, tone, index }) {
                         </span>
                         <p className="text-sm font-medium text-muted-foreground">{label}</p>
                     </div>
-                    <p className="mt-3 text-2xl font-semibold tracking-tight tabular-nums">
+                    <p className="mt-3 font-display text-2xl font-semibold tracking-tight tabular-nums">
                         {display}
                     </p>
                     {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
@@ -85,21 +85,21 @@ export default function InvoiceSummaryCards({ invoices }) {
             value: { raw: sum(['sent', 'overdue']), format: formatPeso },
             sub: 'Sent + overdue, awaiting payment',
             icon: Wallet,
-            tone: 'bg-primary/10 text-primary',
+            tone: 'bg-primary/10 text-primary-ink dark:text-primary',
         },
         {
             label: 'Overdue',
             value: { raw: sum(['overdue']), format: formatPeso },
             sub: `${overdueCount} invoice${overdueCount === 1 ? '' : 's'} past due`,
             icon: AlertTriangle,
-            tone: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+            tone: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
         },
         {
             label: 'Collected',
             value: { raw: sum(['paid']), format: formatPeso },
             sub: 'Paid invoices, all time',
             icon: CircleCheck,
-            tone: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+            tone: 'bg-success/10 text-success',
         },
         {
             label: 'Drafts',

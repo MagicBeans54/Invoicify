@@ -72,17 +72,17 @@ const SCORE_COLORS = [
   "#f43f5e", // rose-500
   "#f97316", // orange-500
   "#fbbf24", // amber-400
-  "#10b981", // emerald-500
+  "#006B54", // financial ink (passes 3:1 vs track, unifies with brand)
 ] as const
 
 const STRENGTH_LABELS = ["Too weak", "Too weak", "Fair", "Good", "Strong"] as const
 
 const LABEL_CLASSES = [
   "text-neutral-400 dark:text-neutral-500",
-  "text-rose-500",
-  "text-orange-500",
-  "text-amber-500 dark:text-amber-400",
-  "text-emerald-500",
+  "text-rose-700 dark:text-rose-300",
+  "text-orange-700 dark:text-orange-300",
+  "text-amber-700 dark:text-amber-300",
+  "text-success",
 ] as const
 
 const labelVariants = {
@@ -163,7 +163,7 @@ export function PasswordStrengthInput({
           disabled={disabled}
           aria-describedby={showMeter ? meterId : undefined}
           className={cn(
-            "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
+            "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
             "pr-10",
           )}
         />
@@ -176,7 +176,7 @@ export function PasswordStrengthInput({
           className={cn(
             "absolute right-1 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 touch-manipulation select-none items-center justify-center rounded-md text-neutral-500 transition-colors",
             "hover:bg-neutral-100 hover:text-neutral-900 active:bg-neutral-200/70 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 dark:active:bg-neutral-700/60",
-            "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring/40",
+            "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
             "disabled:pointer-events-none disabled:opacity-50",
           )}
         >
@@ -314,7 +314,7 @@ export function PasswordStrengthInput({
                     className={cn(
                       "transition-colors duration-200",
                       done
-                        ? "fill-emerald-500 stroke-emerald-500"
+                        ? "fill-success stroke-success"
                         : "fill-transparent stroke-neutral-300 dark:stroke-neutral-700",
                     )}
                   />

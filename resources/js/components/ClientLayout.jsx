@@ -90,7 +90,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                             >
                                 <TechstackMark className="size-10 group-data-[collapsible=icon]:size-8" />
                                 <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
-                                    <span className="truncate text-sm font-semibold tracking-tight text-primary">
+                                    <span className="truncate font-display text-sm font-semibold tracking-tight text-primary-ink dark:text-primary">
                                         Invoicify
                                     </span>
                                     <span className="truncate text-xs text-muted-foreground">
@@ -116,13 +116,13 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                                 asChild
                                                 isActive={isActive}
                                                 tooltip={item.title}
-                                                className="h-9 gap-3 rounded-lg font-medium transition-[width,height,padding,background-color,color] duration-150 data-active:bg-primary/10 data-active:text-primary data-active:font-semibold [&_svg]:text-primary"
+                                                className="h-9 gap-3 rounded-lg font-medium transition-[width,height,padding,background-color,color] duration-150 data-active:bg-primary/10 data-active:text-primary-ink data-active:font-semibold dark:data-active:text-primary [&_svg]:text-primary-ink dark:[&_svg]:text-primary"
                                             >
                                                 <Link href={item.url}>
                                                     <item.icon />
                                                     <span>{item.title}</span>
                                                     {isActive && (
-                                                        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary" />
+                                                        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary-ink dark:bg-primary" />
                                                     )}
                                                 </Link>
                                             </SidebarMenuButton>
@@ -183,7 +183,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                        className="cursor-pointer [&_svg]:text-primary"
+                                        className="cursor-pointer [&_svg]:text-primary-ink dark:[&_svg]:text-primary"
                                         onClick={() => router.post(route('logout'))}
                                     >
                                         <LogOut />
@@ -238,7 +238,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                                 <div>
                                     {title && (
-                                        <h1 className="text-xl font-semibold tracking-tight">
+                                        <h1 className="font-display text-xl font-semibold tracking-tight">
                                             {title}
                                         </h1>
                                     )}

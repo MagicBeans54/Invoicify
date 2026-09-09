@@ -248,11 +248,11 @@ export function HoldToConfirmButton({
       }
       className={cn(
         "relative inline-flex touch-none select-none items-center justify-center rounded-full border font-medium transition-colors",
-        "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
         "disabled:pointer-events-none disabled:opacity-50",
         confirmed
-          ? "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400"
-          : "border-rose-200 bg-white text-rose-600 hover:bg-rose-50 dark:border-rose-500/30 dark:bg-neutral-900 dark:text-rose-400 dark:hover:bg-rose-500/10",
+          ? "border-success/30 bg-success/10 text-success"
+          : "border-rose-200 bg-white text-rose-700 hover:bg-rose-50 dark:border-rose-500/30 dark:bg-neutral-900 dark:text-rose-300 dark:hover:bg-rose-500/10",
         sizeClasses,
         className,
       )}

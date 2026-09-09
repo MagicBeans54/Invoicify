@@ -157,10 +157,10 @@ export default function AuthLayout({ children, title }) {
         <>
             <Head title={title} />
             <div className="flex min-h-screen bg-background">
-                <aside className="relative hidden w-1/3 shrink-0 overflow-hidden bg-gradient-to-br from-[#0a2018] to-[#00896a] lg:block">
+                <aside className="relative hidden w-1/3 shrink-0 overflow-hidden bg-gradient-to-br from-[#071A12] to-[#00553F] lg:block">
                     <div
                         aria-hidden="true"
-                        className="absolute inset-0 z-[1] bg-[linear-gradient(to_top,rgba(0,0,0,0.35),transparent_60%)]"
+                        className="absolute inset-0 z-[1] bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent_65%)]"
                     />
                     <div className="relative z-[2] flex h-full flex-col items-center justify-center px-6 text-center text-white xl:px-10">
                         <div ref={containerRef} aria-hidden="true" className="mb-4 h-64 w-64 xl:h-80 xl:w-80">
@@ -170,11 +170,11 @@ export default function AuthLayout({ children, title }) {
                                 <canvas ref={canvasRef} className="h-full w-full" />
                             )}
                         </div>
-                        <p className="mb-5 text-sm font-semibold uppercase tracking-[2px] text-white/75">
+                        <p className="mb-5 text-sm font-semibold uppercase tracking-[2px] text-white/85">
                             Techstacks
                         </p>
-                        <h2 className="mb-4 text-[32px] font-bold leading-tight">Invoicify</h2>
-                        <p className="max-w-sm text-[15px] leading-[1.7] text-white/90">
+                        <h2 className="mb-4 font-display text-[32px] font-bold leading-tight">Invoicify</h2>
+                        <p className="max-w-sm text-[15px] font-medium leading-[1.7] text-white">
                             Professional invoicing — create, send, and track
                             invoices with live totals and PDF delivery.
                         </p>
