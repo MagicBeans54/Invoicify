@@ -24,6 +24,7 @@ import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import { DateTimePicker } from '@/components/ui/datetime-picker';
 import { SwipeToDelete } from '@/components/ui/swipe-to-delete';
 import { UndoPill } from '@/components/ui/undo-pill';
+import { formatPeso } from '@/lib/invoices';
 
 function parseIsoDate(value) {
     if (!value || typeof value !== 'string') return undefined;
@@ -72,12 +73,21 @@ const invoiceSchema = z.object({
         .min(1, 'Add at least one line item'),
 });
 
-function Field({ label, id, error, children }) {
+function Field({ label, id, error, hint, children }) {
     return (
         <div className="space-y-2">
             <Label htmlFor={id}>{label}</Label>
             {children}
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {hint && !error && (
+                <p id={`${id}-hint`} className="text-xs text-muted-foreground">
+                    {hint}
+                </p>
+            )}
+            {error && (
+                <p role="alert" className="text-sm text-destructive">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }
@@ -153,158 +163,180 @@ export default function InvoiceForm({
     return (
         <form onSubmit={onSubmit} className="space-y-6" noValidate>
             <Card>
-                <CardContent className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <Field
-                        label="Invoice Number"
-                        id="invoice_number"
-                        error={errors.invoice_number?.message}
-                    >
-                        <Input
+                <CardContent className="space-y-6 p-6">
+                    <fieldset className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <legend className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            Identity
+                        </legend>
+                        <Field
+                            label="Invoice Number"
                             id="invoice_number"
-                            {...register('invoice_number')}
-                            disabled={!isEdit}
-                            placeholder={!isEdit ? 'Auto-generated on save' : ''}
-                            className={!isEdit ? 'bg-muted' : ''}
-                        />
-                    </Field>
-
-                    <Field
-                        label="Contract Number"
-                        id="contract_number"
-                        error={errors.contract_number?.message}
-                    >
-                        <Input
-                            id="contract_number"
-                            {...register('contract_number')}
-                            placeholder="Optional"
-                        />
-                    </Field>
-
-                    <Field
-                        label="Invoice Date"
-                        id="invoice_date"
-                        error={errors.invoice_date?.message}
-                    >
-                        <Controller
-                            control={control}
-                            name="invoice_date"
-                            render={({ field }) => (
-                                <DateTimePicker
-                                    granularity="day"
-                                    placeholder="Pick invoice date"
-                                    value={parseIsoDate(field.value)}
-                                    onChange={(date) => field.onChange(toIsoDate(date))}
-                                />
-                            )}
-                        />
-                    </Field>
-
-                    <Field
-                        label="Due Date"
-                        id="due_date"
-                        error={errors.due_date?.message}
-                    >
-                        <Controller
-                            control={control}
-                            name="due_date"
-                            render={({ field }) => (
-                                <DateTimePicker
-                                    granularity="day"
-                                    placeholder="Pick due date"
-                                    value={parseIsoDate(field.value)}
-                                    onChange={(date) => field.onChange(toIsoDate(date))}
-                                />
-                            )}
-                        />
-                    </Field>
-
-                    <div className="space-y-2">
-                        <Label>Status</Label>
-                        <Controller
-                            control={control}
-                            name="status"
-                            render={({ field }) => (
-                                <Select value={field.value} onValueChange={field.onChange}>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="draft">Draft</SelectItem>
-                                        <SelectItem value="sent">Sent</SelectItem>
-                                        <SelectItem value="paid">Paid</SelectItem>
-                                        <SelectItem value="overdue">Overdue</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
-                        {errors.status?.message && (
-                            <p className="text-sm text-destructive">{errors.status.message}</p>
-                        )}
-                    </div>
-
-                    <Field
-                        label="Payment Terms"
-                        id="payment_terms"
-                        error={errors.payment_terms?.message}
-                    >
-                        <Input
-                            id="payment_terms"
-                            {...register('payment_terms')}
-                            placeholder="e.g., Net 30, Due on receipt"
-                        />
-                    </Field>
-                </CardContent>
-            </Card>
-<div className="grid gap-6 lg:grid-cols-2">
-                <Card>
-                    <CardContent className="space-y-4 p-6">
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                            From
-                        </p>
-                        <Field
-                            label="Company Name"
-                            id="company_name"
-                            error={errors.company_name?.message}
-                        >
-                            <Input id="company_name" {...register('company_name')} />
-                        </Field>
-                        <Field
-                            label="Email"
-                            id="company_email"
-                            error={errors.company_email?.message}
+                            error={errors.invoice_number?.message}
+                            hint={!isEdit ? 'Auto-generated when you save — leave blank.' : undefined}
                         >
                             <Input
-                                id="company_email"
-                                type="email"
-                                {...register('company_email')}
+                                id="invoice_number"
+                                {...register('invoice_number')}
+                                disabled={!isEdit}
+                                placeholder={!isEdit ? 'Auto-generated on save' : ''}
+                                aria-describedby={!isEdit ? 'invoice_number-hint' : undefined}
+                                className={!isEdit ? 'bg-muted' : ''}
                             />
                         </Field>
+
                         <Field
-                            label="Phone"
-                            id="company_phone"
-                            error={errors.company_phone?.message}
+                            label="Contract Number"
+                            id="contract_number"
+                            error={errors.contract_number?.message}
                         >
-                            <Input id="company_phone" {...register('company_phone')} />
+                            <Input
+                                id="contract_number"
+                                {...register('contract_number')}
+                                placeholder="Optional"
+                            />
                         </Field>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="status">Status</Label>
+                            <Controller
+                                control={control}
+                                name="status"
+                                render={({ field }) => (
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger id="status" className="w-full">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="draft">Draft</SelectItem>
+                                            <SelectItem value="sent">Sent</SelectItem>
+                                            <SelectItem value="paid">Paid</SelectItem>
+                                            <SelectItem value="overdue">Overdue</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {errors.status?.message && (
+                                <p role="alert" className="text-sm text-destructive">
+                                    {errors.status.message}
+                                </p>
+                            )}
+                        </div>
+                    </fieldset>
+
+                    <fieldset className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <legend className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            Schedule
+                        </legend>
                         <Field
-                            label="Address"
-                            id="company_address"
-                            error={errors.company_address?.message}
+                            label="Invoice Date"
+                            id="invoice_date"
+                            error={errors.invoice_date?.message}
                         >
                             <Controller
                                 control={control}
-                                name="company_address"
-                                render={({ field: { ref, ...field } }) => (
-                                    <AutosizeTextarea
-                                        id="company_address"
-                                        minHeight={40}
-                                        maxHeight={160}
-                                        {...field}
-                                        value={field.value ?? ''}
+                                name="invoice_date"
+                                render={({ field }) => (
+                                    <DateTimePicker
+                                        granularity="day"
+                                        placeholder="Pick invoice date"
+                                        value={parseIsoDate(field.value)}
+                                        onChange={(date) => field.onChange(toIsoDate(date))}
                                     />
                                 )}
                             />
                         </Field>
+
+                        <Field
+                            label="Due Date"
+                            id="due_date"
+                            error={errors.due_date?.message}
+                        >
+                            <Controller
+                                control={control}
+                                name="due_date"
+                                render={({ field }) => (
+                                    <DateTimePicker
+                                        granularity="day"
+                                        placeholder="Pick due date"
+                                        value={parseIsoDate(field.value)}
+                                        onChange={(date) => field.onChange(toIsoDate(date))}
+                                    />
+                                )}
+                            />
+                        </Field>
+
+                        <Field
+                            label="Payment Terms"
+                            id="payment_terms"
+                            error={errors.payment_terms?.message}
+                            hint="Common: Net 30, Due on receipt."
+                        >
+                            <Input
+                                id="payment_terms"
+                                {...register('payment_terms')}
+                                placeholder="e.g., Net 30, Due on receipt"
+                            />
+                        </Field>
+                    </fieldset>
+                </CardContent>
+            </Card>
+<div className="grid items-start gap-6 lg:grid-cols-2">
+                <Card>
+                    <CardContent className="p-6">
+                        <details>
+                            <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                From{' '}
+                                <span className="font-normal normal-case tracking-normal">
+                                    — {watch('company_name') || 'your business'} (prefilled)
+                                </span>
+                            </summary>
+                            <div className="mt-4 space-y-4">
+                                <Field
+                                    label="Company Name"
+                                    id="company_name"
+                                    error={errors.company_name?.message}
+                                >
+                                    <Input id="company_name" {...register('company_name')} />
+                                </Field>
+                                <Field
+                                    label="Email"
+                                    id="company_email"
+                                    error={errors.company_email?.message}
+                                >
+                                    <Input
+                                        id="company_email"
+                                        type="email"
+                                        {...register('company_email')}
+                                    />
+                                </Field>
+                                <Field
+                                    label="Phone"
+                                    id="company_phone"
+                                    error={errors.company_phone?.message}
+                                >
+                                    <Input id="company_phone" {...register('company_phone')} />
+                                </Field>
+                                <Field
+                                    label="Address"
+                                    id="company_address"
+                                    error={errors.company_address?.message}
+                                >
+                                    <Controller
+                                        control={control}
+                                        name="company_address"
+                                        render={({ field: { ref, ...field } }) => (
+                                            <AutosizeTextarea
+                                                id="company_address"
+                                                minHeight={40}
+                                                maxHeight={160}
+                                                {...field}
+                                                value={field.value ?? ''}
+                                            />
+                                        )}
+                                    />
+                                </Field>
+                            </div>
+                        </details>
                     </CardContent>
                 </Card>
 
@@ -378,7 +410,7 @@ export default function InvoiceForm({
                                         {...register(`items.${index}.description`)}
                                     />
                                     {errors.items?.[index]?.description?.message && (
-                                        <p className="text-sm text-destructive">
+                                        <p role="alert" className="text-sm text-destructive">
                                             {errors.items[index].description.message}
                                         </p>
                                     )}
@@ -398,7 +430,7 @@ export default function InvoiceForm({
                                         )}
                                     />
                                     {errors.items?.[index]?.quantity?.message && (
-                                        <p className="text-sm text-destructive">
+                                        <p role="alert" className="text-sm text-destructive">
                                             {errors.items[index].quantity.message}
                                         </p>
                                     )}
@@ -414,7 +446,7 @@ export default function InvoiceForm({
                                         })}
                                     />
                                     {errors.items?.[index]?.unit_price?.message && (
-                                        <p className="text-sm text-destructive">
+                                        <p role="alert" className="text-sm text-destructive">
                                             {errors.items[index].unit_price.message}
                                         </p>
                                     )}
@@ -426,6 +458,7 @@ export default function InvoiceForm({
                                         size="icon"
                                         aria-label={`Remove line item ${index + 1}`}
                                         onClick={() => removeItem(index)}
+                                        className="size-9 shrink-0"
                                     >
                                         <Trash2 />
                                     </Button>
@@ -450,22 +483,27 @@ export default function InvoiceForm({
                     <div className="ml-auto w-full max-w-xs space-y-2 text-sm">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span className="tabular-nums">₱{subtotal.toFixed(2)}</span>
+                            <span className="tabular-nums">{formatPeso(subtotal)}</span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
-                            <span className="text-muted-foreground">Tax (%)</span>
+                            <Label htmlFor="tax_rate" className="text-muted-foreground">
+                                Tax (%)
+                            </Label>
                             <Input
+                                id="tax_rate"
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                className="h-7 w-20 text-right tabular-nums"
+                                className="h-8 w-28 text-right tabular-nums"
                                 {...register('tax_rate', { valueAsNumber: true })}
                             />
                         </div>
                         <Separator />
-                        <div className="flex justify-between font-semibold">
-                            <span>Total</span>
-                            <span className="tabular-nums">₱{(subtotal + tax).toFixed(2)}</span>
+                        <div className="flex items-baseline justify-between gap-4">
+                            <span className="font-semibold">Total</span>
+                            <span className="font-display text-xl font-bold tracking-tight tabular-nums">
+                                {formatPeso(subtotal + tax)}
+                            </span>
                         </div>
                     </div>
                 </CardContent>
@@ -473,47 +511,76 @@ export default function InvoiceForm({
 
             <Card>
                 <CardContent className="p-6">
-                    <Field label="Notes" id="notes" error={errors.notes?.message}>
-                        <Controller
-                            control={control}
-                            name="notes"
-                            render={({ field: { ref, ...field } }) => (
-                                <AutosizeTextarea
-                                    id="notes"
-                                    minHeight={60}
-                                    maxHeight={240}
-                                    placeholder="Notes for the client"
-                                    {...field}
-                                    value={field.value ?? ''}
+                    <details open={Boolean(defaultValues.notes) || undefined}>
+                        <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Notes{' '}
+                            <span className="font-normal normal-case tracking-normal">
+                                (optional)
+                            </span>
+                        </summary>
+                        <div className="mt-4">
+                            <Field label="Notes" id="notes" error={errors.notes?.message}>
+                                <Controller
+                                    control={control}
+                                    name="notes"
+                                    render={({ field: { ref, ...field } }) => (
+                                        <AutosizeTextarea
+                                            id="notes"
+                                            minHeight={60}
+                                            maxHeight={240}
+                                            placeholder="Notes for the client"
+                                            {...field}
+                                            value={field.value ?? ''}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                    </Field>
+                            </Field>
+                        </div>
+                    </details>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardContent className="p-6">
-                    <Field label="Terms" id="terms" error={errors.terms?.message}>
-                        <Controller
-                            control={control}
-                            name="terms"
-                            render={({ field: { ref, ...field } }) => (
-                                <AutosizeTextarea
-                                    id="terms"
-                                    minHeight={60}
-                                    maxHeight={240}
-                                    placeholder="Payment terms and conditions for this invoice"
-                                    {...field}
-                                    value={field.value ?? ''}
+                    <details open={Boolean(defaultValues.terms) || undefined}>
+                        <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Terms{' '}
+                            <span className="font-normal normal-case tracking-normal">
+                                (optional)
+                            </span>
+                        </summary>
+                        <div className="mt-4">
+                            <Field label="Terms" id="terms" error={errors.terms?.message}>
+                                <Controller
+                                    control={control}
+                                    name="terms"
+                                    render={({ field: { ref, ...field } }) => (
+                                        <AutosizeTextarea
+                                            id="terms"
+                                            minHeight={60}
+                                            maxHeight={240}
+                                            placeholder="Payment terms and conditions for this invoice"
+                                            {...field}
+                                            value={field.value ?? ''}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                    </Field>
+                            </Field>
+                        </div>
+                    </details>
                 </CardContent>
             </Card>
 
-            <div className="flex justify-end gap-2">
+            <div className="sticky bottom-4 z-10 flex flex-wrap items-center gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur">
+                <div className="mr-auto flex items-baseline gap-2">
+                    <span className="text-sm text-muted-foreground">Total</span>
+                    <span
+                        className="font-display text-xl font-bold tracking-tight tabular-nums"
+                        aria-live="polite"
+                    >
+                        {formatPeso(subtotal + tax)}
+                    </span>
+                </div>
                 <Button asChild variant="outline" size="sm">
                     <Link href={route('invoices.index')}>Cancel</Link>
                 </Button>
