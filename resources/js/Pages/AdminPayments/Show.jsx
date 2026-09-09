@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import AppLayout from '@/components/AppLayout';
+import {
+    PaymentAdditionalInfoCard,
+    PaymentDetailsCard,
+} from '@/components/PaymentDetailCards';
 import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
-import { Download, Check, X } from 'lucide-react';
-import SpecularButton from '@/components/ui/SpecularButton';
+import { Separator } from '@/components/ui/separator';
+import { Check, X } from 'lucide-react';
+import { formatPeso } from '@/lib/invoices';
 
 export default function AdminPaymentShow({ payment }) {
     const [showRejectForm, setShowRejectForm] = useState(false);
@@ -23,132 +29,39 @@ export default function AdminPaymentShow({ payment }) {
 
     const handleApprove = (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('admin_notes', approveForm.data.admin_notes);
-        approveForm.post(route('admin.payments.approve', payment.id), formData);
+        approveForm.post(route('admin.payments.approve', payment.id));
     };
 
     const handleReject = (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('admin_notes', rejectForm.data.admin_notes);
-        rejectForm.post(route('admin.payments.reject', payment.id), formData);
+        rejectForm.post(route('admin.payments.reject', payment.id));
     };
 
     const isPending = payment.status === 'pending';
+    const amount = Number(payment.amount) || 0;
+    const paid = Number(payment.invoice?.paid_amount) || 0;
+    const remainingIfApproved = Math.max(
+        0,
+        (Number(payment.invoice?.total) || 0) - paid - amount
+    );
 
     return (
         <>
             <Head title={`Review Payment #${payment.id}`} />
-            <AppLayout title={`Review Payment #${payment.id}`}>
-                <div className="grid gap-6 md:grid-cols-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Payment Details</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Payment ID:</span>
-                                <span className="font-medium">#{payment.id}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Client:</span>
-                                <span className="font-medium">{payment.user?.name || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Client Email:</span>
-                                <span className="font-medium">{payment.user?.email || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Invoice:</span>
-                                <span className="font-medium">
-                                    {payment.invoice?.invoice_number || 'N/A'}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Invoice Total:</span>
-                                <span className="font-medium">
-                                    ₱{payment.invoice ? parseFloat(payment.invoice.total).toFixed(2) : 'N/A'}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Payment Amount:</span>
-                                <span className="font-medium">
-                                    ₱{parseFloat(payment.amount).toFixed(2)}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Payment Date:</span>
-                                <span className="font-medium">
-                                    {new Date(payment.payment_date).toLocaleDateString()}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Payment Method:</span>
-                                <span className="font-medium">
-                                    {payment.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                </span>
-                            </div>
-                            {payment.reference_number && (
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Reference Number:</span>
-                                    <span className="font-medium">{payment.reference_number}</span>
-                                </div>
-                            )}
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Status:</span>
-                                <StatusBadge status={payment.status} />
-                            </div>
-                            {payment.admin_reviewed_at && (
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Reviewed On:</span>
-                                    <span className="font-medium">
-                                        {new Date(payment.admin_reviewed_at).toLocaleString()}
-                                    </span>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Additional Information</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {payment.client_notes && (
-                                <div>
-                                    <span className="text-sm text-muted-foreground">Client Notes:</span>
-                                    <p className="mt-1 text-sm">{payment.client_notes}</p>
-                                </div>
-                            )}
-                            {payment.receipt_file && (
-                                <div>
-                                    <span className="text-sm text-muted-foreground">Receipt:</span>
-                                    <div className="mt-2">
-                                        <Button asChild variant="outline" size="sm">
-                                            <a
-                                                href={`/storage/${payment.receipt_file}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Download className="mr-2 h-4 w-4" />
-                                                View Receipt
-                                            </a>
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                            {payment.admin_notes && (
-                                <div>
-                                    <span className="text-sm text-muted-foreground">Admin Notes:</span>
-                                    <p className="mt-1 text-sm">{payment.admin_notes}</p>
-                                </div>
-                            )}
-                            {!payment.client_notes && !payment.admin_notes && !payment.receipt_file && (
-                                <p className="text-sm text-muted-foreground">No additional information available.</p>
-                            )}
-                        </CardContent>
-                    </Card>
+            <AppLayout
+                title={`Review Payment #${payment.id}`}
+                actions={<StatusBadge status={payment.status} />}
+            >
+                <div className="grid items-start gap-6 md:grid-cols-2">
+                    <PaymentDetailsCard
+                        payment={payment}
+                        invoiceHref={
+                            payment.invoice
+                                ? route('invoices.show', payment.invoice.id)
+                                : undefined
+                        }
+                    />
+                    <PaymentAdditionalInfoCard payment={payment} />
                 </div>
 
                 {isPending && (
@@ -157,9 +70,26 @@ export default function AdminPaymentShow({ payment }) {
                             <CardTitle>Review Actions</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            <div className="rounded-lg bg-muted/50 p-4 text-sm">
+                                <p>
+                                    Approving{' '}
+                                    <span className="font-display font-semibold tabular-nums">
+                                        {formatPeso(amount)}
+                                    </span>{' '}
+                                    toward{' '}
+                                    <span className="font-medium">
+                                        {payment.invoice?.invoice_number || 'this invoice'}
+                                    </span>{' '}
+                                    leaves{' '}
+                                    <span className="font-medium tabular-nums">
+                                        {formatPeso(remainingIfApproved)}
+                                    </span>{' '}
+                                    remaining.
+                                </p>
+                            </div>
                             <form onSubmit={handleApprove}>
                                 <div className="space-y-4">
-                                    <div>
+                                    <div className="space-y-2">
                                         <Label htmlFor="approve_notes">Admin Notes (Optional)</Label>
                                         <AutosizeTextarea
                                             id="approve_notes"
@@ -169,67 +99,48 @@ export default function AdminPaymentShow({ payment }) {
                                             minHeight={52}
                                             maxHeight={200}
                                         />
+                                        {approveForm.errors.admin_notes && (
+                                            <p role="alert" className="text-sm text-destructive">
+                                                {approveForm.errors.admin_notes}
+                                            </p>
+                                        )}
                                     </div>
-                                    <SpecularButton
+                                    <LoadingButton
                                         type="submit"
-                                        disabled={approveForm.processing}
-                                        size="lg"
-                                        radius={18}
-                                        tint="#00b1f7fc"
-                                        tintOpacity={0}
-                                        blur={0}
-                                        textColor="#00c832"
-                                        lineColor="#22cc00"
-                                        baseColor="#00f8d7"
-                                        intensity={2}
-                                        shineSize={10}
-                                        shineFade={40}
-                                        thickness={2}
-                                        speed={0.5}
-                                        followMouse
-                                        proximity={250}
-                                        autoAnimate={false}
+                                        loading={approveForm.processing}
                                         className="w-full"
                                     >
-                                        <div className="flex items-center">
-                                            <Check className="mr-2 h-4 w-4" />
-                                            {approveForm.processing ? 'Approving...' : 'Approve Payment'}
-                                        </div>
-                                    </SpecularButton>
+                                        <Check className="mr-2 h-4 w-4" />
+                                        {approveForm.processing ? 'Approving…' : 'Approve Payment'}
+                                    </LoadingButton>
                                 </div>
                             </form>
 
-                            <div className="pt-4">
+                            <Separator />
+
+                            <div>
                                 {!showRejectForm ? (
-                                    <SpecularButton
+                                    <Button
+                                        type="button"
+                                        variant="outline"
                                         onClick={() => setShowRejectForm(true)}
-                                        size="lg"
-                                        radius={18}
-                                        tint="#ffffff"
-                                        tintOpacity={0}
-                                        blur={0}
-                                        textColor="#ff0000"
-                                        lineColor="#ff4444"
-                                        baseColor="#8b0000"
-                                        intensity={2}
-                                        shineSize={10}
-                                        shineFade={40}
-                                        thickness={2}
-                                        speed={0.5}
-                                        followMouse
-                                        proximity={250}
-                                        autoAnimate={false}
-                                        className="w-full"
+                                        className="w-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                                     >
-                                        <div className="flex items-center">
-                                            <X className="mr-2 h-4 w-4" />
-                                            Reject Payment
-                                        </div>
-                                    </SpecularButton>
+                                        <X className="mr-2 h-4 w-4" />
+                                        Reject Payment
+                                    </Button>
                                 ) : (
                                     <form onSubmit={handleReject}>
                                         <div className="space-y-4">
-                                            <div>
+                                            <p className="text-sm text-muted-foreground">
+                                                Rejecting returns{' '}
+                                                <span className="font-medium tabular-nums">
+                                                    {formatPeso(amount)}
+                                                </span>{' '}
+                                                to the client&apos;s open balance. A reason is
+                                                required so they know what to fix.
+                                            </p>
+                                            <div className="space-y-2">
                                                 <Label htmlFor="reject_notes">Rejection Reason (Required)</Label>
                                                 <AutosizeTextarea
                                                     id="reject_notes"
@@ -240,34 +151,22 @@ export default function AdminPaymentShow({ payment }) {
                                                     maxHeight={200}
                                                     required
                                                 />
+                                                {rejectForm.errors.admin_notes && (
+                                                    <p role="alert" className="text-sm text-destructive">
+                                                        {rejectForm.errors.admin_notes}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="flex gap-2">
-                                                <SpecularButton
+                                                <LoadingButton
                                                     type="submit"
-                                                    disabled={rejectForm.processing}
-                                                    size="lg"
-                                                    radius={18}
-                                                    tint="#ffffff"
-                                                    tintOpacity={0}
-                                                    blur={0}
-                                                    textColor="#f5f5f5"
-                                                    lineColor="#ff4444"
-                                                    baseColor="#8b0000"
-                                                    intensity={1}
-                                                    shineSize={10}
-                                                    shineFade={40}
-                                                    thickness={1}
-                                                    speed={0.35}
-                                                    followMouse
-                                                    proximity={250}
-                                                    autoAnimate={false}
+                                                    variant="destructive"
+                                                    loading={rejectForm.processing}
                                                     className="flex-1"
                                                 >
-                                                    <div className="flex items-center">
-                                                        <X className="mr-2 h-4 w-4" />
-                                                        {rejectForm.processing ? 'Rejecting...' : 'Confirm Reject'}
-                                                    </div>
-                                                </SpecularButton>
+                                                    <X className="mr-2 h-4 w-4" />
+                                                    {rejectForm.processing ? 'Rejecting…' : 'Confirm Reject'}
+                                                </LoadingButton>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
@@ -286,6 +185,14 @@ export default function AdminPaymentShow({ payment }) {
                         </CardContent>
                     </Card>
                 )}
+
+                <div className="mt-6 flex justify-start">
+                    <Button asChild variant="ghost" size="sm">
+                        <Link href={route('admin.payments.index')}>
+                            Back to payment review
+                        </Link>
+                    </Button>
+                </div>
             </AppLayout>
         </>
     );

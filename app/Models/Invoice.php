@@ -69,6 +69,24 @@ class Invoice extends Model
         return $this->belongsTo(User::class, 'client_email', 'email');
     }
 
+    /** Sum of approved payments — money already collected. */
+    public function approvedAmount(): float
+    {
+        return round((float) $this->payments()->where('status', 'approved')->sum('amount'), 2);
+    }
+
+    /** Sum of pending + approved payments — money committed by the client. */
+    public function committedAmount(): float
+    {
+        return round((float) $this->payments()->whereIn('status', ['pending', 'approved'])->sum('amount'), 2);
+    }
+
+    /** Invoice total minus committed payments. Never negative. */
+    public function remainingBalance(): float
+    {
+        return max(0, round((float) $this->total - $this->committedAmount(), 2));
+    }
+
     public function calculateTotals(): void
     {
         $this->subtotal = $this->items->sum('total');

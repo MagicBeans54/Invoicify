@@ -15,15 +15,16 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    dueInfo,
+    dueLabel,
+    formatInvoiceDate,
+    formatPeso,
+} from '@/lib/invoices';
 
 export default function Show({ client }) {
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString();
-    };
-
-    const formatCurrency = (amount) => {
-        return '₱' + parseFloat(amount).toFixed(2);
-    };
+    const formatDate = formatInvoiceDate;
+    const formatCurrency = formatPeso;
 
     return (
         <>
@@ -62,6 +63,10 @@ export default function Show({ client }) {
                                         </p>
                                     )}
                                 </div>
+                                <p className="mt-3 text-xs text-muted-foreground">
+                                    Profile details are managed by the client&apos;s own
+                                    account and update here when they change them.
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -77,8 +82,14 @@ export default function Show({ client }) {
                         </div>
 
                         {!client.invoices || client.invoices.length === 0 ? (
-                            <div className="text-center py-8 text-muted-foreground">
-                                No invoices yet
+                            <div className="flex flex-col items-center py-8 text-center">
+                                <p className="text-sm text-muted-foreground">No invoices yet</p>
+                                <Button asChild size="sm" className="mt-4">
+                                    <Link href={route('invoices.create', client.id)}>
+                                        <Plus />
+                                        New Invoice
+                                    </Link>
+                                </Button>
                             </div>
                         ) : (
                             <Table>
@@ -93,7 +104,9 @@ export default function Show({ client }) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {client.invoices.map((invoice) => (
+                                    {client.invoices.map((invoice) => {
+                                        const { daysOverdue } = dueInfo(invoice);
+                                        return (
                                         <TableRow key={invoice.id}>
                                             <TableCell className="font-medium">
                                                 {invoice.invoice_number}
@@ -101,8 +114,21 @@ export default function Show({ client }) {
                                             <TableCell className="text-muted-foreground">
                                                 {formatDate(invoice.invoice_date)}
                                             </TableCell>
-                                            <TableCell className="text-muted-foreground">
-                                                {formatDate(invoice.due_date)}
+                                            <TableCell>
+                                                {daysOverdue > 0 ? (
+                                                    <span className="block">
+                                                        <span className="font-medium text-amber-700 dark:text-amber-300">
+                                                            {formatDate(invoice.due_date)}
+                                                        </span>
+                                                        <span className="mt-0.5 block text-xs font-medium text-amber-700 dark:text-amber-300">
+                                                            {dueLabel(daysOverdue)}
+                                                        </span>
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-muted-foreground">
+                                                        {formatDate(invoice.due_date)}
+                                                    </span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-right tabular-nums">
                                                 {formatCurrency(invoice.total)}
@@ -123,7 +149,8 @@ export default function Show({ client }) {
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                         )}

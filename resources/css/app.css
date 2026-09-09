@@ -110,20 +110,23 @@
 }
 
 .dark {
-    --background: oklch(0.141 0.005 285.823);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.21 0.006 285.885);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.21 0.006 285.885);
-    --popover-foreground: oklch(0.985 0 0);
+    /* Softened charcoal ramp: near-black caused halation/eye strain with
+       near-white text, so every layer is lifted ~0.05 while keeping the
+       canvas < sidebar < card < muted separation. */
+    --background: oklch(0.19 0.005 285.823);
+    --foreground: oklch(0.94 0 0);
+    --card: oklch(0.25 0.006 285.885);
+    --card-foreground: oklch(0.94 0 0);
+    --popover: oklch(0.25 0.006 285.885);
+    --popover-foreground: oklch(0.94 0 0);
     --primary: #24D6AE;
     --primary-foreground: #0D1515;
     /* Mint reads as text on dark surfaces; fills stay mint in both modes */
     --primary-ink: #24D6AE;
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.274 0.006 286.033);
-    --muted-foreground: oklch(0.705 0.015 286.067);
+    --secondary: oklch(0.305 0.007 286.033);
+    --secondary-foreground: oklch(0.94 0 0);
+    --muted: oklch(0.305 0.007 286.033);
+    --muted-foreground: oklch(0.72 0.015 286.067);
     --accent: #0B3B2E;
     --accent-foreground: #8AF0CE;
     --destructive: oklch(0.704 0.191 22.216);
@@ -140,13 +143,13 @@
     --success: #2DD4BF;
     --warning: #FBBF24;
     --danger: #FDA4AF;
-    /* Dark sidebar sits between canvas (bg .141) and cards (.21) so all
+    /* Dark sidebar sits between canvas (bg .19) and cards (.25) so all
        three read as distinct layers instead of card/sidebar colliding. */
-    --sidebar: oklch(0.17 0.005 285.885);
-    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar: oklch(0.215 0.005 285.885);
+    --sidebar-foreground: oklch(0.94 0 0);
     --sidebar-primary: #24D6AE;
     --sidebar-primary-foreground: #0D1515;
-    --sidebar-accent: #0B3B2E;
+    --sidebar-accent: #0E4436;
     --sidebar-accent-foreground: #8AF0CE;
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: #24D6AE;

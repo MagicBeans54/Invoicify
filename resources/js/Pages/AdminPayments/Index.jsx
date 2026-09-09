@@ -6,19 +6,17 @@ import AppLayout from '@/components/AppLayout';
 import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { formatInvoiceDate, formatPeso } from '@/lib/invoices';
+import { friendlyPaymentMethod as friendlyMethod } from '@/lib/payments';
 
 const columnHelper = createColumnHelper();
 
 function formatAmount(value) {
-    return `₱${parseFloat(value).toFixed(2)}`;
+    return formatPeso(value);
 }
 
 function formatDate(value) {
-    return value ? new Date(value).toLocaleDateString() : '';
-}
-
-function friendlyMethod(method) {
-    return (method || '').replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+    return formatInvoiceDate(value);
 }
 
 const columns = [

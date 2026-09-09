@@ -1,88 +1,98 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { createColumnHelper } from '@tanstack/react-table';
 import ClientLayout from '@/components/ClientLayout';
+import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { Plus } from 'lucide-react';
+import { formatInvoiceDate, formatPeso } from '@/lib/invoices';
+import { friendlyPaymentMethod } from '@/lib/payments';
+
+const columnHelper = createColumnHelper();
+
+const columns = [
+    columnHelper.accessor('invoice.invoice_number', {
+        header: 'Invoice',
+        cell: (info) => (
+            <span className="font-medium">{info.getValue() || 'N/A'}</span>
+        ),
+    }),
+    columnHelper.accessor('amount', {
+        header: 'Amount',
+        cell: (info) => (
+            <span className="tabular-nums">{formatPeso(info.getValue())}</span>
+        ),
+        meta: { align: 'right' },
+    }),
+    columnHelper.accessor('payment_date', {
+        header: 'Date',
+        cell: (info) => (
+            <span className="text-muted-foreground">{formatInvoiceDate(info.getValue())}</span>
+        ),
+    }),
+    columnHelper.accessor('payment_method', {
+        header: 'Method',
+        cell: (info) => (
+            <span className="text-muted-foreground">{friendlyPaymentMethod(info.getValue())}</span>
+        ),
+    }),
+    columnHelper.accessor('status', {
+        header: 'Status',
+        cell: (info) => <StatusBadge status={info.getValue()} />,
+    }),
+    columnHelper.accessor('id', {
+        header: '',
+        enableSorting: false,
+        cell: (info) => (
+            <div className="text-right">
+                <Button asChild variant="ghost" size="sm" className="-mr-2">
+                    <Link href={route('client.payments.show', info.getValue())}>View</Link>
+                </Button>
+            </div>
+        ),
+        meta: { align: 'right' },
+    }),
+];
 
 export default function ClientPaymentIndex({ payments }) {
     return (
         <>
             <Head title="My Payments" />
-            <ClientLayout title="My Payments">
-                <div className="mb-4 flex justify-end">
-                    <Button asChild>
-                        <Link href={route('client.payments.create')}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            New Payment
-                        </Link>
-                    </Button>
-                </div>
-
+            <ClientLayout
+                title="My Payments"
+                actions={
+                    payments.length > 0 ? (
+                        <Button asChild size="sm">
+                            <Link href={route('client.payments.create')}>
+                                <Plus />
+                                New Payment
+                            </Link>
+                        </Button>
+                    ) : undefined
+                }
+            >
                 {payments.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
                         <p className="text-sm font-medium">No payments found</p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            You haven't submitted any payments yet.
+                        <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                            You haven&apos;t submitted any payments yet. Pick an
+                            outstanding invoice and submit one in seconds.
                         </p>
+                        <Button asChild size="sm" className="mt-4">
+                            <Link href={route('client.payments.create')}>
+                                <Plus />
+                                New Payment
+                            </Link>
+                        </Button>
                     </div>
                 ) : (
-                    <div className="rounded-lg border bg-card">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Invoice</TableHead>
-                                    <TableHead>Amount</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Method</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right" />
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {payments.map((payment) => (
-                                    <TableRow key={payment.id}>
-                                        <TableCell className="font-medium">
-                                            {payment.invoice?.invoice_number || 'N/A'}
-                                        </TableCell>
-                                        <TableCell className="tabular-nums">
-                                            ₱{parseFloat(payment.amount).toFixed(2)}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {new Date(payment.payment_date).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground">
-                                            {payment.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                        </TableCell>
-                                        <TableCell>
-                                            <StatusBadge status={payment.status} />
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                asChild
-                                                variant="ghost"
-                                                size="sm"
-                                                className="-mr-2"
-                                            >
-                                                <Link href={route('client.payments.show', payment.id)}>
-                                                    View
-                                                </Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={columns}
+                        data={payments}
+                        searchPlaceholder="Search payments…"
+                    />
                 )}
             </ClientLayout>
         </>

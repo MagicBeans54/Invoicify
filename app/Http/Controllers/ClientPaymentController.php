@@ -41,6 +41,17 @@ class ClientPaymentController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Attach live balances so the form can show Total / Paid / Due and
+        // mirror the server-side max validation client-side.
+        $attachBalance = function ($inv) {
+            if ($inv) {
+                $inv->paid_amount = $inv->approvedAmount();
+                $inv->remaining_balance = $inv->remainingBalance();
+            }
+        };
+        $attachBalance($invoice);
+        $invoices->each($attachBalance);
+
         return inertia('ClientPayments/Create', [
             'invoice' => $invoice,
             'invoices' => $invoices,

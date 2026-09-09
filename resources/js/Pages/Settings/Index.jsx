@@ -13,13 +13,23 @@ function Field({ label, id, error, children }) {
         <div className="space-y-2">
             <Label htmlFor={id}>{label}</Label>
             {children}
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+                <p role="alert" className="text-sm text-destructive">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }
 
+const SECTIONS = [
+    { id: 'company', label: 'Company' },
+    { id: 'defaults', label: 'Defaults' },
+    { id: 'bank', label: 'Bank' },
+];
+
 export default function Index({ settings }) {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, isDirty } = useForm({
         company_name: settings.company_name || 'Techstacks',
         logo: null,
         email: settings.email || '',
@@ -45,13 +55,39 @@ export default function Index({ settings }) {
         });
     };
 
+    const hasBankDetails = Boolean(
+        settings.bank_account_name ||
+            settings.bank_name ||
+            settings.bank_account_number ||
+            settings.bank_account_type ||
+            settings.bank_address
+    );
+
     return (
         <>
             <Head title="Company Settings" />
-            <AppLayout title="Settings">
-                <div className="mx-auto max-w-3xl space-y-6">
-                    <form onSubmit={handleSubmit}>
-                        <Card>
+            <AppLayout
+                title="Settings"
+                actions={
+                    <LoadingButton type="submit" form="settings-form" size="sm" loading={processing}>
+                        {isDirty ? 'Save changes' : 'Saved'}
+                    </LoadingButton>
+                }
+            >
+                <div>
+                    <nav aria-label="Settings sections" className="mb-6 flex flex-wrap gap-1.5">
+                        {SECTIONS.map((section) => (
+                            <a
+                                key={section.id}
+                                href={`#settings-${section.id}`}
+                                className="inline-flex h-8 items-center rounded-lg border border-border bg-background px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                            >
+                                {section.label}
+                            </a>
+                        ))}
+                    </nav>
+                    <form id="settings-form" onSubmit={handleSubmit} className="space-y-6" noValidate>
+                        <Card id="settings-company" className="scroll-mt-20">
                             <CardHeader>
                                 <CardTitle className="text-base">Company Information</CardTitle>
                                 <CardDescription>
@@ -114,7 +150,7 @@ export default function Index({ settings }) {
                             </CardContent>
                         </Card>
 
-                        <Card className="mt-6">
+                        <Card id="settings-defaults" className="scroll-mt-20">
                             <CardHeader>
                                 <CardTitle className="text-base">Invoice Defaults</CardTitle>
                                 <CardDescription>
@@ -180,72 +216,85 @@ export default function Index({ settings }) {
                             </CardContent>
                         </Card>
 
-                        <Card className="mt-6">
+                        <Card id="settings-bank" className="scroll-mt-20">
                             <CardHeader>
                                 <CardTitle className="text-base">Bank Details</CardTitle>
                                 <CardDescription>
                                     Bank information shown on invoices for payments.
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="grid gap-4 sm:grid-cols-2">
-                                <Field
-                                    label="Bank Account Name"
-                                    id="bank_account_name"
-                                    error={errors.bank_account_name}
-                                >
-                                    <Input
-                                        id="bank_account_name"
-                                        value={data.bank_account_name}
-                                        onChange={(e) => setData('bank_account_name', e.target.value)}
-                                    />
-                                </Field>
-                                <Field label="Bank Name" id="bank_name" error={errors.bank_name}>
-                                    <Input
-                                        id="bank_name"
-                                        value={data.bank_name}
-                                        onChange={(e) => setData('bank_name', e.target.value)}
-                                    />
-                                </Field>
-                                <Field
-                                    label="Bank Account Number"
-                                    id="bank_account_number"
-                                    error={errors.bank_account_number}
-                                >
-                                    <Input
-                                        id="bank_account_number"
-                                        value={data.bank_account_number}
-                                        onChange={(e) => setData('bank_account_number', e.target.value)}
-                                    />
-                                </Field>
-                                <Field
-                                    label="Bank Account Type"
-                                    id="bank_account_type"
-                                    error={errors.bank_account_type}
-                                >
-                                    <Input
-                                        id="bank_account_type"
-                                        value={data.bank_account_type}
-                                        onChange={(e) => setData('bank_account_type', e.target.value)}
-                                    />
-                                </Field>
-                                <div className="sm:col-span-2">
-                                    <Field label="Bank Address" id="bank_address" error={errors.bank_address}>
-                                        <AutosizeTextarea
-                                            id="bank_address"
-                                            minHeight={60}
-                                            maxHeight={200}
-                                            value={data.bank_address}
-                                            onChange={(e) => setData('bank_address', e.target.value)}
-                                        />
-                                    </Field>
-                                </div>
-                                <div className="flex justify-end sm:col-span-2">
-                                    <LoadingButton type="submit" size="sm" loading={processing}>
-                                        Save Settings
-                                    </LoadingButton>
-                                </div>
+                            <CardContent>
+                                <details open={hasBankDetails || undefined}>
+                                    <summary className="cursor-pointer text-sm font-medium">
+                                        {hasBankDetails
+                                            ? 'Edit bank details'
+                                            : 'Add bank details (optional)'}
+                                    </summary>
+                                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                                        <Field
+                                            label="Bank Account Name"
+                                            id="bank_account_name"
+                                            error={errors.bank_account_name}
+                                        >
+                                            <Input
+                                                id="bank_account_name"
+                                                value={data.bank_account_name}
+                                                onChange={(e) => setData('bank_account_name', e.target.value)}
+                                            />
+                                        </Field>
+                                        <Field label="Bank Name" id="bank_name" error={errors.bank_name}>
+                                            <Input
+                                                id="bank_name"
+                                                value={data.bank_name}
+                                                onChange={(e) => setData('bank_name', e.target.value)}
+                                            />
+                                        </Field>
+                                        <Field
+                                            label="Bank Account Number"
+                                            id="bank_account_number"
+                                            error={errors.bank_account_number}
+                                        >
+                                            <Input
+                                                id="bank_account_number"
+                                                value={data.bank_account_number}
+                                                onChange={(e) => setData('bank_account_number', e.target.value)}
+                                            />
+                                        </Field>
+                                        <Field
+                                            label="Bank Account Type"
+                                            id="bank_account_type"
+                                            error={errors.bank_account_type}
+                                        >
+                                            <Input
+                                                id="bank_account_type"
+                                                value={data.bank_account_type}
+                                                onChange={(e) => setData('bank_account_type', e.target.value)}
+                                            />
+                                        </Field>
+                                        <div className="sm:col-span-2">
+                                            <Field label="Bank Address" id="bank_address" error={errors.bank_address}>
+                                                <AutosizeTextarea
+                                                    id="bank_address"
+                                                    minHeight={60}
+                                                    maxHeight={200}
+                                                    value={data.bank_address}
+                                                    onChange={(e) => setData('bank_address', e.target.value)}
+                                                />
+                                            </Field>
+                                        </div>
+                                    </div>
+                                </details>
                             </CardContent>
                         </Card>
+
+                        <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur">
+                            <p className="mr-auto text-sm text-muted-foreground" aria-live="polite">
+                                {isDirty ? 'You have unsaved changes.' : 'All changes saved.'}
+                            </p>
+                            <LoadingButton type="submit" size="sm" loading={processing}>
+                                {isDirty ? 'Save changes' : 'Saved'}
+                            </LoadingButton>
+                        </div>
                     </form>
                 </div>
             </AppLayout>

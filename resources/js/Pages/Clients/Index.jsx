@@ -5,7 +5,6 @@ import { createColumnHelper } from '@tanstack/react-table';
 import AppLayout from '@/components/AppLayout';
 import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 const columnHelper = createColumnHelper();
 
@@ -24,9 +23,16 @@ const columns = [
     }),
     columnHelper.accessor('invoices_count', {
         header: 'Invoices',
-        cell: (info) => (
-            <Badge variant="outline">{info.getValue() || 0} invoices</Badge>
-        ),
+        cell: (info) => {
+            const count = info.getValue() || 0;
+            return (
+                <Button asChild variant="outline" size="sm">
+                    <Link href={route('clients.show', info.row.original.id)}>
+                        {count} invoice{count === 1 ? '' : 's'}
+                    </Link>
+                </Button>
+            );
+        },
     }),
     columnHelper.accessor('id', {
         header: '',
@@ -50,9 +56,13 @@ export default function Index({ clients }) {
                 {clients.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
                         <p className="text-sm font-medium">No clients yet</p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Clients will appear here when they register for accounts.
+                        <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                            Clients appear here when they register for accounts —
+                            send them your registration page to get started.
                         </p>
+                        <Button asChild variant="outline" size="sm" className="mt-4">
+                            <Link href={route('register')}>Open registration page</Link>
+                        </Button>
                     </div>
                 ) : (
                     <DataTable

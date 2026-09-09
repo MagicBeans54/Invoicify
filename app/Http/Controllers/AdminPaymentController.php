@@ -20,8 +20,17 @@ class AdminPaymentController extends Controller
 
     public function show(Payment $payment)
     {
+        $payment->load(['invoice', 'invoice.items', 'user']);
+
+        // Balances for the review summary: approved-paid so far and what
+        // remains if this pending payment is approved.
+        if ($payment->invoice) {
+            $payment->invoice->paid_amount = $payment->invoice->approvedAmount();
+            $payment->invoice->remaining_balance = $payment->invoice->remainingBalance();
+        }
+
         return inertia('AdminPayments/Show', [
-            'payment' => $payment->load(['invoice', 'invoice.items', 'user']),
+            'payment' => $payment,
         ]);
     }
 
