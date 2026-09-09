@@ -88,13 +88,13 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                 href={route('client.dashboard')}
                                 className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                             >
-                                <TechstackMark className="size-10 group-data-[collapsible=icon]:size-8" />
+                                <TechstackMark className="size-8 group-data-[collapsible=icon]:size-7" />
                                 <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
                                     <span className="truncate font-display text-sm font-semibold tracking-tight text-primary-ink dark:text-primary">
                                         Invoicify
                                     </span>
-                                    <span className="truncate text-xs text-muted-foreground">
-                                        Client portal
+                                    <span className="mt-0.5 inline-flex w-fit items-center rounded-md bg-sidebar-accent px-1.5 py-px text-[10px] font-semibold uppercase tracking-wider text-sidebar-accent-foreground">
+                                        Client
                                     </span>
                                 </span>
                             </Link>
@@ -116,14 +116,11 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                                 asChild
                                                 isActive={isActive}
                                                 tooltip={item.title}
-                                                className="h-9 gap-3 rounded-lg font-medium transition-[width,height,padding,background-color,color] duration-150 data-active:bg-primary/10 data-active:text-primary-ink data-active:font-semibold dark:data-active:text-primary [&_svg]:text-primary-ink dark:[&_svg]:text-primary"
+                                                className="h-9 gap-3 rounded-lg font-medium transition-[width,height,padding,background-color,color] duration-150 data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&_svg]:text-muted-foreground data-active:[&_svg]:text-sidebar-accent-foreground"
                                             >
                                                 <Link href={item.url}>
                                                     <item.icon />
                                                     <span>{item.title}</span>
-                                                    {isActive && (
-                                                        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary-ink dark:bg-primary" />
-                                                    )}
                                                 </Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
@@ -140,7 +137,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                 <DropdownMenuTrigger asChild>
                                     <SidebarMenuButton
                                         size="lg"
-                                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-1"
+                                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
                                     >
                                         <Avatar className="size-8 rounded-lg">
                                             <AvatarFallback className="rounded-lg">
@@ -183,7 +180,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                        className="cursor-pointer [&_svg]:text-primary-ink dark:[&_svg]:text-primary"
+                                        className="cursor-pointer [&_svg]:text-muted-foreground"
                                         onClick={() => router.post(route('logout'))}
                                     >
                                         <LogOut />
@@ -196,7 +193,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                 </SidebarFooter>
             </Sidebar>
             <SidebarInset>
-                <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
+                <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-sidebar-border bg-background px-4 dark:bg-sidebar">
                     <SidebarTrigger className="-ml-1" />
                     <Breadcrumb>
                         <BreadcrumbList>
@@ -232,7 +229,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                         />
                     </div>
                 </header>
-                <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+                <main className="flex-1 bg-muted/40 px-4 py-6 sm:px-6 sm:py-8 dark:bg-transparent">
                     <PageTransition pageKey={url} className="mx-auto max-w-5xl">
                         {(title || subtitle || actions) && (
                             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">

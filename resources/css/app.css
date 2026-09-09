@@ -71,7 +71,10 @@
     --popover-foreground: oklch(0.141 0.005 285.823);
     --primary: #24D6AE;
     --primary-foreground: #0D1515;
-    /* Bolder financial ink for text/icons on light surfaces (~5.9:1 on white) */
+    /* Bolder financial ink for text/icons on light surfaces (~5.9:1 on white).
+       Role split: --primary is the brand fill (buttons, progress, dots);
+       --primary-ink is the text/icon role (nav, links, wordmark). In dark
+       mode both resolve to mint, which passes on near-black. */
     --primary-ink: #006B54;
     --secondary: oklch(0.967 0.001 286.375);
     --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -98,8 +101,10 @@
     --sidebar-foreground: oklch(0.141 0.005 285.823);
     --sidebar-primary: #24D6AE;
     --sidebar-primary-foreground: #0D1515;
-    --sidebar-accent: oklch(0.967 0.001 286.375);
-    --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+    /* Opaque active-encoding wash for nav (replaces translucent primary/10):
+       light tint passes 4.5:1 for ink text; dark tint passes for mint text. */
+    --sidebar-accent: #D9F0E7;
+    --sidebar-accent-foreground: #06382A;
     --sidebar-border: oklch(0.92 0.004 286.32);
     --sidebar-ring: #006B54;
 }
@@ -135,12 +140,14 @@
     --success: #2DD4BF;
     --warning: #FBBF24;
     --danger: #FDA4AF;
-    --sidebar: oklch(0.21 0.006 285.885);
+    /* Dark sidebar sits between canvas (bg .141) and cards (.21) so all
+       three read as distinct layers instead of card/sidebar colliding. */
+    --sidebar: oklch(0.17 0.005 285.885);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: #24D6AE;
     --sidebar-primary-foreground: #0D1515;
-    --sidebar-accent: oklch(0.274 0.006 286.033);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-accent: #0B3B2E;
+    --sidebar-accent-foreground: #8AF0CE;
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: #24D6AE;
 }
