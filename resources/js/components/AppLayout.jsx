@@ -118,7 +118,7 @@ export default function AppLayout({ title, subtitle, crumbs, actions, children }
                     <SidebarGroup>
                         <SidebarGroupLabel>Workspace</SidebarGroupLabel>
                         <SidebarGroupContent>
-                            <SidebarMenu className="pl-1">
+                            <SidebarMenu className="pl-1 group-data-[collapsible=icon]:pl-0">
                                 {items.map((item) => {
                                     const isActive =
                                         url === item.url ||

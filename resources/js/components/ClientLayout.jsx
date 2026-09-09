@@ -105,7 +105,7 @@ export default function ClientLayout({ title, subtitle, crumbs, actions, childre
                     <SidebarGroup>
                         <SidebarGroupLabel>My Account</SidebarGroupLabel>
                         <SidebarGroupContent>
-                            <SidebarMenu className="pl-1">
+                            <SidebarMenu className="pl-1 group-data-[collapsible=icon]:pl-0">
                                 {items.map((item) => {
                                     const isActive =
                                         url === item.url ||

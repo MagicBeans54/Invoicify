@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { useReducedMotion } from 'framer-motion';
 import { TechstackMark } from '@/components/TechstackLogo';
 
 function loadScript(src) {
@@ -10,6 +11,7 @@ function loadScript(src) {
         }
         const script = document.createElement('script');
         script.src = src;
+        script.defer = true;
         script.onload = resolve;
         script.onerror = reject;
         document.body.appendChild(script);
@@ -20,12 +22,20 @@ export default function AuthLayout({ children, title }) {
     const containerRef = useRef(null);
     const canvasRef = useRef(null);
     const [modelFailed, setModelFailed] = useState(false);
+    const reduceMotion = useReducedMotion();
 
     useEffect(() => {
+        // Decorative 3D only: skip entirely on mobile (<lg), on reduced-motion,
+        // or when the panel is hidden — saves CDN + model + battery.
+        if (reduceMotion) return;
+        if (typeof window === 'undefined') return;
+        if (!window.matchMedia('(min-width: 1024px)').matches) return;
+
         let renderer;
         let controls;
         let animationId;
         let cancelled = false;
+        let cleanupResize = null;
 
         async function init() {
             try {
@@ -43,14 +53,6 @@ export default function AuthLayout({ children, title }) {
             const container = containerRef.current;
             const canvas = canvasRef.current;
             if (!container || !canvas || !THREE) return;
-
-            const fitRenderer = () => {
-                const w = container.clientWidth || 220;
-                const h = container.clientHeight || 220;
-                renderer.setSize(w, h, false);
-                camera.aspect = w / h;
-                camera.updateProjectionMatrix();
-            };
 
             const w = container.clientWidth || 220;
             const h = container.clientHeight || 220;
@@ -72,6 +74,15 @@ export default function AuthLayout({ children, title }) {
             controls.enableDamping = true;
             controls.enablePan = false;
             controls.enableZoom = false;
+            controls.enabled = false; // decorative — not interactive
+
+            const fitRenderer = () => {
+                const cw = container.clientWidth || 220;
+                const ch = container.clientHeight || 220;
+                renderer.setSize(cw, ch, false);
+                camera.aspect = cw / ch;
+                camera.updateProjectionMatrix();
+            };
 
             let logo;
             const loader = new THREE.GLTFLoader();
@@ -81,6 +92,9 @@ export default function AuthLayout({ children, title }) {
                     if (cancelled) return;
                     logo = gltf.scene;
                     scene.add(logo);
+                    // Reduced-motion or hidden tab: render one static frame, no loop.
+                    renderer.render(scene, camera);
+                    if (!reduceMotion && !document.hidden) startLoop();
                 },
                 undefined,
                 () => {
@@ -88,31 +102,56 @@ export default function AuthLayout({ children, title }) {
                 }
             );
 
-            function animate() {
-                animationId = requestAnimationFrame(animate);
-                if (logo) logo.rotation.y += 0.01;
-                controls.update();
-                renderer.render(scene, camera);
+            function startLoop() {
+                function animate() {
+                    if (cancelled) return;
+                    // Pause when tab hidden to save battery.
+                    if (!document.hidden && logo) logo.rotation.y += 0.01;
+                    controls.update();
+                    renderer.render(scene, camera);
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
             }
-            animate();
+
+            const onVisibility = () => {
+                if (document.hidden && animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                } else if (!document.hidden && !animationId && logo && !cancelled && !reduceMotion) {
+                    startLoop();
+                }
+            };
+            document.addEventListener('visibilitychange', onVisibility);
 
             window.addEventListener('resize', fitRenderer);
 
-            // Expose cleanup for the effect teardown below.
-            cleanupResize = () => window.removeEventListener('resize', fitRenderer);
+            cleanupResize = () => {
+                window.removeEventListener('resize', fitRenderer);
+                document.removeEventListener('visibilitychange', onVisibility);
+            };
         }
 
-        let cleanupResize = null;
-        init();
+        // Defer decorative payload until idle so auth form paints first.
+        let idleId = null;
+        if ('requestIdleCallback' in window) {
+            idleId = window.requestIdleCallback(() => init(), { timeout: 2000 });
+        } else {
+            idleId = window.setTimeout(() => init(), 800);
+        }
 
         return () => {
             cancelled = true;
+            if (idleId && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+            else if (idleId) clearTimeout(idleId);
             if (cleanupResize) cleanupResize();
             if (animationId) cancelAnimationFrame(animationId);
             if (controls) controls.dispose();
             if (renderer) renderer.dispose();
         };
-    }, []);
+    }, [reduceMotion]);
+
+    const showFallback = modelFailed || reduceMotion;
 
     return (
         <>
@@ -124,11 +163,11 @@ export default function AuthLayout({ children, title }) {
                         className="absolute inset-0 z-[1] bg-[linear-gradient(to_top,rgba(0,0,0,0.35),transparent_60%)]"
                     />
                     <div className="relative z-[2] flex h-full flex-col items-center justify-center px-6 text-center text-white xl:px-10">
-                        <div ref={containerRef} className="mb-4 h-64 w-64 xl:h-80 xl:w-80">
-                            {modelFailed ? (
+                        <div ref={containerRef} aria-hidden="true" className="mb-4 h-64 w-64 xl:h-80 xl:w-80">
+                            {showFallback ? (
                                 <TechstackMark className="size-full text-white" />
                             ) : (
-                                <canvas ref={canvasRef} className="h-full w-full cursor-grab active:cursor-grabbing" />
+                                <canvas ref={canvasRef} className="h-full w-full" />
                             )}
                         </div>
                         <p className="mb-5 text-sm font-semibold uppercase tracking-[2px] text-white/75">
