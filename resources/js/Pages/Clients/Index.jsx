@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { createColumnHelper } from '@tanstack/react-table';
+import { Check, Link2 } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ const columns = [
         cell: (info) => {
             const count = info.getValue() || 0;
             return (
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
                     <Link href={route('clients.show', info.row.original.id)}>
                         {count} invoice{count === 1 ? '' : 's'}
                     </Link>
@@ -49,6 +50,24 @@ const columns = [
 ];
 
 export default function Index({ clients }) {
+    const [copied, setCopied] = useState(false);
+
+    const copyRegistrationLink = async () => {
+        const url = `${window.location.origin}${route('register')}`;
+        try {
+            await navigator.clipboard.writeText(url);
+        } catch {
+            const input = document.createElement('input');
+            input.value = url;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+        }
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2000);
+    };
+
     return (
         <>
             <Head title="Clients" />
@@ -58,11 +77,28 @@ export default function Index({ clients }) {
                         <p className="text-sm font-medium">No clients yet</p>
                         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                             Clients appear here when they register for accounts —
-                            send them your registration page to get started.
+                            share your registration link to onboard them.
                         </p>
-                        <Button asChild variant="outline" size="sm" className="mt-4">
-                            <Link href={route('register')}>Open registration page</Link>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-4"
+                            onClick={copyRegistrationLink}
+                        >
+                            {copied ? (
+                                <>
+                                    <Check /> Copied
+                                </>
+                            ) : (
+                                <>
+                                    <Link2 /> Copy registration link
+                                </>
+                            )}
                         </Button>
+                        <span role="status" aria-live="polite" className="sr-only">
+                            {copied ? 'Registration link copied' : ''}
+                        </span>
                     </div>
                 ) : (
                     <DataTable

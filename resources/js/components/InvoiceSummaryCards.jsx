@@ -3,13 +3,7 @@ import { animate, motion, useReducedMotion } from 'framer-motion';
 import { AlertTriangle, CircleCheck, FileEdit, Wallet } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-
-function formatPeso(value) {
-    return `₱${Number(value || 0).toLocaleString('en-PH', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    })}`;
-}
+import { formatPeso } from '@/lib/invoices';
 
 function useAnimatedNumber(target, format) {
     const reduce = useReducedMotion();
@@ -115,7 +109,7 @@ export default function InvoiceSummaryCards({ invoices, activeFilter, onFilter }
             value: { raw: sum(['overdue']), format: formatPeso },
             sub: `${overdueCount} invoice${overdueCount === 1 ? '' : 's'} past due`,
             icon: AlertTriangle,
-            tone: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
+            tone: 'bg-warning/10 text-warning',
         },
         {
             label: 'Collected',

@@ -9,6 +9,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { InvoicifyMark } from '@/components/InvoicifyLogo';
 import { formatInvoiceDate, formatPeso } from '@/lib/invoices';
 
 function AddressBlock({ name, email, phone, address }) {
@@ -25,13 +27,44 @@ function AddressBlock({ name, email, phone, address }) {
 }
 
 /**
- * Shared invoice document used by admin + client Show pages so the money
- * story (parties → schedule → line items → display-size Total) renders
- * identically everywhere instead of two 90%-same copies drifting apart.
+ * Shared invoice paper used by admin + client Show pages: a financial
+ * document (brand rule, logo + number hero, status, ledger table, ruled
+ * totals) instead of an anonymous admin card — same data, invoicing voice.
  */
 export default function InvoiceDocument({ invoice }) {
     return (
-        <Card>
+        <Card className="overflow-hidden">
+            <div
+                aria-hidden="true"
+                className="h-1.5 bg-gradient-to-r from-primary via-primary-ink to-primary"
+            />
+            <CardContent className="flex flex-wrap items-start justify-between gap-4 p-6">
+                <div className="flex items-center gap-3">
+                    {invoice.company_logo ? (
+                        <img
+                            src={`/storage/${invoice.company_logo}`}
+                            alt={`${invoice.company_name || 'Company'} logo`}
+                            className="h-10 w-10 rounded-lg object-contain"
+                        />
+                    ) : (
+                        <InvoicifyMark className="size-10" />
+                    )}
+                    <div>
+                        <p className="font-display text-2xl font-bold tracking-tight tabular-nums">
+                            {invoice.invoice_number}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                            Issued {formatInvoiceDate(invoice.invoice_date)}
+                            {' → '}
+                            due {formatInvoiceDate(invoice.due_date)}
+                        </p>
+                    </div>
+                </div>
+                <StatusBadge status={invoice.status} />
+            </CardContent>
+
+            <Separator />
+
             <CardContent className="grid gap-8 p-6 sm:grid-cols-2">
                 <div className="space-y-1.5">
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -46,7 +79,7 @@ export default function InvoiceDocument({ invoice }) {
                 </div>
                 <div className="space-y-1.5">
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        To
+                        Bill to
                     </p>
                     <AddressBlock
                         name={invoice.client_name}
@@ -60,18 +93,6 @@ export default function InvoiceDocument({ invoice }) {
             <Separator />
 
             <CardContent className="flex flex-wrap gap-x-12 gap-y-6 p-6">
-                <div className="space-y-1.5">
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        Issued
-                    </p>
-                    <p className="text-sm font-medium">{formatInvoiceDate(invoice.invoice_date)}</p>
-                </div>
-                <div className="space-y-1.5">
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        Due
-                    </p>
-                    <p className="text-sm font-medium">{formatInvoiceDate(invoice.due_date)}</p>
-                </div>
                 {invoice.payment_terms && (
                     <div className="space-y-1.5">
                         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -85,7 +106,7 @@ export default function InvoiceDocument({ invoice }) {
                         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                             Contract
                         </p>
-                        <p className="text-sm font-medium">{invoice.contract_number}</p>
+                        <p className="text-sm font-medium tabular-nums">{invoice.contract_number}</p>
                     </div>
                 )}
             </CardContent>
@@ -135,7 +156,10 @@ export default function InvoiceDocument({ invoice }) {
                             {formatPeso(invoice.tax_amount)}
                         </span>
                     </div>
-                    <Separator />
+                    <div
+                        aria-hidden="true"
+                        className="h-0.5 rounded-full bg-primary-ink/70"
+                    />
                     <div className="flex items-baseline justify-between gap-4">
                         <span className="font-semibold">Total due</span>
                         <span className="font-display text-2xl font-bold tracking-tight tabular-nums">

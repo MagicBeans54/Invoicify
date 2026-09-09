@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-function TechstackGlyph({ className }) {
+function InvoicifyGlyph({ className }) {
     return (
         <svg
             viewBox="0 0 1813 1441"
@@ -20,12 +20,12 @@ function TechstackGlyph({ className }) {
     );
 }
 
-export function TechstackMark({ className }) {
+export function InvoicifyMark({ className }) {
     return (
         <span role="img" aria-label="Invoicify" className={cn('inline-flex shrink-0 text-primary-ink dark:text-primary', className)}>
-            <TechstackGlyph className="size-full" />
+            <InvoicifyGlyph className="size-full" />
         </span>
     );
 }
 
-export default TechstackMark;
+export default InvoicifyMark;

@@ -117,10 +117,10 @@ export default function Show({ client }) {
                                             <TableCell>
                                                 {daysOverdue > 0 ? (
                                                     <span className="block">
-                                                        <span className="font-medium text-amber-700 dark:text-amber-300">
+                                                        <span className="font-medium text-warning">
                                                             {formatDate(invoice.due_date)}
                                                         </span>
-                                                        <span className="mt-0.5 block text-xs font-medium text-amber-700 dark:text-amber-300">
+                                                        <span className="mt-0.5 block text-xs font-medium text-warning">
                                                             {dueLabel(daysOverdue)}
                                                         </span>
                                                     </span>

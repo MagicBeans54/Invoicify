@@ -25,7 +25,7 @@ import {
  * shadcn table primitives. Supports column sorting, a global text filter,
  * and client-side pagination.
  */
-export default function DataTable({ columns, data, searchPlaceholder = 'Search…', isLoading = false }) {
+export default function DataTable({ columns, data, searchPlaceholder = 'Search…', isLoading = false, getRowClassName }) {
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
@@ -119,7 +119,10 @@ export default function DataTable({ columns, data, searchPlaceholder = 'Search�
                             </TableRow>
                         ) : table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
+                                <TableRow
+                                    key={row.id}
+                                    className={getRowClassName?.(row.original)}
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell
                                             key={cell.id}

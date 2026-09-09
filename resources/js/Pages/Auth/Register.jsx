@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
 import AuthLayout from '@/components/AuthLayout';
-import { TechstackMark } from '@/components/TechstackLogo';
+import { InvoicifyMark } from '@/components/InvoicifyLogo';
 import { PasswordVisibilityToggle } from '@/components/ui/password-visibility-toggle';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { PasswordStrengthInput } from '@/components/ui/password-strength';
@@ -38,7 +38,7 @@ export default function RegisterForm() {
                 className="mb-6 flex flex-col items-center gap-1.5 lg:hidden"
             >
                 <div className="flex items-center gap-2.5">
-                    <TechstackMark className="size-9" />
+                    <InvoicifyMark className="size-9" />
                     <span className="font-display text-lg font-semibold tracking-tight text-primary-ink dark:text-primary">Invoicify</span>
                 </div>
                 <p className="text-xs text-muted-foreground">

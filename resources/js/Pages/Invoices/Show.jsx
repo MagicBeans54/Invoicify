@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { HoldToConfirmButton } from '@/components/ui/hold-to-confirm';
 import { ShareButton } from '@/components/ui/share-button';
-import { StatusBadge } from '@/components/ui/status-badge';
 
 
 
@@ -31,9 +30,6 @@ export default function Show({ invoice }) {
                     invoice.contract_number
                         ? `Contract: ${invoice.contract_number}`
                         : undefined
-                }
-                actions={
-                    <StatusBadge status={invoice.status} />
                 }
             >
                 <InvoiceDocument invoice={invoice} />

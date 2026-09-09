@@ -44,7 +44,7 @@ import {
 import FlashToaster from '@/components/FlashToaster';
 import ModeToggle from '@/components/ModeToggle';
 import PageTransition from '@/components/PageTransition';
-import { TechstackMark } from '@/components/TechstackLogo';
+import { InvoicifyMark } from '@/components/InvoicifyLogo';
 import { NotificationBell } from '@/components/ui/notification-bell';
 
 const navConfig = [
@@ -101,7 +101,7 @@ export default function AppLayout({ title, subtitle, crumbs, actions, children }
                                 href={route('invoices.index')}
                                 className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                             >
-                                <TechstackMark className="size-8 group-data-[collapsible=icon]:size-7" />
+                                <InvoicifyMark className="size-8 group-data-[collapsible=icon]:size-7" />
                                 <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
                                     <span className="truncate font-display text-sm font-semibold tracking-tight text-primary-ink dark:text-primary">
                                         Invoicify

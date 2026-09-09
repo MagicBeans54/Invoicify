@@ -1,30 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
 import AuthLayout from '@/components/AuthLayout';
 import { InvoicifyMark } from '@/components/InvoicifyLogo';
-import { PasswordVisibilityToggle } from '@/components/ui/password-visibility-toggle';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function LoginForm() {
+export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
-        password: '',
     });
-    const [showPassword, setShowPassword] = useState(false);
     const reduce = useReducedMotion();
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(route('login.post'));
+        post(route('password.email'));
     }
 
     return (
-        <AuthLayout title="Log in">
+        <AuthLayout title="Forgot password">
             <motion.div
                 initial={{ opacity: 0, y: reduce ? 0 : 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -46,10 +43,15 @@ export default function LoginForm() {
             >
             <Card>
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Log in</CardTitle>
-                    <CardDescription>Welcome back — access invoices, track totals, download PDFs</CardDescription>
+                    <CardTitle className="text-2xl">Reset your password</CardTitle>
+                    <CardDescription>Enter your account email and we&apos;ll send a reset link</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {status && (
+                        <p role="status" className="mb-4 rounded-lg bg-success/10 px-3 py-2.5 text-sm text-success">
+                            {status}
+                        </p>
+                    )}
                     <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
@@ -72,50 +74,15 @@ export default function LoginForm() {
                                 </p>
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="password">Password</Label>
-                                <Link
-                                    href={route('password.request')}
-                                    className="text-xs text-primary-ink hover:underline dark:text-primary"
-                                >
-                                    Forgot password?
-                                </Link>
-                            </div>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    autoComplete="current-password"
-                                    required
-                                    placeholder="••••••••"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    aria-invalid={Boolean(errors.password)}
-                                    aria-describedby={errors.password ? 'password-error' : undefined}
-                                    className="h-10 pr-10"
-                                />
-                                <PasswordVisibilityToggle
-                                    visible={showPassword}
-                                    onClick={() => setShowPassword((prev) => !prev)}
-                                />
-                            </div>
-                            {errors.password && (
-                                <p id="password-error" role="alert" className="text-sm text-destructive">
-                                    {errors.password}
-                                </p>
-                            )}
-                        </div>
                         <LoadingButton type="submit" className="w-full" loading={processing}>
-                            Log in
+                            Send reset link
                         </LoadingButton>
                     </form>
                 </CardContent>
                 <CardFooter className="justify-center text-center text-sm text-muted-foreground">
-                    <p>Don&apos;t have an account?{' '}
-                        <Link href={route('register')} className="text-primary-ink hover:underline dark:text-primary">
-                            Create account
+                    <p>Remembered it?{' '}
+                        <Link href={route('login')} className="text-primary-ink hover:underline dark:text-primary">
+                            Log in
                         </Link>
                     </p>
                 </CardFooter>

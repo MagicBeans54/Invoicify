@@ -39,10 +39,10 @@ const columns = [
             if (daysOverdue > 0) {
                 return (
                     <span className="block">
-                        <span className="font-medium text-amber-700 dark:text-amber-300">
+                        <span className="font-medium text-warning">
                             {formatInvoiceDate(info.getValue())}
                         </span>
-                        <span className="mt-0.5 block text-xs font-medium text-amber-700 dark:text-amber-300">
+                        <span className="mt-0.5 block text-xs font-medium text-warning">
                             {dueLabel(daysOverdue)}
                         </span>
                     </span>
@@ -155,6 +155,11 @@ export default function ClientIndex({ invoices }) {
                                 columns={columns}
                                 data={filtered}
                                 searchPlaceholder="Search invoices…"
+                                getRowClassName={(row) =>
+                                    dueInfo(row).daysOverdue > 0
+                                        ? 'bg-warning/[0.07]'
+                                        : undefined
+                                }
                             />
                         )}
                     </>

@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { motion, useReducedMotion } from 'framer-motion';
 import AuthLayout from '@/components/AuthLayout';
 import { InvoicifyMark } from '@/components/InvoicifyLogo';
-import { PasswordVisibilityToggle } from '@/components/ui/password-visibility-toggle';
 import { LoadingButton } from '@/components/ui/loading-button';
+import { PasswordStrengthInput } from '@/components/ui/password-strength';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function LoginForm() {
+export default function ResetPassword({ token, email }) {
     const { data, setData, post, processing, errors } = useForm({
-        email: '',
+        token,
+        email: email || '',
         password: '',
+        password_confirmation: '',
     });
-    const [showPassword, setShowPassword] = useState(false);
     const reduce = useReducedMotion();
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(route('login.post'));
+        post(route('password.update'));
     }
 
     return (
-        <AuthLayout title="Log in">
+        <AuthLayout title="Set a new password">
             <motion.div
                 initial={{ opacity: 0, y: reduce ? 0 : 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -46,8 +47,8 @@ export default function LoginForm() {
             >
             <Card>
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Log in</CardTitle>
-                    <CardDescription>Welcome back — access invoices, track totals, download PDFs</CardDescription>
+                    <CardTitle className="text-2xl">Set a new password</CardTitle>
+                    <CardDescription>Choose something strong — 8+ characters</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit} noValidate>
@@ -73,49 +74,56 @@ export default function LoginForm() {
                             )}
                         </div>
                         <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="password">Password</Label>
-                                <Link
-                                    href={route('password.request')}
-                                    className="text-xs text-primary-ink hover:underline dark:text-primary"
-                                >
-                                    Forgot password?
-                                </Link>
-                            </div>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    autoComplete="current-password"
-                                    required
-                                    placeholder="••••••••"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    aria-invalid={Boolean(errors.password)}
-                                    aria-describedby={errors.password ? 'password-error' : undefined}
-                                    className="h-10 pr-10"
-                                />
-                                <PasswordVisibilityToggle
-                                    visible={showPassword}
-                                    onClick={() => setShowPassword((prev) => !prev)}
-                                />
-                            </div>
+                            <Label htmlFor="password">New password</Label>
+                            <PasswordStrengthInput
+                                id="password"
+                                name="password"
+                                value={data.password}
+                                onValueChange={(value) => setData('password', value)}
+                                placeholder="••••••••"
+                                autoComplete="new-password"
+                                rules={[
+                                    { label: 'At least 8 characters (required)', test: (value) => value.length >= 8 },
+                                    { label: 'One uppercase letter', test: (value) => /[A-Z]/.test(value) },
+                                    { label: 'One number', test: (value) => /[0-9]/.test(value) },
+                                ]}
+                            />
                             {errors.password && (
                                 <p id="password-error" role="alert" className="text-sm text-destructive">
                                     {errors.password}
                                 </p>
                             )}
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password_confirmation">Confirm new password</Label>
+                            <Input
+                                id="password_confirmation"
+                                name="password_confirmation"
+                                type="password"
+                                autoComplete="new-password"
+                                required
+                                placeholder="••••••••"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                aria-invalid={Boolean(errors.password_confirmation)}
+                                aria-describedby={errors.password_confirmation ? 'password-confirmation-error' : undefined}
+                                className="h-10"
+                            />
+                            {errors.password_confirmation && (
+                                <p id="password-confirmation-error" role="alert" className="text-sm text-destructive">
+                                    {errors.password_confirmation}
+                                </p>
+                            )}
+                        </div>
                         <LoadingButton type="submit" className="w-full" loading={processing}>
-                            Log in
+                            Reset password
                         </LoadingButton>
                     </form>
                 </CardContent>
                 <CardFooter className="justify-center text-center text-sm text-muted-foreground">
-                    <p>Don&apos;t have an account?{' '}
-                        <Link href={route('register')} className="text-primary-ink hover:underline dark:text-primary">
-                            Create account
+                    <p>Remembered it?{' '}
+                        <Link href={route('login')} className="text-primary-ink hover:underline dark:text-primary">
+                            Log in
                         </Link>
                     </p>
                 </CardFooter>

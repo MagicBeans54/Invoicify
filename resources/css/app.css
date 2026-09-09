@@ -12,7 +12,9 @@
 
 @theme {
     --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
+    /* Ledger-serif display voice for wordmark, headings, and peso totals —
+       the financial-paper counterpoint to the Manrope UI voice. */
+    --font-display: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
 }
 
 @theme inline {

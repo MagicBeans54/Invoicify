@@ -166,6 +166,7 @@ export default function InvoiceForm({
                 <CardContent className="space-y-6 p-6">
                     <fieldset className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <legend className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <span className="mr-1.5 text-primary-ink dark:text-primary" aria-hidden="true">1</span>
                             Identity
                         </legend>
                         <Field
@@ -225,6 +226,7 @@ export default function InvoiceForm({
 
                     <fieldset className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <legend className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <span className="mr-1.5 text-primary-ink dark:text-primary" aria-hidden="true">2</span>
                             Schedule
                         </legend>
                         <Field
@@ -589,7 +591,7 @@ export default function InvoiceForm({
                 </LoadingButton>
             </div>
 
-            <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-max max-w-[calc(100vw-3rem)] -translate-x-1/2">
+            <div className="pointer-events-none fixed bottom-20 left-1/2 z-50 w-max max-w-[calc(100vw-3rem)] -translate-x-1/2 sm:bottom-6">
                 <UndoPill
                     key={removalSeq}
                     open={!!lastRemoved}
