@@ -28,9 +28,29 @@ export default function ModeToggle() {
     const [theme, setThemeState] = useState(getTheme);
 
     useEffect(() => {
+        // Reconcile with the persisted choice on mount (first paint is set by
+        // the inline script in app.blade.php; this covers client routing).
+        try {
+            const stored = localStorage.getItem(THEME_KEY);
+            if (stored === 'dark' || stored === 'light') {
+                setTheme(stored);
+                setThemeState(stored);
+            }
+        } catch {
+        }
         const onChange = (e) => setThemeState(e.detail);
+        const onStorage = (e) => {
+            if (e.key === THEME_KEY && (e.newValue === 'dark' || e.newValue === 'light')) {
+                setTheme(e.newValue);
+                setThemeState(e.newValue);
+            }
+        };
         window.addEventListener(THEME_EVENT, onChange);
-        return () => window.removeEventListener(THEME_EVENT, onChange);
+        window.addEventListener('storage', onStorage);
+        return () => {
+            window.removeEventListener(THEME_EVENT, onChange);
+            window.removeEventListener('storage', onStorage);
+        };
     }, []);
 
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -38,7 +58,7 @@ export default function ModeToggle() {
     return (
         <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon"
             onClick={() => setTheme(next)}
             aria-label={`Switch to ${next} mode`}
             title={`Switch to ${next} mode`}

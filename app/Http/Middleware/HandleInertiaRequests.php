@@ -57,6 +57,31 @@ class HandleInertiaRequests extends Middleware
                     return [
                         'overdueInvoices' => Invoice::where('status', 'overdue')->count(),
                         'pendingPayments' => Payment::where('status', 'pending')->count(),
+                        'overdueItems' => Invoice::where('status', 'overdue')
+                            ->orderByDesc('due_date')
+                            ->take(5)
+                            ->get(['id', 'invoice_number', 'client_name', 'total'])
+                            ->map(fn ($i) => [
+                                'id' => $i->id,
+                                'invoice_number' => $i->invoice_number,
+                                'client_name' => $i->client_name,
+                                'total' => (string) $i->total,
+                            ])
+                            ->values()
+                            ->all(),
+                        'pendingItems' => Payment::where('status', 'pending')
+                            ->with(['invoice:id,invoice_number'])
+                            ->orderByDesc('created_at')
+                            ->take(5)
+                            ->get(['id', 'amount', 'invoice_id', 'reference_number'])
+                            ->map(fn ($p) => [
+                                'id' => $p->id,
+                                'reference_number' => $p->reference_number,
+                                'amount' => (string) $p->amount,
+                                'invoice_number' => $p->invoice?->invoice_number,
+                            ])
+                            ->values()
+                            ->all(),
                     ];
                 }
                 return [
@@ -64,6 +89,20 @@ class HandleInertiaRequests extends Middleware
                         ->where('status', 'overdue')
                         ->count(),
                     'pendingPayments' => 0,
+                    'overdueItems' => Invoice::where('client_email', $user->email)
+                        ->where('status', 'overdue')
+                        ->orderByDesc('due_date')
+                        ->take(5)
+                        ->get(['id', 'invoice_number', 'client_name', 'total'])
+                        ->map(fn ($i) => [
+                            'id' => $i->id,
+                            'invoice_number' => $i->invoice_number,
+                            'client_name' => $i->client_name,
+                            'total' => (string) $i->total,
+                        ])
+                        ->values()
+                        ->all(),
+                    'pendingItems' => [],
                 ];
             },
             'ziggy' => fn () => [

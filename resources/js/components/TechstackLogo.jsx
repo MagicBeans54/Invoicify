@@ -22,7 +22,7 @@ function TechstackGlyph({ className }) {
 
 export function TechstackMark({ className }) {
     return (
-        <span role="img" aria-label="Techstacks" className={cn('inline-flex shrink-0 text-primary', className)}>
+        <span role="img" aria-label="Invoicify" className={cn('inline-flex shrink-0 text-primary', className)}>
             <TechstackGlyph className="size-full" />
         </span>
     );

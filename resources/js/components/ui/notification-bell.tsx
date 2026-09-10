@@ -20,6 +20,7 @@ export interface NotificationBellProps {
   /** Visual size of the button. Default "md" */
   size?: "sm" | "md" | "lg"
   className?: string
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -71,7 +72,9 @@ export function NotificationBell({
   onClick,
   size = "md",
   className,
-}: NotificationBellProps) {
+  ref,
+  ...rest
+}: NotificationBellProps & Omit<React.ComponentProps<"button">, keyof NotificationBellProps | "ref">) {
   const shouldReduceMotion = useReducedMotion()
   const prevCountRef = useRef(count)
   // Monotonically increasing swing trigger — re-keying the bell restarts the
@@ -98,7 +101,9 @@ export function NotificationBell({
 
   return (
     <motion.button
+      ref={ref}
       type="button"
+      {...rest}
       onClick={onClick}
       aria-label={
         count > 0 ? `Notifications, ${count} unread` : "Notifications"
@@ -162,13 +167,13 @@ export function NotificationBell({
               {swinging && (
                 <motion.span
                   key={`ping-${ringKey}`}
-                  className="absolute inset-0 rounded-full bg-rose-500"
+                  className="absolute inset-0 rounded-full bg-destructive"
                   initial={{ scale: 1, opacity: 0.6 }}
                   animate={{ scale: 2, opacity: 0 }}
                   transition={{ duration: PING_DURATION, ease: "easeOut" }}
                 />
               )}
-              <span className="relative h-2.5 w-2.5 rounded-full bg-rose-500" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-destructive" />
             </motion.span>
           )}
         </AnimatePresence>
@@ -178,7 +183,7 @@ export function NotificationBell({
             <motion.span
               key="badge"
               aria-hidden="true"
-              className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold leading-none text-white"
+              className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive/15 px-1 text-[10px] font-semibold leading-none text-destructive dark:bg-destructive/25"
               // Grow outward from where the badge attaches to the bell
               style={{ transformOrigin: "left bottom" }}
               initial={{ scale: 0 }}
