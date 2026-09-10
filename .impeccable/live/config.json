@@ -1,0 +1,1 @@
+{"commentSyntax": "html", "cspChecked": true, "exclude": ["resources/views/emails/**", "resources/views/invoices/**"], "files": ["resources/views/app.blade.php"], "insertBefore": "</body>"}

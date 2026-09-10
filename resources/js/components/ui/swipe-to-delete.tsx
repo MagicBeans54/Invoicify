@@ -228,13 +228,13 @@ export function SwipeToDelete({
               onPointerDown={(event) => event.stopPropagation()}
               className={cn(
                 "absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 touch-manipulation select-none items-center justify-center rounded-md",
-                "text-neutral-500 hover:bg-rose-50 hover:text-rose-600 active:bg-rose-100 dark:text-neutral-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 dark:active:bg-rose-500/20",
+                "text-neutral-600 hover:bg-rose-50 hover:text-rose-700 active:bg-rose-100 dark:text-neutral-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-300 dark:active:bg-rose-500/20",
                 "opacity-0 transition-opacity duration-150",
                 // Never surface the button mid-drag or while the row is offset
                 isDragging || !isResting || isDeleting
                   ? "pointer-events-none"
                   : "group-hover/swipe:opacity-100 group-focus-within/swipe:opacity-100 focus-visible:opacity-100",
-                "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300",
+                "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-destructive/40",
               )}
             >
               <Trash2 size={14} aria-hidden="true" />

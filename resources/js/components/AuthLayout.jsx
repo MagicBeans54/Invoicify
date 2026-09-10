@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Head } from '@inertiajs/react';
 import { TechstackMark } from '@/components/TechstackLogo';
+import PixelBlast from '@/components/PixelBlast';
 
 function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -117,13 +118,25 @@ export default function AuthLayout({ children, title }) {
     return (
         <>
             <Head title={title} />
-            <div className="flex min-h-screen bg-background">
-                <aside className="relative hidden w-1/3 shrink-0 overflow-hidden bg-gradient-to-br from-[#0a2018] to-[#00896a] lg:block">
-                    <div
-                        aria-hidden="true"
-                        className="absolute inset-0 z-[1] bg-[linear-gradient(to_top,rgba(0,0,0,0.35),transparent_60%)]"
-                    />
-                    <div className="relative z-[2] flex h-full flex-col items-center justify-center px-6 text-center text-white xl:px-10">
+            <div className="relative flex min-h-screen overflow-hidden bg-[#09100d]">
+                <div className="absolute inset-0">
+<PixelBlast
+    variant="square"
+    pixelSize={3}
+    color="#10B981"
+    patternScale={1}
+    patternDensity={0.5}
+    enableRipples={false}
+    rippleSpeed={0.3}
+    rippleThickness={0.1}
+    rippleIntensityScale={1.1}
+    speed={0.5}
+    transparent
+    edgeFade={0.5}
+  />
+                </div>
+                <aside className="relative z-10 hidden w-1/3 shrink-0 overflow-hidden lg:block">
+                    <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white xl:px-10">
                         <div ref={containerRef} className="mb-4 h-64 w-64 xl:h-80 xl:w-80">
                             {modelFailed ? (
                                 <TechstackMark className="size-full text-white" />
@@ -131,17 +144,17 @@ export default function AuthLayout({ children, title }) {
                                 <canvas ref={canvasRef} className="h-full w-full cursor-grab active:cursor-grabbing" />
                             )}
                         </div>
-                        <p className="mb-5 text-sm font-semibold uppercase tracking-[2px] text-white/75">
+                        <p className="mb-5 text-sm font-semibold uppercase tracking-[2px] text-white/70">
                             Techstacks
                         </p>
                         <h2 className="mb-4 text-[32px] font-bold leading-tight">Invoicify</h2>
-                        <p className="max-w-sm text-[15px] leading-[1.7] text-white/90">
+                        <p className="max-w-sm text-[15px] leading-[1.7] text-white/85">
                             Professional invoicing — create, send, and track
                             invoices with live totals and PDF delivery.
                         </p>
                     </div>
                 </aside>
-                <main className="flex flex-1 items-center justify-center p-4 py-10 sm:p-8">
+                <main className="relative z-10 flex flex-1 items-center justify-center p-4 py-10 sm:p-8">
                     <div className="w-full max-w-md">{children}</div>
                 </main>
             </div>

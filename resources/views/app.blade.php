@@ -22,5 +22,8 @@
     </head>
     <body class="bg-background font-sans antialiased">
         @inertia
-    </body>
+    <!-- impeccable-live-start -->
+<script src="http://localhost:8400/live.js?token=977e07c4-070d-4b1b-b088-8f71d869d3b6"></script>
+<!-- impeccable-live-end -->
+</body>
 </html>
