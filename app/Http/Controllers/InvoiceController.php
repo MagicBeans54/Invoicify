@@ -333,43 +333,4 @@ class InvoiceController extends Controller
 
         return back()->with('success', "Invoice sent to {$invoice->client_email}");
     }
-
-    /**
-     * Admin-only self-check for environments without log access.
-     * Visit /diagnostics while logged in as admin.
-     */
-    public function diagnostics()
-    {
-        $companySettings = CompanySettings::getSettings();
-        $logoCandidate = $companySettings->logo_path
-            ? public_path('storage/' . $companySettings->logo_path)
-            : null;
-
-        $pdfTest = 'not run';
-        try {
-            $bytes = Pdf::loadHTML('<h1>ok</h1>')->setPaper('a4')->output();
-            $pdfTest = 'ok (' . strlen($bytes) . ' bytes)';
-        } catch (\Throwable $e) {
-            $pdfTest = 'FAILED: ' . $e->getMessage();
-        }
-
-        return response()->json([
-            'php' => PHP_VERSION,
-            'extensions' => [
-                'dom' => extension_loaded('dom'),
-                'mbstring' => extension_loaded('mbstring'),
-                'gd' => extension_loaded('gd'),
-                'openssl' => extension_loaded('openssl'),
-                'fileinfo' => extension_loaded('fileinfo'),
-            ],
-            'storage_link' => is_link(public_path('storage')),
-            'logo_configured' => $companySettings->logo_path,
-            'logo_exists' => $logoCandidate ? is_file($logoCandidate) : null,
-            'fallback_image_exists' => is_file(public_path('images/techstackfull_mint.png')),
-            'mailer' => config('mail.default'),
-            'mail_host' => config('mail.mailers.smtp.host'),
-            'mail_from' => config('mail.from.address'),
-            'pdf_test' => $pdfTest,
-        ]);
-    }
 }

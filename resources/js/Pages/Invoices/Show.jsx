@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { Download, Pencil, Send } from 'lucide-react';
+import { Download, Pencil, Send, Trash2 } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
-import { HoldToConfirmButton } from '@/components/ui/hold-to-confirm';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { ShareButton } from '@/components/ui/share-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,11 +33,19 @@ import {
 
 export default function Show({ invoice }) {
     const [sending, setSending] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const sendInvoice = () => {
         setSending(true);
         router.post(route('invoices.send', invoice.id), {}, {
             onFinish: () => setSending(false),
+        });
+    };
+
+    const deleteInvoice = () => {
+        setDeleting(true);
+        router.delete(route('invoices.destroy', invoice.id), {
+            onFinish: () => setDeleting(false),
         });
     };
 
@@ -225,14 +243,35 @@ export default function Show({ invoice }) {
                             },
                         ]}
                     />
-                    <HoldToConfirmButton
-                        size="sm"
-                        label="Hold to delete"
-                        confirmedLabel="Deleted"
-                        onConfirm={() =>
-                            router.delete(route('invoices.destroy', invoice.id))
-                        }
-                    />
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm">
+                                <Trash2 />
+                                Delete
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Delete invoice {invoice.invoice_number}?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This permanently deletes the invoice and its{' '}
+                                    {invoice.items?.length ?? 0} line item
+                                    {(invoice.items?.length ?? 0) === 1 ? '' : 's'} for{' '}
+                                    {invoice.client_name} (
+                                    <span className="tnum">{formatCurrency(invoice.total)}</span>
+                                    ). This cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={deleteInvoice} disabled={deleting}>
+                                    {deleting ? 'Deleting…' : 'Delete invoice'}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </AppLayout>
         </>
