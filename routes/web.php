@@ -17,6 +17,11 @@ Route::post('/register', [AuthController::class, 'store'])->name('register.store
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
+Route::get('/forgot-password', [AuthController::class, 'forgot'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'email'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showReset'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'update'])->name('password.update');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes (protected by admin middleware)
