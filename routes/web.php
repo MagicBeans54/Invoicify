@@ -42,6 +42,9 @@ Route::middleware('auth.admin')->group(function () {
     Route::get('/settings', [CompanySettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [CompanySettingsController::class, 'update'])->name('settings.update');
 
+    // Self-check for environments without log access (admin only).
+    Route::get('/diagnostics', [InvoiceController::class, 'diagnostics'])->name('diagnostics');
+
     // Admin Payment Routes
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');

@@ -9,11 +9,38 @@ use App\Models\Client;
 use App\Mail\InvoiceMail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
 {
+    /**
+     * Resolve image paths for the PDF. Missing files are the most common
+     * production 500 cause (no storage:link, ephemeral disk, renamed file),
+     * so absent files resolve to null and the view omits the <img> entirely.
+     */
+    private function pdfAssets(CompanySettings $companySettings): array
+    {
+        $logoPath = null;
+        if (! empty($companySettings->logo_path)) {
+            $candidate = public_path('storage/' . $companySettings->logo_path);
+            if (is_file($candidate)) {
+                $logoPath = $candidate;
+            } else {
+                Log::warning('Invoice PDF: configured logo missing', [
+                    'logo_path' => $companySettings->logo_path,
+                ]);
+            }
+        }
+
+        $fallback = public_path('images/techstackfull_mint.png');
+
+        return [
+            'logoPath' => $logoPath,
+            'fallbackPath' => is_file($fallback) ? $fallback : null,
+        ];
+    }
     public function index()
     {
         $invoices = Invoice::with('items')->latest()->get();
@@ -235,19 +262,26 @@ class InvoiceController extends Controller
     {
         $invoice->load('items');
         $companySettings = CompanySettings::getSettings();
-        
-        // Get logo file path if exists
-        $logoPath = null;
-        if ($companySettings->logo_path) {
-            $logoPath = public_path('storage/' . $companySettings->logo_path);
+
+        try {
+            $pdf = Pdf::loadView('invoices.pdf', array_merge(
+                [
+                    'invoice' => $invoice,
+                    'companySettings' => $companySettings,
+                    'invoiceDate' => $invoice->invoice_date?->format('M d, Y') ?? '—',
+                    'dueDate' => $invoice->due_date?->format('M d, Y') ?? '—',
+                ],
+                $this->pdfAssets($companySettings),
+            ))->setPaper('a4');
+        } catch (\Throwable $e) {
+            Log::error('Invoice PDF generation failed', [
+                'invoice_id' => $invoice->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Could not generate the PDF. Please try again or contact support.');
         }
-        
-        $pdf = Pdf::loadView('invoices.pdf', [
-            'invoice' => $invoice,
-            'companySettings' => $companySettings,
-            'logoPath' => $logoPath,
-        ])->setPaper('a4');
-        
+
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
     }
 
@@ -261,23 +295,81 @@ class InvoiceController extends Controller
 
         $companySettings = CompanySettings::getSettings();
 
-        $logoPath = null;
-        if ($companySettings->logo_path) {
-            $logoPath = public_path('storage/' . $companySettings->logo_path);
+        try {
+            $pdf = Pdf::loadView('invoices.pdf', array_merge(
+                [
+                    'invoice' => $invoice,
+                    'companySettings' => $companySettings,
+                    'invoiceDate' => $invoice->invoice_date?->format('M d, Y') ?? '—',
+                    'dueDate' => $invoice->due_date?->format('M d, Y') ?? '—',
+                ],
+                $this->pdfAssets($companySettings),
+            ))->setPaper('a4')->output();
+        } catch (\Throwable $e) {
+            Log::error('Invoice PDF generation failed (send)', [
+                'invoice_id' => $invoice->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Could not generate the PDF, so nothing was sent. Please try again.');
         }
 
-        $pdf = Pdf::loadView('invoices.pdf', [
-            'invoice' => $invoice,
-            'companySettings' => $companySettings,
-            'logoPath' => $logoPath,
-        ])->setPaper('a4')->output();
+        try {
+            Mail::to($invoice->client_email)->send(new InvoiceMail($invoice, $pdf));
+        } catch (\Throwable $e) {
+            Log::error('Invoice email failed', [
+                'invoice_id' => $invoice->id,
+                'to' => $invoice->client_email,
+                'mailer' => config('mail.default'),
+                'message' => $e->getMessage(),
+            ]);
 
-        Mail::to($invoice->client_email)->send(new InvoiceMail($invoice, $pdf));
+            return back()->with('error', 'The PDF was built but the email could not be sent (' . $e->getMessage() . '). Check mail settings and try again.');
+        }
 
         if ($invoice->status === 'draft') {
             $invoice->update(['status' => 'sent']);
         }
 
         return back()->with('success', "Invoice sent to {$invoice->client_email}");
+    }
+
+    /**
+     * Admin-only self-check for environments without log access.
+     * Visit /diagnostics while logged in as admin.
+     */
+    public function diagnostics()
+    {
+        $companySettings = CompanySettings::getSettings();
+        $logoCandidate = $companySettings->logo_path
+            ? public_path('storage/' . $companySettings->logo_path)
+            : null;
+
+        $pdfTest = 'not run';
+        try {
+            $bytes = Pdf::loadHTML('<h1>ok</h1>')->setPaper('a4')->output();
+            $pdfTest = 'ok (' . strlen($bytes) . ' bytes)';
+        } catch (\Throwable $e) {
+            $pdfTest = 'FAILED: ' . $e->getMessage();
+        }
+
+        return response()->json([
+            'php' => PHP_VERSION,
+            'extensions' => [
+                'dom' => extension_loaded('dom'),
+                'mbstring' => extension_loaded('mbstring'),
+                'gd' => extension_loaded('gd'),
+                'openssl' => extension_loaded('openssl'),
+                'fileinfo' => extension_loaded('fileinfo'),
+            ],
+            'storage_link' => is_link(public_path('storage')),
+            'logo_configured' => $companySettings->logo_path,
+            'logo_exists' => $logoCandidate ? is_file($logoCandidate) : null,
+            'fallback_image_exists' => is_file(public_path('images/techstackfull_mint.png')),
+            'mailer' => config('mail.default'),
+            'mail_host' => config('mail.mailers.smtp.host'),
+            'mail_from' => config('mail.from.address'),
+            'pdf_test' => $pdfTest,
+        ]);
     }
 }
