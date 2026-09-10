@@ -111,10 +111,9 @@ export function NotificationBell({
       whileTap={shouldReduceMotion ? undefined : { scale: 0.94 }}
       transition={TAP_SPRING}
       className={cn(
-        "relative inline-flex touch-manipulation select-none items-center justify-center rounded-full border transition-colors",
-        "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-100",
-        "dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800",
-        "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300",
+        "relative inline-flex touch-manipulation select-none items-center justify-center rounded-full border border-transparent transition-colors",
+        "bg-transparent text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40",
         sizeClasses,
         className,
       )}

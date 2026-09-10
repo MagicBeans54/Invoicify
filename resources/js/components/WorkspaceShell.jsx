@@ -120,7 +120,7 @@ function BellMenu({ variant, stats }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <NotificationBell count={count} className="h-8 w-8" title={summary} />
+                <NotificationBell count={count} size="sm" className="h-8 w-8" title={summary} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" sideOffset={8} className="w-80">
                 <DropdownMenuLabel>
@@ -209,15 +209,15 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
     }
 
     return (
-        <SidebarProvider style={{ '--sidebar-width': '13.5rem' }}>
+        <SidebarProvider style={{ '--sidebar-width': '13.5rem' }} className="bg-sidebar">
             <FlashToaster />
-            <Sidebar collapsible="icon">
-                <SidebarHeader>
+            <Sidebar collapsible="icon" className="border-0">
+                <SidebarHeader className="h-14 justify-center border-0 px-2">
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <Link
                                 href={route(config.home)}
-                                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+                                className="flex h-10 items-center gap-2.5 rounded-lg px-2 transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                             >
                                 <TechstackMark className="size-7 shrink-0" />
                                 <span className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
@@ -333,9 +333,9 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
                     </SidebarMenu>
                 </SidebarFooter>
             </Sidebar>
-            <SidebarInset>
-                <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
-                    <SidebarTrigger className="-ml-1" />
+            <SidebarInset className="bg-sidebar">
+                <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-0 bg-sidebar px-4">
+                    <SidebarTrigger className="-ml-1 h-8 w-8 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
                     {trail.length > 1 && (
                         <div className="min-w-0 flex-1">
                             <Breadcrumb>
@@ -365,12 +365,12 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
                             </Breadcrumb>
                         </div>
                     )}
-                    <div className="ml-auto flex items-center gap-1">
+                    <div className="ml-auto flex shrink-0 items-center gap-1.5">
                         <ModeToggle />
                         <BellMenu variant={variant} stats={stats} />
                     </div>
                 </header>
-                <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+                <main className="min-h-[calc(100svh-3.5rem)] flex-1 bg-background px-4 py-6 sm:px-6 sm:py-8 md:rounded-tl-2xl">
                     <PageTransition pageKey={url} className="mx-auto max-w-5xl">
                         {(title || subtitle || actions) && (
                             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
