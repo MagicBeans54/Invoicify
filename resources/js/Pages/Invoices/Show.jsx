@@ -206,33 +206,7 @@ export default function Show({ invoice }) {
                 </Card>
 
                 <div className="mt-6 flex flex-wrap justify-end gap-2">
-                    <LoadingButton
-                        size="sm"
-                        loading={sending}
-                        onClick={sendInvoice}
-                        disabled={!invoice.client_email}
-                        title={
-                            invoice.client_email
-                                ? `Email this invoice to ${invoice.client_email}`
-                                : 'Add a client email to enable sending'
-                        }
-                    >
-                        <Send />
-                        Send
-                    </LoadingButton>
-                    <Button asChild variant="outline" size="sm">
-                        <a href={route('invoices.pdf', invoice.id)}>
-                            <Download />
-                            Download PDF
-                        </a>
-                    </Button>
-                    <Button asChild size="sm">
-                        <Link href={route('invoices.edit', invoice.id)}>
-                            <Pencil />
-                            Edit
-                        </Link>
-                    </Button>
-                    <ShareButton
+                                  <ShareButton
                         size="sm"
                         direction="left"
                         label={`Share ${invoice.invoice_number}`}
