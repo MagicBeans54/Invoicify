@@ -148,10 +148,7 @@ export default function AuthLayout({ children, title }) {
                             Techstacks
                         </p>
                         <h2 className="mb-4 text-[32px] font-bold leading-tight">Invoicify</h2>
-                        <p className="max-w-sm text-[15px] leading-[1.7] text-white/85">
-                            Professional invoicing — create, send, and track
-                            invoices with live totals and PDF delivery.
-                        </p>
+                       
                     </div>
                 </aside>
                 <main className="relative z-10 flex flex-1 items-center justify-center p-4 py-10 sm:p-8">
