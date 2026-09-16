@@ -51,7 +51,7 @@ export default function RegisterForm() {
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">Create your account</CardTitle>
                     <CardDescription>Access your invoices and payments</CardDescription>
-                    <p className="pt-1 text-xs text-muted-foreground">You&apos;re creating a client account. Need an admin account? Contact your workspace owner.</p>
+                    
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4" onSubmit={handleSubmit}>
