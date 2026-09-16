@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import {
@@ -181,7 +181,6 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
     const { url, props } = usePage();
     const user = props.auth?.user;
     const stats = props.stats;
-    const [confirmingLogout, setConfirmingLogout] = useState(false);
 
     const items = config.routes.map((item) => {
         const itemUrl = route(item.routeName);
@@ -200,12 +199,7 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
 
     function handleLogoutSelect(e) {
         e.preventDefault();
-        if (confirmingLogout) {
-            setConfirmingLogout(false);
-            router.post(route('logout'));
-        } else {
-            setConfirmingLogout(true);
-        }
+        router.post(route('logout'));
     }
 
     return (
@@ -262,11 +256,7 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
                 <SidebarFooter>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <DropdownMenu
-                                onOpenChange={(open) => {
-                                    if (!open) setConfirmingLogout(false);
-                                }}
-                            >
+                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <SidebarMenuButton
                                         size="lg"
@@ -325,7 +315,7 @@ export default function WorkspaceShell({ variant, title, subtitle, crumbs, actio
                                     )}
                                     <DropdownMenuItem className="cursor-pointer" onSelect={handleLogoutSelect}>
                                         <LogOut />
-                                        {confirmingLogout ? 'Click again to confirm logout' : 'Log out'}
+                                        Log out
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
