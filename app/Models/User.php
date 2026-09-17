@@ -51,12 +51,12 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return isset($this->role) && $this->role === 'admin';
     }
 
     public function isClient(): bool
     {
-        return $this->role === 'client';
+        return isset($this->role) && $this->role === 'client';
     }
 
     public function client()

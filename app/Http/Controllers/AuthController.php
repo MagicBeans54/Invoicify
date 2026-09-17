@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
@@ -25,32 +26,44 @@ class AuthController extends Controller
             'address' => ['nullable', 'string'],
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'client', // Default to client role
-        ]);
-
-        // Create or update the client profile, keyed by email, so that
-        // re-registration or a pre-existing client record never results
-        // in duplicate clients.
-        Client::updateOrCreate(
-            ['email' => $validated['email']],
-            [
+        try {
+            $userData = [
                 'name' => $validated['name'],
-                'phone' => $validated['phone'] ?? null,
-                'address' => $validated['address'] ?? null,
-            ]
-        );
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ];
 
-        Auth::login($user);
+            // Only add role if the column exists in the database
+            if (Schema::hasColumn('users', 'role')) {
+                $userData['role'] = 'client';
+            }
 
-        // Redirect based on role
-        if ($user->isAdmin()) {
-            return redirect()->route('invoices.index');
-        } else {
-            return redirect()->route('client.dashboard');
+            $user = User::create($userData);
+
+            // Create or update the client profile, keyed by email, so that
+            // re-registration or a pre-existing client record never results
+            // in duplicate clients.
+            Client::updateOrCreate(
+                ['email' => $validated['email']],
+                [
+                    'name' => $validated['name'],
+                    'phone' => $validated['phone'] ?? null,
+                    'address' => $validated['address'] ?? null,
+                ]
+            );
+
+            Auth::login($user);
+
+            // Redirect based on role
+            if (Schema::hasColumn('users', 'role') && $user->isAdmin()) {
+                return redirect()->route('invoices.index');
+            } else {
+                return redirect()->route('client.dashboard');
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'email' => 'Registration failed: ' . $e->getMessage(),
+            ]);
         }
     }
 
@@ -70,7 +83,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         // Redirect based on role
-        if (Auth::user()->isAdmin()) {
+        if (Schema::hasColumn('users', 'role') && Auth::user()->isAdmin()) {
             return redirect()->route('invoices.index');
         } else {
             return redirect()->route('client.dashboard');
