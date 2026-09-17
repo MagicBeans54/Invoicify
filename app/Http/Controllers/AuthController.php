@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password as PasswordRule;
+use Illuminate\Validation\Rules\Password as PasswordValidationRule;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -21,7 +21,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', PasswordValidationRule::min(8)],
             'phone' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
         ]);
@@ -134,7 +134,7 @@ class AuthController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', PasswordRule::min(8)],
+            'password' => ['required', 'confirmed', PasswordValidationRule::min(8)],
         ]);
 
         $status = Password::reset(
