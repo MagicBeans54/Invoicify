@@ -120,6 +120,10 @@ class InvoiceController extends Controller
                     'terms' => $validated['terms'] ?? null,
                 ]);
                 break;
+            } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+                if ($attempts >= 5) {
+                    throw $e;
+                }
             } catch (\Illuminate\Database\QueryException $e) {
                 $isDuplicateKey = str_contains($e->getMessage(), 'Duplicate entry')
                     || str_contains($e->getMessage(), 'UNIQUE constraint failed');
