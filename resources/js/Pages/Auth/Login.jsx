@@ -16,6 +16,7 @@ export default function LoginForm() {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
+        remember: false,
     });
     const [showPassword, setShowPassword] = useState(false);
     const reduce = useReducedMotion();
@@ -107,6 +108,18 @@ export default function LoginForm() {
                                 </button>
                             </div>
                             {errors.password && <p id="password-error" role="alert" className="text-sm text-destructive">{errors.password}</p>}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                id="remember"
+                                type="checkbox"
+                                checked={data.remember}
+                                onChange={(e) => setData('remember', e.target.checked)}
+                                className="h-4 w-4 rounded border-input accent-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
+                            />
+                            <Label htmlFor="remember" className="cursor-pointer text-sm font-normal text-muted-foreground">
+                                Remember me
+                            </Label>
                         </div>
                         <LoadingButton type="submit" className="w-full" loading={processing}>
                             Log in
