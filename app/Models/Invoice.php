@@ -80,12 +80,11 @@ class Invoice extends Model
     {
         $date = $invoiceDate instanceof \DateTime ? $invoiceDate->format('Y-m-d') : $invoiceDate;
 
-        // Collect the numeric suffixes of all invoices for this client on this
-        // date (format: INV-XXX-YYYY-MM-DD) and take the highest one. This is
+        // Collect the numeric suffixes of all invoices on this date
+        // (format: INV-XXX-YYYY-MM-DD) and take the highest one. This is
         // done numerically rather than via string ordering, which breaks once
         // the suffix grows beyond three digits.
-        $highestSuffix = self::where('client_name', $clientName)
-            ->whereDate('invoice_date', $date)
+        $highestSuffix = self::whereDate('invoice_date', $date)
             ->pluck('invoice_number')
             ->map(function ($number) use ($date) {
                 preg_match('/INV-(\d+)-' . preg_quote($date, '/') . '$/', $number, $matches);
