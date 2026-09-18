@@ -56,12 +56,15 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'remember' => ['sometimes', 'boolean'],
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        $remember = $request->boolean('remember');
+
+        if (! Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']], $remember)) {
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records.',
             ]);
